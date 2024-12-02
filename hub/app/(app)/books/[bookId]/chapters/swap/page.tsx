@@ -23,9 +23,7 @@ export default function Page() {
   return (
     <div className="p-4 mx-auto space-y-4 rounded-md shadow-md bg-card">
       <div className="flex items-center justify-between gap-x-2">
-        <span className="mx-2 text-xl font-bold">
-          {data.chapters.length} Chương
-        </span>
+        <span className="mx-2 text-xl font-bold">Sắp xếp chương</span>
         <Button variant={"gooeyRight"} className="h-8" asChild>
           <Link
             href={`/books/${params.bookId}/chapters/create/${data.chapters.length + 1}`}
@@ -35,7 +33,13 @@ export default function Page() {
           </Link>
         </Button>
       </div>
-      <Chapters data={data.chapters} />
+      <Chapters
+        bookId={parseInt(params.bookId)}
+        initialData={data.chapters.map((chapter) => ({
+          ...chapter,
+          newOrder: chapter.order,
+        }))}
+      />
     </div>
   );
 }

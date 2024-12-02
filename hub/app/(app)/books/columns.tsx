@@ -1,6 +1,6 @@
 "use client";
 
-import { BookFragment } from "@/apollo-client/generated";
+import { BookFragment } from "@/apollo-client/__generated";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";

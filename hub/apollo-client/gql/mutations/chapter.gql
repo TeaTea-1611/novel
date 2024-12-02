@@ -21,3 +21,40 @@ mutation CreateChapter(
     }
   }
 }
+
+mutation SwapChapters($bookId: Int!, $data: [SwapChapterInput!]!) {
+  swapChapters(bookId: $bookId, data: $data) {
+    ...chapter
+  }
+}
+
+mutation DeleteChapter($chapterId: Int!) {
+  deleteChapter(chapterId: $chapterId) {
+    success
+    message
+  }
+}
+
+mutation UpdateChapter(
+  $bookId: Int!
+  $chapterId: Int!
+  $title: String!
+  $content: String!
+  $publishAt: Timestamp!
+  $unlockPrice: Int!
+) {
+  updateChapter(
+    bookId: $bookId
+    chapterId: $chapterId
+    title: $title
+    content: $content
+    publishAt: $publishAt
+    unlockPrice: $unlockPrice
+  ) {
+    success
+    message
+    chapter {
+      ...chapter
+    }
+  }
+}

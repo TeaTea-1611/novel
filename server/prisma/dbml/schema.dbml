@@ -222,7 +222,7 @@ Table chapter {
   bookId Int [not null]
   order Int [not null]
   title String [not null]
-  content String [not null]
+  content String [not null, note: '@TypeGraphQL.omit(output: true)']
   unlockPrice Int [not null]
   publishAt DateTime [default: `now()`, not null]
   createdAt DateTime [default: `now()`, not null]

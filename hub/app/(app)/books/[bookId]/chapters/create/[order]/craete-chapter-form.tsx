@@ -1,10 +1,9 @@
 "use client";
 
 import {
-  ChapterDocument,
-  ChapterQuery,
+  ChapterFragmentDoc,
   useCreateChapterMutation,
-} from "@/apollo-client/generated";
+} from "@/apollo-client/__generated";
 import { Button } from "@/components/ui/button";
 import { DatetimePicker } from "@/components/ui/datetime-picker";
 import {
@@ -58,14 +57,17 @@ export function CreateChapterForm({ bookId, order }: Props) {
         data.createChapter.message,
       );
       if (data.createChapter.chapter) {
-        client.writeQuery<ChapterQuery>({
-          query: ChapterDocument,
-          variables: {
-            chapterId: data.createChapter.chapter.id,
-          },
-          data: {
-            __typename: "Query",
-            chapter: data.createChapter.chapter,
+        client.cache.modify({
+          fields: {
+            chapters(existingChapters = []) {
+              return [
+                ...existingChapters,
+                client.cache.writeFragment({
+                  data: data.createChapter.chapter,
+                  fragment: ChapterFragmentDoc,
+                }),
+              ];
+            },
           },
         });
         router.push(`/books/${data.createChapter.chapter.bookId}/chapters`);

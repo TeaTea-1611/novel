@@ -1,6 +1,6 @@
 "use client";
 
-import { useBookQuery } from "@/apollo-client/generated";
+import { useBookQuery } from "@/apollo-client/__generated";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FileImage, FilePenLine, UserPen } from "lucide-react";
 import { useParams } from "next/navigation";

@@ -5,6 +5,7 @@ import { ApolloWrapper } from "./apollo-wrapper";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { PageTracker } from "react-page-tracker";
 
 const ginto = localFont({
   src: "./fonts/Ginto.woff2",
@@ -33,6 +34,7 @@ export default function RootLayout({
         >
           <ApolloWrapper>
             <TooltipProvider>{children}</TooltipProvider>
+            <PageTracker />
             <Toaster position="top-center" />
           </ApolloWrapper>
         </ThemeProvider>

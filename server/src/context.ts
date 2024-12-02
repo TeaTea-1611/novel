@@ -7,7 +7,7 @@ import { redis } from "./redis";
 import { buildDataLoaders } from "./utils";
 
 const prisma = new PrismaClient({
-  log: ["query"],
+  // log: ["query"],
 });
 
 export interface Context {

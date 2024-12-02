@@ -283,6 +283,7 @@ model Chapter {
   bookId      Int
   order       Int
   title       String
+  /// @TypeGraphQL.omit(output: true)
   content     String
   unlockPrice Int
   publishAt   DateTime @default(now())

@@ -60,7 +60,7 @@ const modelsInfo = {
   TagOnBook: ["bookId", "tagId"],
   Review: ["id", "userId", "bookId", "point", "content", "isSpoiler", "createdAt"],
   Comment: ["id", "userId", "bookId", "content", "totalLike", "createdAt", "updatedAt"],
-  Chapter: ["id", "bookId", "order", "title", "content", "unlockPrice", "publishAt", "createdAt", "updatedAt"],
+  Chapter: ["id", "bookId", "order", "title", "unlockPrice", "publishAt", "createdAt", "updatedAt"],
   BookStatistic: ["id", "bookId", "type", "value", "date"],
   Reading: ["userId", "bookId", "currentChapter", "readingAt"],
   Bookmark: ["userId", "bookId", "createdAt"]

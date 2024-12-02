@@ -130,11 +130,11 @@ type Chapter {
   bookId: Int!
   order: Int!
   title: String!
-  content: String!
   unlockPrice: Int!
   publishAt: Timestamp!
   createdAt: Timestamp!
   updatedAt: Timestamp!
+  content: String!
 }
 
 type PaginatedReading {
@@ -176,6 +176,9 @@ type Mutation {
   updatePrivacyPolicy(value: String!): Boolean
   updateCopyright(value: String!): Boolean
   createChapter(bookId: Int!, order: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
+  updateChapter(bookId: Int!, chapterId: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
+  deleteChapter(chapterId: Int!): MutationResponse!
+  swapChapters(bookId: Int!, data: [SwapChapterInput!]!): [Chapter!]!
 }
 
 type MutationResponse implements IMutationResponse {
@@ -215,4 +218,9 @@ type ChapterMutationResponse implements IMutationResponse {
   success: Boolean!
   message: String!
   chapter: Chapter
+}
+
+input SwapChapterInput {
+  id: Int!
+  newOrder: Int!
 }

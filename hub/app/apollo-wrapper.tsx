@@ -5,7 +5,7 @@ import { accessTokenVar } from "@/apollo-client/vars/access-token-var";
 import {
   RefreshTokenDocument,
   RefreshTokenMutation,
-} from "@/apollo-client/generated";
+} from "@/apollo-client/__generated";
 import { ApolloLink, fromPromise, Observable } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";

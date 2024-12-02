@@ -3,7 +3,6 @@ fragment chapter on Chapter {
   bookId
   order
   title
-  content
   unlockPrice
   publishAt
   createdAt

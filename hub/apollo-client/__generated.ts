@@ -111,6 +111,7 @@ export type Mutation = {
   convertBook: BookResponse;
   createBook: BookResponse;
   createChapter: ChapterMutationResponse;
+  deleteChapter: MutationResponse;
   googleLogin: LoginResponse;
   login: LoginResponse;
   logout: Scalars['Boolean']['output'];
@@ -119,7 +120,9 @@ export type Mutation = {
   refreshToken?: Maybe<Scalars['String']['output']>;
   register: MutationResponse;
   resendTwoFactorCode: MutationResponse;
+  swapChapters: Array<Chapter>;
   updateBook: BookResponse;
+  updateChapter: ChapterMutationResponse;
   updateConvertBook: BookResponse;
   updateCopyright?: Maybe<Scalars['Boolean']['output']>;
   updateNotificationSettings: NotificationSettings;
@@ -187,6 +190,11 @@ export type MutationCreateChapterArgs = {
 };
 
 
+export type MutationDeleteChapterArgs = {
+  chapterId: Scalars['Int']['input'];
+};
+
+
 export type MutationGoogleLoginArgs = {
   code: Scalars['String']['input'];
 };
@@ -222,6 +230,12 @@ export type MutationResendTwoFactorCodeArgs = {
 };
 
 
+export type MutationSwapChaptersArgs = {
+  bookId: Scalars['Int']['input'];
+  data: Array<SwapChapterInput>;
+};
+
+
 export type MutationUpdateBookArgs = {
   gender: Scalars['Int']['input'];
   genreId: Scalars['Int']['input'];
@@ -230,6 +244,16 @@ export type MutationUpdateBookArgs = {
   status: Scalars['Int']['input'];
   synopsis: Scalars['String']['input'];
   tagIds: Array<Scalars['Int']['input']>;
+};
+
+
+export type MutationUpdateChapterArgs = {
+  bookId: Scalars['Int']['input'];
+  chapterId: Scalars['Int']['input'];
+  content: Scalars['String']['input'];
+  publishAt: Scalars['Timestamp']['input'];
+  title: Scalars['String']['input'];
+  unlockPrice: Scalars['Int']['input'];
 };
 
 
@@ -377,6 +401,11 @@ export enum SortOrder {
   Desc = 'desc'
 }
 
+export type SwapChapterInput = {
+  id: Scalars['Int']['input'];
+  newOrder: Scalars['Int']['input'];
+};
+
 export type Tag = {
   __typename?: 'Tag';
   group: TagGroup;
@@ -431,9 +460,14 @@ export enum UserRole {
 
 export type BookFragment = { __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } };
 
-export type ChapterFragment = { __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, content: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any };
+export type ChapterFragment = { __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any };
 
 export type UserFragment = { __typename?: 'User', id: number, email: string, nickname: string, avatar: string, pendant: string, role: UserRole, emailVerified?: any | null, isTwoFactorEnable: boolean, gender: number, introduce: string, phone: string, dob: any, urls: Array<string>, keyNum: number, ticketNum: number, candyNum: number, createdAt: any };
+
+export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
 export type RefreshTokenMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -511,7 +545,34 @@ export type CreateChapterMutationVariables = Exact<{
 }>;
 
 
-export type CreateChapterMutation = { __typename?: 'Mutation', createChapter: { __typename?: 'ChapterMutationResponse', success: boolean, message: string, chapter?: { __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, content: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any } | null } };
+export type CreateChapterMutation = { __typename?: 'Mutation', createChapter: { __typename?: 'ChapterMutationResponse', success: boolean, message: string, chapter?: { __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any } | null } };
+
+export type SwapChaptersMutationVariables = Exact<{
+  bookId: Scalars['Int']['input'];
+  data: Array<SwapChapterInput> | SwapChapterInput;
+}>;
+
+
+export type SwapChaptersMutation = { __typename?: 'Mutation', swapChapters: Array<{ __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any }> };
+
+export type DeleteChapterMutationVariables = Exact<{
+  chapterId: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteChapterMutation = { __typename?: 'Mutation', deleteChapter: { __typename?: 'MutationResponse', success: boolean, message: string } };
+
+export type UpdateChapterMutationVariables = Exact<{
+  bookId: Scalars['Int']['input'];
+  chapterId: Scalars['Int']['input'];
+  title: Scalars['String']['input'];
+  content: Scalars['String']['input'];
+  publishAt: Scalars['Timestamp']['input'];
+  unlockPrice: Scalars['Int']['input'];
+}>;
+
+
+export type UpdateChapterMutation = { __typename?: 'Mutation', updateChapter: { __typename?: 'ChapterMutationResponse', success: boolean, message: string, chapter?: { __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any } | null } };
 
 export type BookOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -543,14 +604,14 @@ export type ChapterQueryVariables = Exact<{
 }>;
 
 
-export type ChapterQuery = { __typename?: 'Query', chapter?: { __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, content: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any } | null };
+export type ChapterQuery = { __typename?: 'Query', chapter?: { __typename?: 'Chapter', content: string, id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any } | null };
 
 export type ChaptersQueryVariables = Exact<{
   bookId: Scalars['Int']['input'];
 }>;
 
 
-export type ChaptersQuery = { __typename?: 'Query', chapters: Array<{ __typename?: 'Chapter', id: number, bookId: number, title: string, order: number, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any }> };
+export type ChaptersQuery = { __typename?: 'Query', chapters: Array<{ __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any }> };
 
 export type FullQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -608,7 +669,6 @@ export const ChapterFragmentDoc = gql`
   bookId
   order
   title
-  content
   unlockPrice
   publishAt
   createdAt
@@ -636,6 +696,36 @@ export const UserFragmentDoc = gql`
   createdAt
 }
     `;
+export const LogoutDocument = gql`
+    mutation Logout {
+  logout
+}
+    `;
+export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
+
+/**
+ * __useLogoutMutation__
+ *
+ * To run a mutation, you first call `useLogoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLogoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [logoutMutation, { data, loading, error }] = useLogoutMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, options);
+      }
+export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
+export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
+export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
 export const RefreshTokenDocument = gql`
     mutation RefreshToken {
   refreshToken
@@ -955,6 +1045,123 @@ export function useCreateChapterMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateChapterMutationHookResult = ReturnType<typeof useCreateChapterMutation>;
 export type CreateChapterMutationResult = Apollo.MutationResult<CreateChapterMutation>;
 export type CreateChapterMutationOptions = Apollo.BaseMutationOptions<CreateChapterMutation, CreateChapterMutationVariables>;
+export const SwapChaptersDocument = gql`
+    mutation SwapChapters($bookId: Int!, $data: [SwapChapterInput!]!) {
+  swapChapters(bookId: $bookId, data: $data) {
+    ...chapter
+  }
+}
+    ${ChapterFragmentDoc}`;
+export type SwapChaptersMutationFn = Apollo.MutationFunction<SwapChaptersMutation, SwapChaptersMutationVariables>;
+
+/**
+ * __useSwapChaptersMutation__
+ *
+ * To run a mutation, you first call `useSwapChaptersMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSwapChaptersMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [swapChaptersMutation, { data, loading, error }] = useSwapChaptersMutation({
+ *   variables: {
+ *      bookId: // value for 'bookId'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useSwapChaptersMutation(baseOptions?: Apollo.MutationHookOptions<SwapChaptersMutation, SwapChaptersMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SwapChaptersMutation, SwapChaptersMutationVariables>(SwapChaptersDocument, options);
+      }
+export type SwapChaptersMutationHookResult = ReturnType<typeof useSwapChaptersMutation>;
+export type SwapChaptersMutationResult = Apollo.MutationResult<SwapChaptersMutation>;
+export type SwapChaptersMutationOptions = Apollo.BaseMutationOptions<SwapChaptersMutation, SwapChaptersMutationVariables>;
+export const DeleteChapterDocument = gql`
+    mutation DeleteChapter($chapterId: Int!) {
+  deleteChapter(chapterId: $chapterId) {
+    success
+    message
+  }
+}
+    `;
+export type DeleteChapterMutationFn = Apollo.MutationFunction<DeleteChapterMutation, DeleteChapterMutationVariables>;
+
+/**
+ * __useDeleteChapterMutation__
+ *
+ * To run a mutation, you first call `useDeleteChapterMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteChapterMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteChapterMutation, { data, loading, error }] = useDeleteChapterMutation({
+ *   variables: {
+ *      chapterId: // value for 'chapterId'
+ *   },
+ * });
+ */
+export function useDeleteChapterMutation(baseOptions?: Apollo.MutationHookOptions<DeleteChapterMutation, DeleteChapterMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteChapterMutation, DeleteChapterMutationVariables>(DeleteChapterDocument, options);
+      }
+export type DeleteChapterMutationHookResult = ReturnType<typeof useDeleteChapterMutation>;
+export type DeleteChapterMutationResult = Apollo.MutationResult<DeleteChapterMutation>;
+export type DeleteChapterMutationOptions = Apollo.BaseMutationOptions<DeleteChapterMutation, DeleteChapterMutationVariables>;
+export const UpdateChapterDocument = gql`
+    mutation UpdateChapter($bookId: Int!, $chapterId: Int!, $title: String!, $content: String!, $publishAt: Timestamp!, $unlockPrice: Int!) {
+  updateChapter(
+    bookId: $bookId
+    chapterId: $chapterId
+    title: $title
+    content: $content
+    publishAt: $publishAt
+    unlockPrice: $unlockPrice
+  ) {
+    success
+    message
+    chapter {
+      ...chapter
+    }
+  }
+}
+    ${ChapterFragmentDoc}`;
+export type UpdateChapterMutationFn = Apollo.MutationFunction<UpdateChapterMutation, UpdateChapterMutationVariables>;
+
+/**
+ * __useUpdateChapterMutation__
+ *
+ * To run a mutation, you first call `useUpdateChapterMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateChapterMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateChapterMutation, { data, loading, error }] = useUpdateChapterMutation({
+ *   variables: {
+ *      bookId: // value for 'bookId'
+ *      chapterId: // value for 'chapterId'
+ *      title: // value for 'title'
+ *      content: // value for 'content'
+ *      publishAt: // value for 'publishAt'
+ *      unlockPrice: // value for 'unlockPrice'
+ *   },
+ * });
+ */
+export function useUpdateChapterMutation(baseOptions?: Apollo.MutationHookOptions<UpdateChapterMutation, UpdateChapterMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateChapterMutation, UpdateChapterMutationVariables>(UpdateChapterDocument, options);
+      }
+export type UpdateChapterMutationHookResult = ReturnType<typeof useUpdateChapterMutation>;
+export type UpdateChapterMutationResult = Apollo.MutationResult<UpdateChapterMutation>;
+export type UpdateChapterMutationOptions = Apollo.BaseMutationOptions<UpdateChapterMutation, UpdateChapterMutationVariables>;
 export const BookOptionsDocument = gql`
     query BookOptions {
   kinds
@@ -1108,6 +1315,7 @@ export const ChapterDocument = gql`
     query Chapter($chapterId: Int!) {
   chapter(chapterId: $chapterId) {
     ...chapter
+    content
   }
 }
     ${ChapterFragmentDoc}`;
@@ -1147,17 +1355,10 @@ export type ChapterQueryResult = Apollo.QueryResult<ChapterQuery, ChapterQueryVa
 export const ChaptersDocument = gql`
     query Chapters($bookId: Int!) {
   chapters(bookId: $bookId) {
-    id
-    bookId
-    title
-    order
-    unlockPrice
-    publishAt
-    createdAt
-    updatedAt
+    ...chapter
   }
 }
-    `;
+    ${ChapterFragmentDoc}`;
 
 /**
  * __useChaptersQuery__

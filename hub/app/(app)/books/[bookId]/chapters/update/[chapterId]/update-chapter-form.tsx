@@ -1,10 +1,9 @@
 "use client";
 
 import {
-  ChapterDocument,
-  ChapterQuery,
-  useCreateChapterMutation,
-} from "@/apollo-client/generated";
+  ChapterFragment,
+  useUpdateChapterMutation,
+} from "@/apollo-client/__generated";
 import { Button } from "@/components/ui/button";
 import { DatetimePicker } from "@/components/ui/datetime-picker";
 import {
@@ -26,58 +25,41 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { createChapterSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
 interface Props {
-  bookId: number;
-  order: number;
+  initialData: ChapterFragment & { content: string };
 }
 
-export function CreateChapterForm({ bookId, order }: Props) {
-  const router = useRouter();
-
+export function UpdateChapterForm({ initialData }: Props) {
   const form = useForm<z.infer<typeof createChapterSchema>>({
     resolver: zodResolver(createChapterSchema),
     defaultValues: {
-      title: "",
-      content: "",
-      publishAt: new Date(),
-      unlockPrice: 0,
+      title: initialData.title,
+      content: initialData.content,
+      publishAt: new Date(initialData.publishAt),
+      unlockPrice: initialData.unlockPrice,
     },
   });
 
-  const [createChapter, { loading, client }] = useCreateChapterMutation({
+  const [updateChapter, { loading }] = useUpdateChapterMutation({
     onError(error) {
       toast.error(error.message);
     },
     onCompleted(data) {
-      toast[data.createChapter.success ? "success" : "error"](
-        data.createChapter.message,
+      toast[data.updateChapter.success ? "success" : "error"](
+        data.updateChapter.message,
       );
-      if (data.createChapter.chapter) {
-        client.writeQuery<ChapterQuery>({
-          query: ChapterDocument,
-          variables: {
-            chapterId: data.createChapter.chapter.id,
-          },
-          data: {
-            __typename: "Query",
-            chapter: data.createChapter.chapter,
-          },
-        });
-        router.push(`/books/${data.createChapter.chapter.bookId}/chapters`);
-      }
     },
   });
 
   function onSubmit(values: z.infer<typeof createChapterSchema>) {
-    createChapter({
+    updateChapter({
       variables: {
-        bookId: bookId,
-        order: order,
+        bookId: initialData.bookId,
+        chapterId: initialData.id,
         ...values,
       },
     });

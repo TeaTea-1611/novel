@@ -1,6 +1,6 @@
 "use client";
 
-import { useBookQuery } from "@/apollo-client/generated";
+import { useBookQuery } from "@/apollo-client/__generated";
 import { CardWrapper } from "@/components/card-wrapper";
 import { useParams } from "next/navigation";
 import { UpdateBookForm } from "./update-book-form";

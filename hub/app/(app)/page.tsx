@@ -1,6 +1,6 @@
 "use client";
 
-import { useFullQuery } from "@/apollo-client/generated";
+import { useFullQuery } from "@/apollo-client/__generated";
 
 export default function Home() {
   return (

@@ -1,14 +1,16 @@
 "use client";
 
-import { useFullQuery } from "@/apollo-client/generated";
+import { useFullQuery } from "@/apollo-client/__generated";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
+import { MagicBackButton } from "@/components/ui/magic-back-button";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { UserButton } from "@/components/user-button";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -26,26 +28,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="bg-transparent">
-        <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center gap-2 bg-background">
-          <div className="flex flex-1 items-center gap-2 px-3">
+        <header className="sticky top-0 z-50 flex items-center px-3 h-14 shrink-0 bg-background">
+          <div id="header-left" className="flex items-center flex-1 gap-2">
             <SidebarTrigger />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            {/* <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage className="line-clamp-1">
-                    Project Management & Task Tracking
-                  </BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb> */}
+            <Separator orientation="vertical" className="h-4 mr-2" />
+            <MagicBackButton className="rounded-md size-7" />
           </div>
-          <div className="ml-auto px-3">
+          <div className="flex items-center ml-auto gap-x-2">
             <ModeToggle />
+            <UserButton />
           </div>
         </header>
         <div className="w-full p-2 lg:p-4">{children}</div>
-        <div className="fixed inset-0 -z-50 pointer-events-none">
+        <div className="fixed inset-0 pointer-events-none -z-50">
           <div className="absolute size-full bg-gradient-to-b from-gradient-from to-gradient-to"></div>
         </div>
       </SidebarInset>

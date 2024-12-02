@@ -23,9 +23,9 @@
 #   }
 # }
 
-# mutation Logout {
-#   logout
-# }
+mutation Logout {
+  logout
+}
 
 mutation RefreshToken {
   refreshToken

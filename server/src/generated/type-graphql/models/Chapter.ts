@@ -26,10 +26,7 @@ export class Chapter {
   })
   title!: string;
 
-  @TypeGraphQL.Field(_type => String, {
-    nullable: false
-  })
-  content!: string;
+  content?: string;
 
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: false

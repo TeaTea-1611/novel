@@ -1,6 +1,6 @@
 "use client";
 
-import { SortOrder, useCreatedBooksQuery } from "@/apollo-client/generated";
+import { SortOrder, useCreatedBooksQuery } from "@/apollo-client/__generated";
 
 import { columns } from "./columns";
 import { DataTable } from "./data-table";

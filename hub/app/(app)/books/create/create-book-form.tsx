@@ -5,7 +5,7 @@ import {
   BookQuery,
   useBookOptionsQuery,
   useCreateBookMutation,
-} from "@/apollo-client/generated";
+} from "@/apollo-client/__generated";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createBookSchema } from "@/schemas";
 import { Button } from "@/components/ui/button";
