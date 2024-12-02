@@ -1,0 +1,18 @@
+query Chapter($chapterId: Int!) {
+  chapter(chapterId: $chapterId) {
+    ...chapter
+  }
+}
+
+query Chapters($bookId: Int!) {
+  chapters(bookId: $bookId) {
+    id
+    bookId
+    title
+    order
+    unlockPrice
+    publishAt
+    createdAt
+    updatedAt
+  }
+}

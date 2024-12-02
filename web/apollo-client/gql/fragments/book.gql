@@ -1,0 +1,39 @@
+fragment book on Book {
+  id
+  name
+  originalName
+  authorId
+  synopsis
+  poster
+  kind
+  gender
+  status
+  genreId
+  wordCnt
+  flowerCnt
+  readCnt
+  reviewCnt
+  chapterCnt
+  commentCnt
+  points
+  createdAt
+  author {
+    id
+    name
+    originalName
+  }
+  createdBy {
+    id
+    nickname
+    avatar
+    pendant
+  }
+  tags {
+    id
+    name
+  }
+  genre {
+    id
+    name
+  }
+}

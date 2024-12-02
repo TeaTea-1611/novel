@@ -1,0 +1,23 @@
+mutation CreateChapter(
+  $bookId: Int!
+  $order: Int!
+  $title: String!
+  $content: String!
+  $publishAt: Timestamp!
+  $unlockPrice: Int!
+) {
+  createChapter(
+    bookId: $bookId
+    order: $order
+    title: $title
+    content: $content
+    publishAt: $publishAt
+    unlockPrice: $unlockPrice
+  ) {
+    success
+    message
+    chapter {
+      ...chapter
+    }
+  }
+}

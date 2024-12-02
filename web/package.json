@@ -1,0 +1,51 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "build:registry": "bun ./scripts/build-registry.mts && bun x prettier --log-level silent --write \"./registry/**/*.{ts,tsx,mdx}\" --cache",
+    "codegen": "graphql-codegen --config codegen.ts"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.11.10",
+    "@apollo/experimental-nextjs-app-support": "^0.11.6",
+    "@react-oauth/google": "^0.12.1",
+    "@repo/shared-schemas": "*",
+    "@repo/ui": "*",
+    "apollo-upload-client": "17.0.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
+    "jotai": "^2.10.2",
+    "lucide-react": "^0.460.0",
+    "next": "15.0.3",
+    "next-themes": "^0.4.3",
+    "react": "19.0.0-rc-66855b96-20241106",
+    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react-easy-crop": "^5.1.0",
+    "sonner": "^1.7.0",
+    "tailwind-merge": "^2.5.4",
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^5.0.1"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.3",
+    "@graphql-codegen/client-preset": "^4.5.0",
+    "@graphql-codegen/typescript-operations": "^4.3.1",
+    "@graphql-codegen/typescript-react-apollo": "^4.3.2",
+    "@types/apollo-upload-client": "17.0.2",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "15.0.3",
+    "lodash.template": "^4.5.0",
+    "postcss": "^8",
+    "rimraf": "^6.0.1",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}

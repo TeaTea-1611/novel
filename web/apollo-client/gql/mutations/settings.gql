@@ -1,0 +1,12 @@
+mutation UpdateNotificationSettings(
+  $newChapter: Boolean!
+  $newInteraction: Boolean!
+) {
+  updateNotificationSettings(
+    newChapter: $newChapter
+    newInteraction: $newInteraction
+  ) {
+    newChapter
+    newInteraction
+  }
+}

@@ -1,0 +1,49 @@
+query BookOptions {
+  kinds
+  genders
+  status
+  genres {
+    id
+    name
+  }
+  tags {
+    id
+    name
+    group {
+      name
+      color
+      bgColor
+    }
+  }
+}
+
+query Book($bookId: Int!) {
+  book(bookId: $bookId) {
+    ...book
+  }
+}
+
+query CreatedBooks(
+  $page: Int
+  $take: Int
+  $keyword: String!
+  $genreId: Int
+  $tagIds: [Int!]
+  $sortBy: String
+  $sortOrder: SortOrder
+) {
+  createdBooks(
+    page: $page
+    take: $take
+    keyword: $keyword
+    genreId: $genreId
+    tagIds: $tagIds
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+  ) {
+    total
+    books {
+      ...book
+    }
+  }
+}

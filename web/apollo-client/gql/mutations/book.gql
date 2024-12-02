@@ -1,0 +1,109 @@
+mutation CreateBook(
+  $name: String!
+  $synopsis: String!
+  $gender: Int!
+  $genre: String!
+  $tags: [String!]!
+) {
+  createBook(
+    name: $name
+    synopsis: $synopsis
+    gender: $gender
+    genre: $genre
+    tags: $tags
+  ) {
+    success
+    message
+    book {
+      ...book
+    }
+  }
+}
+
+mutation UpdateBook(
+  $name: String!
+  $synopsis: String!
+  $gender: Int!
+  $genre: String!
+  $tags: [String!]!
+  $id: Int!
+) {
+  updateBook(
+    name: $name
+    synopsis: $synopsis
+    gender: $gender
+    genre: $genre
+    tags: $tags
+    id: $id
+  ) {
+    success
+    message
+    book {
+      ...book
+    }
+  }
+}
+
+mutation ConvertBook(
+  $name: String!
+  $originalName: String!
+  $authorName: String!
+  $originalAuthorName: String!
+  $synopsis: String!
+  $gender: Int!
+  $genre: String!
+  $tags: [String!]!
+) {
+  convertBook(
+    name: $name
+    originalName: $originalName
+    authorName: $authorName
+    originalAuthorName: $originalAuthorName
+    synopsis: $synopsis
+    gender: $gender
+    genre: $genre
+    tags: $tags
+  ) {
+    success
+    message
+    book {
+      ...book
+    }
+  }
+}
+
+mutation UpdateConvertBook(
+  $name: String!
+  $synopsis: String!
+  $gender: Int!
+  $genre: String!
+  $tags: [String!]!
+  $originalName: String!
+  $authorName: String!
+  $originalAuthorName: String!
+  $id: Int!
+) {
+  updateConvertBook(
+    name: $name
+    synopsis: $synopsis
+    gender: $gender
+    genre: $genre
+    tags: $tags
+    originalName: $originalName
+    authorName: $authorName
+    originalAuthorName: $originalAuthorName
+    id: $id
+  ) {
+    success
+    message
+    book {
+      ...book
+    }
+  }
+}
+
+mutation ChangePoster($poster: Upload!, $bookId: Int!) {
+  changePoster(poster: $poster, bookId: $bookId) {
+    ...book
+  }
+}

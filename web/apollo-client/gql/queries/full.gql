@@ -1,0 +1,18 @@
+query Full {
+  me {
+    ...user
+  }
+  reading(take: 10, cursor: null) {
+    totalCount
+    cursor
+    hasMore
+    reading {
+      currentChapter
+      readingAt
+      book {
+        id
+        name
+      }
+    }
+  }
+}
