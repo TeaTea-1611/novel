@@ -177,7 +177,8 @@ type Mutation {
   updateCopyright(value: String!): Boolean
   createChapter(bookId: Int!, order: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
   updateChapter(bookId: Int!, chapterId: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
-  deleteChapter(chapterId: Int!): MutationResponse!
+  deleteChapters(chapterIds: [Int!]!, bookId: Int!): MutationResponse!
+  updateChapters(publishAt: Timestamp!, unlockPrice: Int!, chapterIds: [Int!]!, bookId: Int!): MutationResponse!
   swapChapters(bookId: Int!, data: [SwapChapterInput!]!): [Chapter!]!
 }
 

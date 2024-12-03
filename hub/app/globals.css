@@ -42,9 +42,9 @@
   }
 
   .dark {
-    --background: 225 40% 8%;
+    --background: 225 40% 10%;
     --foreground: 210 40% 98%;
-    --gradient-from: 225 40% 8%;
+    --gradient-from: 225 40% 10%;
     --gradient-to: 225 38% 23%;
     --card: 226 40% 12%;
     --card-foreground: 210 40% 98%;

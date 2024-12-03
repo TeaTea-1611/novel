@@ -28,13 +28,6 @@ mutation SwapChapters($bookId: Int!, $data: [SwapChapterInput!]!) {
   }
 }
 
-mutation DeleteChapter($chapterId: Int!) {
-  deleteChapter(chapterId: $chapterId) {
-    success
-    message
-  }
-}
-
 mutation UpdateChapter(
   $bookId: Int!
   $chapterId: Int!
@@ -56,5 +49,29 @@ mutation UpdateChapter(
     chapter {
       ...chapter
     }
+  }
+}
+
+mutation DeleteChapters($chapterIds: [Int!]!, $bookId: Int!) {
+  deleteChapters(chapterIds: $chapterIds, bookId: $bookId) {
+    success
+    message
+  }
+}
+
+mutation UpdateChapters(
+  $publishAt: Timestamp!
+  $unlockPrice: Int!
+  $chapterIds: [Int!]!
+  $bookId: Int!
+) {
+  updateChapters(
+    publishAt: $publishAt
+    unlockPrice: $unlockPrice
+    chapterIds: $chapterIds
+    bookId: $bookId
+  ) {
+    success
+    message
   }
 }

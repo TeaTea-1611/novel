@@ -42,6 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="w-full p-2 lg:p-4">{children}</div>
         <div className="fixed inset-0 pointer-events-none -z-50">
           <div className="absolute size-full bg-gradient-to-b from-gradient-from to-gradient-to"></div>
+          <div className="absolute w-full h-full bg-[url('/mask-image.svg')] bg-repeat"></div>
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ChapterFragment,
   ChapterFragmentDoc,
   useCreateChapterMutation,
 } from "@/apollo-client/__generated";
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { createChapterSchema } from "@/schemas";
+import { gql, Reference } from "@apollo/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -41,7 +43,7 @@ export function CreateChapterForm({ bookId, order }: Props) {
   const form = useForm<z.infer<typeof createChapterSchema>>({
     resolver: zodResolver(createChapterSchema),
     defaultValues: {
-      title: "",
+      title: "Title ",
       content: "",
       publishAt: new Date(),
       unlockPrice: 0,
@@ -56,21 +58,41 @@ export function CreateChapterForm({ bookId, order }: Props) {
       toast[data.createChapter.success ? "success" : "error"](
         data.createChapter.message,
       );
-      if (data.createChapter.chapter) {
+      const newChapter = data.createChapter.chapter;
+
+      if (newChapter) {
         client.cache.modify({
           fields: {
-            chapters(existingChapters = []) {
-              return [
-                ...existingChapters,
-                client.cache.writeFragment({
-                  data: data.createChapter.chapter,
+            chapters(existingChaptersRef = [], { readField }) {
+              const newChapterRef = client.cache.writeFragment<ChapterFragment>(
+                {
+                  data: newChapter,
                   fragment: ChapterFragmentDoc,
-                }),
-              ];
+                },
+              );
+
+              const updatedChapters = existingChaptersRef.map(
+                (chapterRef: Reference) => {
+                  const chapterOrder = readField<number>("order", chapterRef);
+                  if (chapterOrder && chapterOrder >= newChapter.order) {
+                    return client.cache.writeFragment({
+                      id: chapterRef.__ref,
+                      fragment: gql`
+                        fragment UpdateOrder on Chapter {
+                          order
+                        }
+                      `,
+                      data: { order: chapterOrder + 1 },
+                    });
+                  }
+                  return chapterRef;
+                },
+              );
+              return [...updatedChapters, newChapterRef];
             },
           },
         });
-        router.push(`/books/${data.createChapter.chapter.bookId}/chapters`);
+        router.push(`/books/${newChapter.bookId}/chapters`);
       }
     },
   });
