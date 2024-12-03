@@ -4,7 +4,7 @@ import { stringSchema } from "./helper";
 const nameSchema = stringSchema(3, 255, "Tên");
 const authorNameSchema = stringSchema(3, 255, "Tên tác giả");
 const authorOriginNameSchema = stringSchema(3, 255, "Tên gốc của tác giả");
-const synopsisSchema = stringSchema(0, 1000, "Tóm tắt");
+const synopsisSchema = stringSchema(0, 4000, "Tóm tắt");
 
 const tagIdsSchema = z
   .array(z.coerce.number({ required_error: "Bắt buộc." }))
@@ -43,8 +43,12 @@ const extendedBookSchema = {
 export const createBookSchema = z.object(baseBookSchema);
 
 export const updateBookSchema = z.object({
-  ...baseBookSchema,
-  status: statusSchema,
+  name: z.optional(nameSchema),
+  synopsis: z.optional(synopsisSchema),
+  gender: z.optional(bookGenderSchema),
+  genreId: z.optional(genreIdSchema),
+  tagIds: z.optional(tagIdsSchema),
+  status: z.optional(statusSchema),
 });
 
 export const convertBookSchema = z.object(extendedBookSchema);

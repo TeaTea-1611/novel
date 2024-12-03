@@ -43,7 +43,7 @@ export function CreateChapterForm({ bookId, order }: Props) {
   const form = useForm<z.infer<typeof createChapterSchema>>({
     resolver: zodResolver(createChapterSchema),
     defaultValues: {
-      title: "Title ",
+      title: "",
       content: "",
       publishAt: new Date(),
       unlockPrice: 0,

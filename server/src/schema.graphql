@@ -168,7 +168,7 @@ type Mutation {
   updateNotificationSettings(newChapter: Boolean!, newInteraction: Boolean!): NotificationSettings!
   updateTwoFactor(isTwoFactorEnable: Boolean!, code: String): TwoFactorResponse!
   createBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!): BookResponse!
-  updateBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!, id: Int!, status: Int!): BookResponse!
+  updateBook(bookId: Int!, status: Int, name: String, synopsis: String, gender: Int, genreId: Int, tagIds: [Int!]): BookResponse!
   convertBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!, originalName: String!, authorName: String!, originalAuthorName: String!): BookResponse!
   updateConvertBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!, originalName: String!, authorName: String!, originalAuthorName: String!, id: Int!): BookResponse!
   changePoster(poster: Upload!, bookId: Int!): Book!

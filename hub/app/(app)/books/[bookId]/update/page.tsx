@@ -6,28 +6,25 @@ import { useParams } from "next/navigation";
 import { UpdateBookForm } from "./update-book-form";
 
 export default function Page() {
-  const params = useParams<{ id: string }>();
+  const params = useParams<{ bookId: string }>();
 
   const { data, loading } = useBookQuery({
     variables: {
-      bookId: parseInt(params.id),
+      bookId: parseInt(params.bookId),
     },
-    skip: !params.id,
+    skip: !params.bookId,
   });
-
-  if (loading) {
-  }
-
-  if (!data?.book) {
-    return <div></div>;
-  }
 
   return (
     <CardWrapper
       title="Chỉnh sửa truyện"
       description="Thực hiện thay đổi cho truyện của bạn tại đây. Nhấp vào lưu khi bạn hoàn tất."
     >
-      <UpdateBookForm initialData={data.book} />
+      {loading || !data?.book ? (
+        <div></div>
+      ) : (
+        <UpdateBookForm initialData={data.book} />
+      )}
     </CardWrapper>
   );
 }

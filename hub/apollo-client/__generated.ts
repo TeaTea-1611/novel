@@ -239,13 +239,13 @@ export type MutationSwapChaptersArgs = {
 
 
 export type MutationUpdateBookArgs = {
-  gender: Scalars['Int']['input'];
-  genreId: Scalars['Int']['input'];
-  id: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  status: Scalars['Int']['input'];
-  synopsis: Scalars['String']['input'];
-  tagIds: Array<Scalars['Int']['input']>;
+  bookId: Scalars['Int']['input'];
+  gender?: InputMaybe<Scalars['Int']['input']>;
+  genreId?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['Int']['input']>;
+  synopsis?: InputMaybe<Scalars['String']['input']>;
+  tagIds?: InputMaybe<Array<Scalars['Int']['input']>>;
 };
 
 
@@ -496,13 +496,13 @@ export type CreateBookMutationVariables = Exact<{
 export type CreateBookMutation = { __typename?: 'Mutation', createBook: { __typename?: 'BookResponse', success: boolean, message: string, book?: { __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } } | null } };
 
 export type UpdateBookMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  synopsis: Scalars['String']['input'];
-  gender: Scalars['Int']['input'];
-  genreId: Scalars['Int']['input'];
-  tagIds: Array<Scalars['Int']['input']> | Scalars['Int']['input'];
-  id: Scalars['Int']['input'];
-  status: Scalars['Int']['input'];
+  bookId: Scalars['Int']['input'];
+  status?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  synopsis?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<Scalars['Int']['input']>;
+  genreId?: InputMaybe<Scalars['Int']['input']>;
+  tagIds?: InputMaybe<Array<Scalars['Int']['input']> | Scalars['Int']['input']>;
 }>;
 
 
@@ -825,15 +825,15 @@ export type CreateBookMutationHookResult = ReturnType<typeof useCreateBookMutati
 export type CreateBookMutationResult = Apollo.MutationResult<CreateBookMutation>;
 export type CreateBookMutationOptions = Apollo.BaseMutationOptions<CreateBookMutation, CreateBookMutationVariables>;
 export const UpdateBookDocument = gql`
-    mutation UpdateBook($name: String!, $synopsis: String!, $gender: Int!, $genreId: Int!, $tagIds: [Int!]!, $id: Int!, $status: Int!) {
+    mutation UpdateBook($bookId: Int!, $status: Int, $name: String, $synopsis: String, $gender: Int, $genreId: Int, $tagIds: [Int!]) {
   updateBook(
+    bookId: $bookId
+    status: $status
     name: $name
     synopsis: $synopsis
     gender: $gender
-    status: $status
     genreId: $genreId
     tagIds: $tagIds
-    id: $id
   ) {
     success
     message
@@ -858,13 +858,13 @@ export type UpdateBookMutationFn = Apollo.MutationFunction<UpdateBookMutation, U
  * @example
  * const [updateBookMutation, { data, loading, error }] = useUpdateBookMutation({
  *   variables: {
+ *      bookId: // value for 'bookId'
+ *      status: // value for 'status'
  *      name: // value for 'name'
  *      synopsis: // value for 'synopsis'
  *      gender: // value for 'gender'
  *      genreId: // value for 'genreId'
  *      tagIds: // value for 'tagIds'
- *      id: // value for 'id'
- *      status: // value for 'status'
  *   },
  * });
  */

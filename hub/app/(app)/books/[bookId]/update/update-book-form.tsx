@@ -71,7 +71,7 @@ export function UpdateBookForm({ initialData }: Props) {
   async function onSubmit(values: z.infer<typeof updateBookSchema>) {
     update({
       variables: {
-        id: initialData.id,
+        bookId: initialData.id,
         ...values,
       },
     });

@@ -4,7 +4,7 @@ import { stringSchema } from "./helper";
 const nameSchema = stringSchema(3, 255, "Tên");
 const authorNameSchema = stringSchema(3, 255, "Tên tác giả");
 const authorOriginNameSchema = stringSchema(3, 255, "Tên gốc của tác giả");
-const synopsisSchema = stringSchema(0, 1000, "Tóm tắt");
+const synopsisSchema = stringSchema(0, 4000, "Tóm tắt");
 
 const tagIdsSchema = z
   .array(z.coerce.number({ required_error: "Bắt buộc." }))

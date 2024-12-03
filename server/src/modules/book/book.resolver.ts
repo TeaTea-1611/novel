@@ -38,6 +38,7 @@ import { GraphQLError } from "graphql";
 import { handleValidationError } from "../../utils/validation";
 import type { Prisma } from "@prisma/client";
 import { env } from "../../env";
+import { throwForbiddenError } from "../../utils/errors";
 
 @Service()
 @Resolver(() => Book)
@@ -146,23 +147,20 @@ export class BookResolver {
   @Mutation(() => BookResponse)
   async updateBook(
     @Args()
-    { id, name, synopsis, gender, genreId, tagIds, status }: UpdateBookArgs,
+    { bookId, genreId, tagIds, ...args }: UpdateBookArgs,
     @Ctx() { user, prisma }: Context,
   ): Promise<BookResponse> {
     handleValidationError(
       updateBookSchema.safeParse({
-        name,
-        synopsis,
-        gender,
+        ...args,
         genreId,
         tagIds,
-        status,
       }),
     );
 
     const existingBook = await prisma.book.findFirst({
       where: {
-        id,
+        id: bookId,
         createdById: user!.id,
       },
       select: { id: true },
@@ -177,17 +175,18 @@ export class BookResolver {
     }
 
     const updatedBook = await prisma.book.update({
-      where: { id },
+      where: { id: bookId },
       data: {
-        name,
-        synopsis,
-        gender,
-        genreId,
-        status,
-        tagOnBooks: {
-          deleteMany: {},
-          create: tagIds.map((id) => ({ tag: { connect: { id } } })),
-        },
+        ...args,
+        ...(genreId ? { genre: { connect: { id: genreId } } } : {}),
+        ...(tagIds?.length
+          ? {
+              tagOnBooks: {
+                deleteMany: {},
+                create: tagIds.map((id) => ({ tag: { connect: { id } } })),
+              },
+            }
+          : {}),
       },
     });
 
@@ -393,24 +392,24 @@ export class BookResolver {
     @Ctx() { user, prisma }: Context,
   ): Promise<Book> {
     const book = await prisma.book.findUnique({
-      where: { id: bookId, createdById: user!.id },
+      where: { id: bookId },
     });
 
-    if (!book) {
-      throw new Error(
-        "Truyện không tồn tại hoặc bạn không có quyền chỉnh sửa.",
-      );
+    if (!book || book.createdById !== user!.id) {
+      return throwForbiddenError();
     }
 
     const uploadDir = path.join(import.meta.dir, "../../../public/upload/book");
     await fsPromises.mkdir(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, `${bookId}.webp`);
+    const filePath = path.join(uploadDir, `${bookId}.jpg`);
 
     const stream = createReadStream();
     const out = createWriteStream(filePath);
 
     try {
-      const transform = sharp().resize(176, 240).webp({ quality: 100 });
+      const transform = sharp()
+        .resize(176, 240)
+        .toFormat("jpg", { quality: 100 });
 
       stream.pipe(transform).pipe(out);
 
@@ -420,13 +419,12 @@ export class BookResolver {
     }
 
     const protocol = env.NODE_ENV === "production" ? "https" : "http";
-    const host = env.HOST || "localhost:4000";
-    const poster = `${protocol}://${host}/upload/book/${
-      user!.id
-    }.webp?${Date.now()}`;
+    const poster = `${protocol}://${env.HOST}:${
+      env.PORT
+    }/upload/book/${bookId}.jpg?${Date.now()}`;
 
     return await prisma.book.update({
-      where: { id: user!.id },
+      where: { id: bookId },
       data: {
         poster,
       },

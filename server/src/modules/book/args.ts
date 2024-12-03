@@ -32,12 +32,27 @@ export class ConvertBookArgs extends CreateBookArgs {
 }
 
 @ArgsType()
-export class UpdateBookArgs extends CreateBookArgs {
+export class UpdateBookArgs {
   @Field(() => Int)
-  id!: number;
+  bookId!: number;
 
-  @Field(() => Int)
-  status!: number;
+  @Field(() => Int, { nullable: true })
+  status?: number;
+
+  @Field({ nullable: true })
+  name?: string;
+
+  @Field({ nullable: true })
+  synopsis?: string;
+
+  @Field(() => Int, { nullable: true })
+  gender?: number;
+
+  @Field(() => Int, { nullable: true })
+  genreId?: number;
+
+  @Field(() => [Int], { nullable: true })
+  tagIds?: number[];
 }
 
 @ArgsType()

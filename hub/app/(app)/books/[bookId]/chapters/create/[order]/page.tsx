@@ -2,7 +2,7 @@
 
 import { CardWrapper } from "@/components/card-wrapper";
 import { useParams } from "next/navigation";
-import { CreateChapterForm } from "./craete-chapter-form";
+import { CreateChapterForm } from "./create-chapter-form";
 
 export default function Page() {
   const params = useParams<{ bookId: string; order: string }>();

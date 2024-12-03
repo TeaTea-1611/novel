@@ -21,22 +21,22 @@ mutation CreateBook(
 }
 
 mutation UpdateBook(
-  $name: String!
-  $synopsis: String!
-  $gender: Int!
-  $genreId: Int!
-  $tagIds: [Int!]!
-  $id: Int!
-  $status: Int!
+  $bookId: Int!
+  $status: Int
+  $name: String
+  $synopsis: String
+  $gender: Int
+  $genreId: Int
+  $tagIds: [Int!]
 ) {
   updateBook(
+    bookId: $bookId
+    status: $status
     name: $name
     synopsis: $synopsis
     gender: $gender
-    status: $status
     genreId: $genreId
     tagIds: $tagIds
-    id: $id
   ) {
     success
     message

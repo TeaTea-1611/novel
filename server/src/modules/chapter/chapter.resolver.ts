@@ -48,17 +48,7 @@ export class ChapterResolver {
   ): Promise<Chapter[]> {
     return await prisma.chapter.findMany({
       where: { bookId },
-      select: {
-        id: true,
-        bookId: true,
-        order: true,
-        title: true,
-        content: false,
-        publishAt: true,
-        unlockPrice: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      omit: { content: true },
     });
   }
 
@@ -316,17 +306,7 @@ export class ChapterResolver {
 
       return await prisma.chapter.findMany({
         where: { id: { in: [...data.map((chapter) => chapter.id)] } },
-        select: {
-          id: true,
-          bookId: true,
-          order: true,
-          title: true,
-          content: false,
-          publishAt: true,
-          unlockPrice: true,
-          createdAt: true,
-          updatedAt: true,
-        },
+        omit: { content: true },
         orderBy: { order: "asc" },
       });
     } catch (error) {
