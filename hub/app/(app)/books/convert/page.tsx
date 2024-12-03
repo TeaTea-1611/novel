@@ -1,12 +1,12 @@
 "use client";
 
 import { CardWrapper } from "@/components/card-wrapper";
-import { CreateBookForm } from "./create-book-form";
+import { ConvertBookForm } from "./convert-book-form";
 
 export default function Page() {
   return (
     <CardWrapper
-      title="Thêm truyện mới (Sáng tác)"
+      title="Thêm truyện mới (Convert)"
       description={
         <>
           - Lưu ý: Để đăng truyện do bạn sáng tác, vui lòng sử dụng
@@ -17,7 +17,7 @@ export default function Page() {
         </>
       }
     >
-      <CreateBookForm />
+      <ConvertBookForm />
     </CardWrapper>
   );
 }

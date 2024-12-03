@@ -28,7 +28,7 @@ export function DataTableViewOptions<TData>({
         <Button
           variant="outline"
           size="sm"
-          className="ml-auto hidden h-8 lg:flex"
+          className="hidden h-8 ml-auto lg:flex"
         >
           <Settings2 />
           Hiện
@@ -54,6 +54,8 @@ export function DataTableViewOptions<TData>({
                 className="capitalize"
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                onClick={(e) => e.stopPropagation()}
+                onSelect={(e) => e.preventDefault()}
               >
                 {label}
               </DropdownMenuCheckboxItem>

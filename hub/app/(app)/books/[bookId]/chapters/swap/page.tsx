@@ -12,7 +12,7 @@ export default function Page() {
     variables: {
       bookId: parseInt(params.bookId),
     },
-    skip: !params.bookId,
+    skip: !parseInt(params.bookId),
   });
 
   const content =

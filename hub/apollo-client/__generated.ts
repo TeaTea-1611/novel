@@ -111,6 +111,7 @@ export type Mutation = {
   convertBook: BookResponse;
   createBook: BookResponse;
   createChapter: ChapterMutationResponse;
+  deleteBook: MutationResponse;
   deleteChapters: MutationResponse;
   googleLogin: LoginResponse;
   login: LoginResponse;
@@ -188,6 +189,11 @@ export type MutationCreateChapterArgs = {
   publishAt: Scalars['Timestamp']['input'];
   title: Scalars['String']['input'];
   unlockPrice: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteBookArgs = {
+  bookId: Scalars['Int']['input'];
 };
 
 
@@ -544,6 +550,13 @@ export type ChangePosterMutationVariables = Exact<{
 
 
 export type ChangePosterMutation = { __typename?: 'Mutation', changePoster: { __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } } };
+
+export type DeleteBookMutationVariables = Exact<{
+  bookId: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteBookMutation = { __typename?: 'Mutation', deleteBook: { __typename?: 'MutationResponse', success: boolean, message: string } };
 
 export type CreateChapterMutationVariables = Exact<{
   bookId: Scalars['Int']['input'];
@@ -1017,6 +1030,40 @@ export function useChangePosterMutation(baseOptions?: Apollo.MutationHookOptions
 export type ChangePosterMutationHookResult = ReturnType<typeof useChangePosterMutation>;
 export type ChangePosterMutationResult = Apollo.MutationResult<ChangePosterMutation>;
 export type ChangePosterMutationOptions = Apollo.BaseMutationOptions<ChangePosterMutation, ChangePosterMutationVariables>;
+export const DeleteBookDocument = gql`
+    mutation DeleteBook($bookId: Int!) {
+  deleteBook(bookId: $bookId) {
+    success
+    message
+  }
+}
+    `;
+export type DeleteBookMutationFn = Apollo.MutationFunction<DeleteBookMutation, DeleteBookMutationVariables>;
+
+/**
+ * __useDeleteBookMutation__
+ *
+ * To run a mutation, you first call `useDeleteBookMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteBookMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteBookMutation, { data, loading, error }] = useDeleteBookMutation({
+ *   variables: {
+ *      bookId: // value for 'bookId'
+ *   },
+ * });
+ */
+export function useDeleteBookMutation(baseOptions?: Apollo.MutationHookOptions<DeleteBookMutation, DeleteBookMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteBookMutation, DeleteBookMutationVariables>(DeleteBookDocument, options);
+      }
+export type DeleteBookMutationHookResult = ReturnType<typeof useDeleteBookMutation>;
+export type DeleteBookMutationResult = Apollo.MutationResult<DeleteBookMutation>;
+export type DeleteBookMutationOptions = Apollo.BaseMutationOptions<DeleteBookMutation, DeleteBookMutationVariables>;
 export const CreateChapterDocument = gql`
     mutation CreateChapter($bookId: Int!, $order: Int!, $title: String!, $content: String!, $publishAt: Timestamp!, $unlockPrice: Int!) {
   createChapter(

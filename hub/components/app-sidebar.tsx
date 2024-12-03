@@ -6,6 +6,7 @@ import {
   LibraryBig,
   File,
   House,
+  ChartColumnIcon,
 } from "lucide-react";
 
 import {
@@ -42,6 +43,14 @@ export function AppSidebar() {
                 <Link href={"/"}>
                   <LayoutDashboard />
                   Tổng quan
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href={"/analytics"}>
+                  <ChartColumnIcon />
+                  Số liệu phân tích
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -92,15 +101,6 @@ export function AppSidebar() {
                         <SidebarMenuSubButton asChild>
                           <Link href="/books/convert">
                             <span>Convert</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    </SidebarMenuSub>
-                    <SidebarMenuSub>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                          <Link href="/books/analytics">
-                            <span>Thống kê</span>
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>

@@ -1,13 +1,14 @@
 "use client";
 
 import { useBookQuery } from "@/apollo-client/__generated";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { FilePenLineIcon } from "lucide-react";
+import { FilePenLineIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Book } from "./book";
+import { BookDeleteDialog } from "./components/book-delete-dialog";
 
 export default function Page() {
   const params = useParams<{ bookId: string }>();
@@ -16,7 +17,7 @@ export default function Page() {
     variables: {
       bookId: parseInt(params.bookId),
     },
-    skip: !params.bookId,
+    skip: !parseInt(params.bookId),
   });
 
   return (
@@ -36,18 +37,25 @@ export default function Page() {
         </div>
       ) : (
         <>
-          <Link
-            href={`/books/${data.book.id}/update`}
-            className={cn(
-              buttonVariants({
-                variant: "outline",
-              }),
-              "absolute top-4 right-4 h-8",
-            )}
-          >
-            <FilePenLineIcon className="mr-2 size-4" />
-            Chỉnh sửa
-          </Link>
+          <div className="absolute flex items-center space-x-2 top-4 right-4">
+            <BookDeleteDialog bookId={data.book.id}>
+              <Button variant="destructive" className="size-8">
+                <TrashIcon className="size-4" />
+              </Button>
+            </BookDeleteDialog>
+            <Link
+              href={`/books/${data.book.id}/update`}
+              className={cn(
+                buttonVariants({
+                  variant: "outline",
+                }),
+                "h-8",
+              )}
+            >
+              <FilePenLineIcon className="mr-2 size-4" />
+              Chỉnh sửa
+            </Link>
+          </div>
           <Book book={data.book} />
         </>
       )}

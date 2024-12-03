@@ -109,3 +109,10 @@ mutation ChangePoster($poster: Upload!, $bookId: Int!) {
     ...book
   }
 }
+
+mutation DeleteBook($bookId: Int!) {
+  deleteBook(bookId: $bookId) {
+    success
+    message
+  }
+}
