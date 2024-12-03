@@ -21,6 +21,7 @@ type Query {
   chapters(bookId: Int!): [Chapter!]!
   genres: [Genre!]!
   reading(cursor: String, take: Int!): PaginatedReading!
+  read(chapterId: Int!): Boolean!
 }
 
 type User {
@@ -172,6 +173,7 @@ type Mutation {
   convertBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!, originalName: String!, authorName: String!, originalAuthorName: String!): BookResponse!
   updateConvertBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!, originalName: String!, authorName: String!, originalAuthorName: String!, id: Int!): BookResponse!
   changePoster(poster: Upload!, bookId: Int!): Book!
+  deleteBook(bookId: Int!): MutationResponse!
   updateTermsOfService(value: String!): Boolean
   updatePrivacyPolicy(value: String!): Boolean
   updateCopyright(value: String!): Boolean

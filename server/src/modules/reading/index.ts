@@ -1,1 +1,1 @@
-export * from "./reading";
+export * from "./reading.resolver";

@@ -1,3 +1,9 @@
+import type { Prisma } from "@prisma/client";
+import { createWriteStream, promises as fsPromises } from "fs";
+import GraphQLUpload from "graphql-upload/GraphQLUpload.mjs";
+import * as path from "path";
+import sharp from "sharp";
+import { finished } from "stream/promises";
 import {
   Arg,
   Args,
@@ -19,6 +25,11 @@ import {
   User,
 } from "../../../src/generated/type-graphql";
 import type { Context } from "../../context";
+import { env } from "../../env";
+import { createBookSchema, updateBookSchema } from "../../schemas";
+import { MutationResponse, type Upload } from "../../types";
+import { throwForbiddenError } from "../../utils/errors";
+import { handleValidationError } from "../../utils/validation";
 import {
   ConvertBookArgs,
   CreateBookArgs,
@@ -27,18 +38,6 @@ import {
   UpdateConvertBookArgs,
 } from "./args";
 import { BookResponse, PaginatedBooksResponse } from "./types";
-import GraphQLUpload from "graphql-upload/GraphQLUpload.mjs";
-import type { Upload } from "../../types";
-import { createWriteStream, promises as fsPromises } from "fs";
-import * as path from "path";
-import sharp from "sharp";
-import { finished } from "stream/promises";
-import { createBookSchema, updateBookSchema } from "../../schemas";
-import { GraphQLError } from "graphql";
-import { handleValidationError } from "../../utils/validation";
-import type { Prisma } from "@prisma/client";
-import { env } from "../../env";
-import { throwForbiddenError } from "../../utils/errors";
 
 @Service()
 @Resolver(() => Book)
@@ -429,5 +428,36 @@ export class BookResolver {
         poster,
       },
     });
+  }
+
+  @Authorized()
+  @Mutation(() => MutationResponse)
+  async deleteBook(
+    @Arg("bookId", () => Int) bookId: number,
+    @Ctx() { user, prisma }: Context,
+  ): Promise<MutationResponse> {
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
+    });
+
+    if (!book) {
+      return {
+        success: false,
+        message: "Không tìm thấy truyện",
+      };
+    }
+
+    if (book.createdById !== user!.id) {
+      return throwForbiddenError();
+    }
+
+    await prisma.book.delete({
+      where: { id: book.id },
+    });
+
+    return {
+      success: true,
+      message: "Truyện đã xóa",
+    };
   }
 }
