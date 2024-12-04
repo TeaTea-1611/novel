@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { usePageTrackerStore } from "react-page-tracker";
 import { toast } from "sonner";
 
 interface Props {
@@ -22,6 +23,7 @@ interface Props {
 
 export const BookDeleteDialog = ({ bookId, children }: Props) => {
   const router = useRouter();
+  const isFirstPage = usePageTrackerStore((state) => state.isFirstPage);
 
   const [deleteBook, { loading, client }] = useDeleteBookMutation({
     variables: {
@@ -37,7 +39,11 @@ export const BookDeleteDialog = ({ bookId, children }: Props) => {
       if (data.deleteBook.success) {
         client.cache.evict({ id: `Book:${bookId}` });
         client.cache.gc();
-        router.replace("/books");
+        if (isFirstPage) {
+          router.replace("/books");
+        } else {
+          router.back();
+        }
       }
     },
   });

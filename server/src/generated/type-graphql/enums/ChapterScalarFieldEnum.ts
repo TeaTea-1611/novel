@@ -7,6 +7,7 @@ export enum ChapterScalarFieldEnum {
   title = "title",
   content = "content",
   unlockPrice = "unlockPrice",
+  readCnt = "readCnt",
   publishAt = "publishAt",
   createdAt = "createdAt",
   updatedAt = "updatedAt"

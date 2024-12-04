@@ -7,3 +7,6 @@ export * from "./app";
 export * from "./chapter";
 export * from "./genre";
 export * from "./reading";
+export * from "./comment";
+export * from "./review";
+export * from "./analytics";

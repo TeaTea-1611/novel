@@ -22,7 +22,7 @@ interface ConfigStore {
 
 export const useConfig = create(
   persist<ConfigStore>(
-    (set, get) => ({
+    (set) => ({
       theme: "default",
       font: "ginto",
       fontSize: "16px",

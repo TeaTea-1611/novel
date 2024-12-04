@@ -2,21 +2,22 @@
 
 import { Icons } from "@/components/icons";
 import { ResponseMessage } from "@/components/response-message";
-import { Button } from "@repo/ui/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@repo/ui/components/ui/form";
+} from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { passwordResetSchema, z } from "@repo/shared-schemas";
-import { usePasswordResetMutation } from "@/generated/graphql";
-import { Input } from "@repo/ui/components/ui/input";
+import { passwordResetSchema } from "@/schemas";
+import { usePasswordResetMutation } from "@/apollo-client/__generated";
+import { Input } from "@/components/ui/input";
+import { z } from "zod";
 
 export const PasswordResetForm = () => {
   const [countdown, setCountdown] = useState(0);

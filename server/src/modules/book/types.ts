@@ -18,4 +18,13 @@ export class PaginatedBooksResponse {
 
   @Field(() => [Book])
   books!: Book[];
+
+  @Field(() => Int, { nullable: true })
+  prev?: number | null;
+
+  @Field(() => Int, { nullable: true })
+  next?: number | null;
+
+  @Field(() => Int)
+  totalPages!: number;
 }

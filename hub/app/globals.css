@@ -6,7 +6,7 @@
   :root {
     --background: 0 0% 100%;
     --foreground: 24 7% 20%;
-    --gradient-from: 32 88% 92%;
+    --gradient-from: 32 80% 98%;
     --gradient-to: 20 30% 96%;
     --card: 0 0% 100%;
     --card-foreground: 222 84% 5%;
@@ -106,6 +106,6 @@
 @layer components {
   .hide-password-toggle::-ms-reveal,
   .hide-password-toggle::-ms-clear {
-    @apply hidden pointer-events-none invisible;
+    @apply invisible hidden pointer-events-none;
   }
 }

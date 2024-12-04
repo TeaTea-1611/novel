@@ -2,8 +2,11 @@
 
 import { NotLoggedIn } from "@/components/not-logged-in";
 import { UserAvatar } from "@/components/user-avatar";
-import { useChangeAvatarMutation, useFullQuery } from "@/generated/graphql";
-import { Skeleton } from "@repo/ui/components/ui/skeleton";
+import {
+  useChangeAvatarMutation,
+  useFullQuery,
+} from "@/apollo-client/__generated";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Wrapper } from "../wrapper";
 import { ChangePendant } from "./change-pendant";

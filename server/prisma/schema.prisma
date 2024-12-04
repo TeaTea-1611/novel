@@ -173,6 +173,7 @@ model Book {
   name         String   @unique
   originalName String   @default("")
   authorId     Int?
+  originalLink String   @default("")
   synopsis     String
   kind         Int // 1: Chuyển ngữ, 2: Sáng tác
   gender       Int // 1: Truyện nam, 2: Truyện nữ
@@ -190,8 +191,8 @@ model Book {
   newChapterAt DateTime @default(now())
   createdById  Int
 
-  author     Author?         @relation(fields: [authorId], references: [id])
-  genre      Genre           @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  author     Author?         @relation(fields: [authorId], references: [id]) // onDelete: Cascade
+  genre      Genre           @relation(fields: [genreId], references: [id])
   createdBy  User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
   reviews    Review[]
   comments   Comment[]
@@ -286,6 +287,7 @@ model Chapter {
   /// @TypeGraphQL.omit(output: true)
   content     String
   unlockPrice Int
+  readCnt     Int      @default(0)
   publishAt   DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -296,22 +298,18 @@ model Chapter {
   @@map("chapter")
 }
 
-enum BookStatisticType {
-  READ
-  COMMENT
-  REVIEW
-}
-
 model BookStatistic {
-  id     Int               @id @default(autoincrement())
-  bookId Int
-  type   BookStatisticType
-  value  Int               @default(0)
-  date   DateTime          @db.Date
+  id      Int @id @default(autoincrement())
+  bookId  Int
+  read    Int @default(0)
+  comment Int @default(0)
+  review  Int @default(0)
+
+  date DateTime @db.Date
 
   book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
-  @@unique([bookId, type, date])
+  @@unique([bookId, date])
   @@map("book_statistic")
 }
 

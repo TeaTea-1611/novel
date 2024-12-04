@@ -1,4 +1,4 @@
-import { cn } from "@repo/ui/lib/utils";
+import { cn } from "@/lib/utils";
 
 type IconProps = React.HTMLAttributes<SVGElement>;
 

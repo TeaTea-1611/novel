@@ -331,9 +331,57 @@ export class BookResolver {
     return await prisma.book.findUnique({ where: { id: bookId } });
   }
 
-  @Query(() => [Book])
-  async books(@Ctx() { prisma }: Context): Promise<Book[]> {
-    return await prisma.book.findMany();
+  @Query(() => PaginatedBooksResponse)
+  async paginatedBooks(
+    @Args()
+    {
+      page,
+      take,
+      keyword,
+      gender,
+      genreId,
+      tagIds,
+      sortBy,
+      sortOrder,
+    }: PaginatedBooksArgs,
+    @Ctx() { prisma }: Context,
+  ): Promise<PaginatedBooksResponse> {
+    const realTake = Math.min(take, 50);
+
+    const whereClause: Prisma.BookWhereInput = {
+      OR: [
+        { name: { contains: keyword, mode: "insensitive" } },
+        { author: { name: { contains: keyword, mode: "insensitive" } } },
+        { createdBy: { nickname: { contains: keyword, mode: "insensitive" } } },
+      ],
+      ...(gender && { gender }),
+      ...(genreId && { genreId }),
+      ...(tagIds?.length && {
+        tagOnBooks: { some: { tagId: { in: tagIds } } },
+      }),
+    };
+
+    const [total, books] = await Promise.all([
+      prisma.book.count({ where: whereClause }),
+      prisma.book.findMany({
+        where: whereClause,
+        take: realTake,
+        skip: (page - 1) * realTake,
+        orderBy: sortBy ? { [sortBy]: sortOrder } : { createdAt: "desc" },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / realTake);
+    const prev = page > 1 ? page - 1 : null;
+    const next = page < totalPages ? page + 1 : null;
+
+    return {
+      total,
+      books,
+      prev,
+      next,
+      totalPages,
+    };
   }
 
   @Authorized()
@@ -352,6 +400,8 @@ export class BookResolver {
     }: PaginatedBooksArgs,
     @Ctx() { prisma, user }: Context,
   ): Promise<PaginatedBooksResponse> {
+    const realTake = Math.min(take, 50);
+
     const whereClause: Prisma.BookWhereInput = {
       createdById: user!.id,
       OR: [
@@ -374,13 +424,23 @@ export class BookResolver {
       prisma.book.count({ where: whereClause }),
       prisma.book.findMany({
         where: whereClause,
-        take,
-        skip: (page - 1) * take,
+        take: realTake,
+        skip: (page - 1) * realTake,
         orderBy: sortBy ? { [sortBy]: sortOrder } : { createdAt: "desc" },
       }),
     ]);
 
-    return { total, books };
+    const totalPages = Math.ceil(total / realTake);
+    const prev = page > 1 ? page - 1 : null;
+    const next = page < totalPages ? page + 1 : null;
+
+    return {
+      total,
+      books,
+      prev,
+      next,
+      totalPages,
+    };
   }
 
   @Authorized()

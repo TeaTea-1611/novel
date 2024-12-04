@@ -28,14 +28,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="bg-transparent">
-        <header className="sticky top-0 z-50 flex items-center px-3 h-14 shrink-0 bg-background">
+        <header className="sticky top-0 z-50 flex items-center px-3 duration-300 ease-linear h-14 shrink-0 backdrop-blur">
           <div id="header-left" className="flex items-center flex-1 gap-2">
             <SidebarTrigger />
             <Separator orientation="vertical" className="h-4 mr-2" />
             <MagicBackButton className="rounded-md size-7" />
+            <Separator orientation="vertical" className="h-4" />
+            <ModeToggle />
           </div>
           <div className="flex items-center ml-auto gap-x-2">
-            <ModeToggle />
             <UserButton />
           </div>
         </header>

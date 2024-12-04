@@ -1,5 +1,6 @@
 import { PrismaClient, UserRole } from "@prisma/client";
 import argon2 from "argon2";
+import { fakerVI } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
 const email = "phamnam079202038134@gmail.com";

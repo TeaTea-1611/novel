@@ -9,7 +9,9 @@ query BookOptions {
   tags {
     id
     name
+    groupId
     group {
+      id
       name
       color
       bgColor

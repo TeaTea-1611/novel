@@ -4,13 +4,14 @@ import {
   Ctx,
   FieldResolver,
   Int,
+  Mutation,
   Query,
   Resolver,
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
 import type { Context } from "../../context";
-import { Book, BookStatisticType, Reading } from "../../generated/type-graphql";
+import { Book, Reading } from "../../generated/type-graphql";
 import { PaginatedReading } from "./types";
 import { MutationResponse } from "../../types";
 
@@ -60,8 +61,7 @@ export class ReadingResolver {
     };
   }
 
-  @Authorized()
-  @Query(() => Boolean)
+  @Mutation(() => Boolean)
   async read(
     @Arg("chapterId", () => Int) chapterId: number,
     @Ctx() { prisma, user }: Context,
@@ -77,51 +77,57 @@ export class ReadingResolver {
       return false;
     }
 
-    await prisma.reading.upsert({
-      where: {
-        userId_bookId: {
+    if (user) {
+      await prisma.reading.upsert({
+        where: {
+          userId_bookId: {
+            userId: user!.id,
+            bookId: chapter.bookId,
+          },
+        },
+        create: {
           userId: user!.id,
           bookId: chapter.bookId,
+          currentChapter: chapter.order,
+          readingAt: date,
         },
-      },
-      create: {
-        userId: user!.id,
-        bookId: chapter.bookId,
-        currentChapter: chapter.order,
-        readingAt: date,
-      },
-      update: {
-        currentChapter: chapter.order,
-        readingAt: date,
-      },
-      select: { userId: true },
-    });
+        update: {
+          currentChapter: chapter.order,
+          readingAt: date,
+        },
+        select: { userId: true },
+      });
+    }
 
-    await prisma.book.update({
-      where: { id: chapter.bookId },
-      data: { readCnt: { increment: 1 } },
-      select: { id: true },
-    });
-
-    await prisma.bookStatistic.upsert({
-      where: {
-        bookId_type_date: {
+    await Promise.all([
+      prisma.chapter.update({
+        where: { id: chapter.id },
+        data: { readCnt: { increment: 1 } },
+        select: { id: true },
+      }),
+      prisma.book.update({
+        where: { id: chapter.bookId },
+        data: { readCnt: { increment: 1 } },
+        select: { id: true },
+      }),
+      prisma.bookStatistic.upsert({
+        where: {
+          bookId_date: {
+            bookId: chapter.bookId,
+            date,
+          },
+        },
+        create: {
           bookId: chapter.bookId,
-          type: BookStatisticType.READ,
           date,
+          read: 1,
         },
-      },
-      create: {
-        bookId: chapterId,
-        type: BookStatisticType.READ,
-        date,
-        value: 1,
-      },
-      update: {
-        value: { increment: 1 },
-      },
-      select: { id: true },
-    });
+        update: {
+          read: { increment: 1 },
+        },
+        select: { id: true },
+      }),
+    ]);
 
     return true;
   }

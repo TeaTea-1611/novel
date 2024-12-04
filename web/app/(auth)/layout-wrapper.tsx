@@ -4,8 +4,8 @@ import { Icons } from "@/components/icons";
 import { ModeToggle } from "@/components/mode-toggle";
 import { siteConfig } from "@/config/site";
 import { ginto } from "@/styles/fonts";
-import { buttonVariants } from "@repo/ui/components/ui/button";
-import { cn } from "@repo/ui/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
 
@@ -49,6 +49,7 @@ export const LayoutWrapper = ({
       </footer>
       <div className="fixed inset-0 -z-50 pointer-events-none">
         <div className="absolute size-full bg-gradient-to-b from-gradient-from to-gradient-to"></div>
+        <div className="absolute w-full h-full bg-[url('/mask-image.svg')] bg-repeat"></div>
       </div>
     </>
   );

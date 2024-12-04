@@ -1,6 +1,6 @@
 "use client";
 
-import { useFullQuery } from "@/generated/graphql";
+import { useFullQuery } from "@/apollo-client/__generated";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 

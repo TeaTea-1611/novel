@@ -78,13 +78,15 @@ export class SettingsResolver {
       "../../../public/upload/avatar",
     );
     await fsPromises.mkdir(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, `${user!.id}.png`);
+    const filePath = path.join(uploadDir, `${user!.id}.jpg`);
 
     const stream = createReadStream();
     const out = createWriteStream(filePath);
 
     try {
-      const transform = sharp().resize(208, 208).png({ quality: 100 });
+      const transform = sharp()
+        .resize(208, 208)
+        .toFormat("jpg", { quality: 100 });
 
       stream.pipe(transform).pipe(out);
 
@@ -94,10 +96,10 @@ export class SettingsResolver {
     }
 
     const protocol = env.NODE_ENV === "production" ? "https" : "http";
-    const host = env.HOST || "localhost:4000";
-    const avatar = `${protocol}://${host}/upload/avatar/${
+
+    const avatar = `${protocol}://${env.HOST}:${env.PORT}/upload/avatar/${
       user!.id
-    }.png?${Date.now()}`;
+    }.jpg?${Date.now()}`;
 
     return await prisma.user.update({
       where: { id: user!.id },

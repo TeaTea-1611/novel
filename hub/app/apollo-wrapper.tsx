@@ -104,7 +104,6 @@ function makeClient() {
                 });
             }
             case "FORBIDDEN": {
-              toast.error(err.message);
               break;
             }
           }

@@ -6,11 +6,12 @@
     "dev": "bun --watch run src/index.ts",
     "dev:email": "email dev --dir src/emails",
     "start": "bun run src/index.ts",
-    "db:generate": "bunx prisma generate",
-    "db:push": "bunx prisma db push --skip-generate",
-    "db:seed": "bunx prisma db seed"
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push --skip-generate",
+    "db:seed": "prisma db seed"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.3.0",
     "@types/bun": "latest",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",

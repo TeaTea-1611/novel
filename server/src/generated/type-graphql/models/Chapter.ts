@@ -33,6 +33,11 @@ export class Chapter {
   })
   unlockPrice!: number;
 
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: false
+  })
+  readCnt!: number;
+
   @TypeGraphQL.Field(_type => Date, {
     nullable: false
   })

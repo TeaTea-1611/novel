@@ -1,0 +1,10 @@
+fragment chapter on Chapter {
+  id
+  bookId
+  order
+  title
+  unlockPrice
+  publishAt
+  createdAt
+  updatedAt
+}

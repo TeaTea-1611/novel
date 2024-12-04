@@ -1,9 +1,9 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import { ginto } from "@/styles/fonts";
-import { Toaster } from "@repo/ui/components/ui/sonner";
-import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Metadata } from "next";
-import "@repo/ui/globals.css";
+import "@/styles/globals.css";
 import { ApolloWrapper } from "./apollo-wrapper";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 

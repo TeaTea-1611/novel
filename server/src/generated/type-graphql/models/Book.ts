@@ -38,6 +38,11 @@ export class Book {
   @TypeGraphQL.Field(_type => String, {
     nullable: false
   })
+  originalLink!: string;
+
+  @TypeGraphQL.Field(_type => String, {
+    nullable: false
+  })
   synopsis!: string;
 
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {

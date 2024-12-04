@@ -53,15 +53,15 @@ const modelsInfo = {
   Event: ["id", "name", "description", "webPath", "appPath", "startDate", "endDate"],
   EventAsset: ["eventId", "assetId"],
   Author: ["id", "name", "originalName"],
-  Book: ["id", "name", "originalName", "authorId", "synopsis", "kind", "gender", "status", "poster", "genreId", "wordCnt", "flowerCnt", "readCnt", "reviewCnt", "chapterCnt", "commentCnt", "points", "createdAt", "newChapterAt", "createdById"],
+  Book: ["id", "name", "originalName", "authorId", "originalLink", "synopsis", "kind", "gender", "status", "poster", "genreId", "wordCnt", "flowerCnt", "readCnt", "reviewCnt", "chapterCnt", "commentCnt", "points", "createdAt", "newChapterAt", "createdById"],
   Genre: ["id", "name"],
   TagGroup: ["id", "name", "color", "bgColor"],
   Tag: ["id", "groupId", "name"],
   TagOnBook: ["bookId", "tagId"],
   Review: ["id", "userId", "bookId", "point", "content", "isSpoiler", "createdAt"],
   Comment: ["id", "userId", "bookId", "content", "totalLike", "createdAt", "updatedAt"],
-  Chapter: ["id", "bookId", "order", "title", "unlockPrice", "publishAt", "createdAt", "updatedAt"],
-  BookStatistic: ["id", "bookId", "type", "value", "date"],
+  Chapter: ["id", "bookId", "order", "title", "unlockPrice", "readCnt", "publishAt", "createdAt", "updatedAt"],
+  BookStatistic: ["id", "bookId", "read", "comment", "review", "date"],
   Reading: ["userId", "bookId", "currentChapter", "readingAt"],
   Bookmark: ["userId", "bookId", "createdAt"]
 };

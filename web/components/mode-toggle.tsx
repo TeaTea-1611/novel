@@ -2,14 +2,14 @@
 
 import * as React from "react";
 import { useTheme } from "next-themes";
-import { Button } from "@repo/ui/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@repo/ui/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import { LaptopMinimal, Moon, Sun } from "lucide-react";
 
 export function ModeToggle() {

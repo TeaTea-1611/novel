@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarSeparator,
-} from "@repo/ui/components/ui/sidebar";
+} from "@/components/ui/sidebar";
 import Link from "next/link";
 import { Fragment } from "react";
 

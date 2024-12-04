@@ -4,4 +4,3 @@ export * from "./chapter";
 export * from "./auth";
 export * from "./settings";
 export * from "./helper";
-export * from "zod";

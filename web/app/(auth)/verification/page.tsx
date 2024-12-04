@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { LayoutWrapper } from "../layout-wrapper";
-import { useVerificationMutation } from "@/generated/graphql";
+import { useVerificationMutation } from "@/apollo-client/__generated";
 
 export default function NewVerificationPage() {
   const searchParams = useSearchParams();

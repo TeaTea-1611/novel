@@ -2,21 +2,22 @@
 
 import { Icons } from "@/components/icons";
 import { ResponseMessage } from "@/components/response-message";
-import { Button } from "@repo/ui/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@repo/ui/components/ui/form";
+} from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { newPasswordSchema, z } from "@repo/shared-schemas";
-import { useNewPasswordMutation } from "@/generated/graphql";
-import { PasswordInput } from "@repo/ui/components/ui/password-input";
+import { newPasswordSchema } from "@/schemas";
+import { useNewPasswordMutation } from "@/apollo-client/__generated";
+import { PasswordInput } from "@/components/ui/password-input";
+import { z } from "zod";
 
 export const NewPasswordForm = () => {
   const searchParams = useSearchParams();

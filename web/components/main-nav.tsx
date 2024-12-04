@@ -3,12 +3,12 @@
 import { Icons } from "@/components/icons";
 import { mainNav } from "@/config/nav";
 import { siteConfig } from "@/config/site";
-import { Button, buttonVariants } from "@repo/ui/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@repo/ui/components/ui/collapsible";
+} from "@/components/ui/collapsible";
 import {
   Sheet,
   SheetClose,
@@ -17,8 +17,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@repo/ui/components/ui/sheet";
-import { cn } from "@repo/ui/lib/utils";
+} from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 import { ChevronRight, PanelLeft, X } from "lucide-react";
 import Link from "next/link";
 import { VisuallyHidden } from "./visually-hidden";

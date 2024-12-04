@@ -1,9 +1,9 @@
 "use client";
 
 import { userNav } from "@/config/nav";
-import { useFullQuery, useLogoutMutation } from "@/generated/graphql";
+import { useFullQuery, useLogoutMutation } from "@/apollo-client/__generated";
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@repo/ui/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Sheet,
   SheetClose,
@@ -12,13 +12,13 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@repo/ui/components/ui/sheet";
-import { Skeleton } from "@repo/ui/components/ui/skeleton";
+} from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@repo/ui/components/ui/tooltip";
+} from "@/components/ui/tooltip";
 import { LogIn, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,6 +26,7 @@ import { Fragment, useState } from "react";
 import { toast } from "sonner";
 import { UserAvatar } from "./user-avatar";
 import { VisuallyHidden } from "./visually-hidden";
+import { accessTokenVar } from "@/apollo-client/vars/access-token-var";
 
 export function UserButton() {
   const { data, loading, client } = useFullQuery();
@@ -45,6 +46,7 @@ export function UserButton() {
             },
           },
         });
+        accessTokenVar(null);
       }
     },
   });

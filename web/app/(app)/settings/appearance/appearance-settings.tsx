@@ -13,17 +13,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui/components/ui/select";
-import { Skeleton } from "@repo/ui/components/ui/skeleton";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@repo/ui/components/ui/toggle-group";
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@repo/ui/components/ui/tooltip";
+} from "@/components/ui/tooltip";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 

@@ -13,7 +13,7 @@ export const MagicBackButton = React.forwardRef<
   const isFirstPage = usePageTrackerStore((state) => state.isFirstPage);
   return (
     <Button
-      className={cn("rounded-full", className)}
+      className={cn("rounded-full bg-transparent", className)}
       variant="outline"
       size="icon"
       ref={ref}

@@ -30,6 +30,7 @@ export type Book = {
   __typename?: 'Book';
   author?: Maybe<Author>;
   authorId?: Maybe<Scalars['Int']['output']>;
+  authorName: Scalars['String']['output'];
   chapterCnt: Scalars['Int']['output'];
   commentCnt: Scalars['Int']['output'];
   createdAt: Scalars['Timestamp']['output'];
@@ -42,7 +43,8 @@ export type Book = {
   id: Scalars['Int']['output'];
   kind: Scalars['Int']['output'];
   name: Scalars['String']['output'];
-  originalName?: Maybe<Scalars['String']['output']>;
+  newChapterAt: Scalars['Timestamp']['output'];
+  originalName: Scalars['String']['output'];
   points: Scalars['Float']['output'];
   poster: Scalars['String']['output'];
   readCnt: Scalars['Int']['output'];
@@ -60,17 +62,55 @@ export type BookResponse = IMutationResponse & {
   success: Scalars['Boolean']['output'];
 };
 
-export type ChapterInput = {
-  content: Scalars['String']['input'];
-  order: Scalars['Int']['input'];
-  publishAt: Scalars['Timestamp']['input'];
-  title: Scalars['String']['input'];
-  unlockPrice: Scalars['Int']['input'];
+export type BookStatistic = {
+  __typename?: 'BookStatistic';
+  bookId: Scalars['Int']['output'];
+  date: Scalars['Timestamp']['output'];
+  id: Scalars['Int']['output'];
+  type: BookStatisticType;
+  value: Scalars['Int']['output'];
+};
+
+export enum BookStatisticType {
+  Comment = 'COMMENT',
+  Read = 'READ',
+  Review = 'REVIEW'
+}
+
+export type Chapter = {
+  __typename?: 'Chapter';
+  bookId: Scalars['Int']['output'];
+  content: Scalars['String']['output'];
+  createdAt: Scalars['Timestamp']['output'];
+  id: Scalars['Int']['output'];
+  order: Scalars['Int']['output'];
+  publishAt: Scalars['Timestamp']['output'];
+  readCnt: Scalars['Int']['output'];
+  title: Scalars['String']['output'];
+  unlockPrice: Scalars['Int']['output'];
+  updatedAt: Scalars['Timestamp']['output'];
+};
+
+export type ChapterMutationResponse = IMutationResponse & {
+  __typename?: 'ChapterMutationResponse';
+  chapter?: Maybe<Chapter>;
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type Comment = {
+  __typename?: 'Comment';
+  bookId: Scalars['Int']['output'];
+  content: Scalars['String']['output'];
+  createdAt: Scalars['Timestamp']['output'];
+  id: Scalars['Int']['output'];
+  totalLike: Scalars['Int']['output'];
+  updatedAt: Scalars['Timestamp']['output'];
+  userId: Scalars['Int']['output'];
 };
 
 export type Genre = {
   __typename?: 'Genre';
-  bookCnt: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
 };
@@ -95,19 +135,26 @@ export type Mutation = {
   changePassword: MutationResponse;
   changePoster: Book;
   changeProfile: User;
+  comment: Comment;
   convertBook: BookResponse;
   createBook: BookResponse;
-  createChapters: MutationResponse;
+  createChapter: ChapterMutationResponse;
+  deleteBook: MutationResponse;
+  deleteChapters: MutationResponse;
   googleLogin: LoginResponse;
   login: LoginResponse;
   logout: Scalars['Boolean']['output'];
   newPassword: MutationResponse;
   passwordReset: MutationResponse;
+  read: Scalars['Boolean']['output'];
   refreshToken?: Maybe<Scalars['String']['output']>;
   register: MutationResponse;
   resendTwoFactorCode: MutationResponse;
-  swapChapters: Scalars['Boolean']['output'];
+  review: Review;
+  swapChapters: Array<Chapter>;
   updateBook: BookResponse;
+  updateChapter: ChapterMutationResponse;
+  updateChapters: MutationResponse;
   updateConvertBook: BookResponse;
   updateCopyright?: Maybe<Scalars['Boolean']['output']>;
   updateNotificationSettings: NotificationSettings;
@@ -144,30 +191,51 @@ export type MutationChangeProfileArgs = {
 };
 
 
+export type MutationCommentArgs = {
+  bookId: Scalars['Int']['input'];
+  content: Scalars['String']['input'];
+};
+
+
 export type MutationConvertBookArgs = {
   authorName: Scalars['String']['input'];
   gender: Scalars['Int']['input'];
-  genre: Scalars['String']['input'];
+  genreId: Scalars['Int']['input'];
   name: Scalars['String']['input'];
   originalAuthorName: Scalars['String']['input'];
   originalName: Scalars['String']['input'];
   synopsis: Scalars['String']['input'];
-  tags: Array<Scalars['String']['input']>;
+  tagIds: Array<Scalars['Int']['input']>;
 };
 
 
 export type MutationCreateBookArgs = {
   gender: Scalars['Int']['input'];
-  genre: Scalars['String']['input'];
+  genreId: Scalars['Int']['input'];
   name: Scalars['String']['input'];
   synopsis: Scalars['String']['input'];
-  tags: Array<Scalars['String']['input']>;
+  tagIds: Array<Scalars['Int']['input']>;
 };
 
 
-export type MutationCreateChaptersArgs = {
+export type MutationCreateChapterArgs = {
   bookId: Scalars['Int']['input'];
-  chapters: Array<ChapterInput>;
+  content: Scalars['String']['input'];
+  order: Scalars['Int']['input'];
+  publishAt: Scalars['Timestamp']['input'];
+  title: Scalars['String']['input'];
+  unlockPrice: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteBookArgs = {
+  bookId: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteChaptersArgs = {
+  bookId: Scalars['Int']['input'];
+  chapterIds: Array<Scalars['Int']['input']>;
 };
 
 
@@ -194,6 +262,11 @@ export type MutationPasswordResetArgs = {
 };
 
 
+export type MutationReadArgs = {
+  chapterId: Scalars['Int']['input'];
+};
+
+
 export type MutationRegisterArgs = {
   email: Scalars['String']['input'];
   nickname: Scalars['String']['input'];
@@ -206,26 +279,59 @@ export type MutationResendTwoFactorCodeArgs = {
 };
 
 
+export type MutationReviewArgs = {
+  bookId: Scalars['Int']['input'];
+  content: Scalars['String']['input'];
+  isSpoiler: Scalars['Boolean']['input'];
+  point: Scalars['Int']['input'];
+};
+
+
+export type MutationSwapChaptersArgs = {
+  bookId: Scalars['Int']['input'];
+  data: Array<SwapChapterInput>;
+};
+
+
 export type MutationUpdateBookArgs = {
-  gender: Scalars['Int']['input'];
-  genre: Scalars['String']['input'];
-  id: Scalars['Int']['input'];
-  name: Scalars['String']['input'];
-  synopsis: Scalars['String']['input'];
-  tags: Array<Scalars['String']['input']>;
+  bookId: Scalars['Int']['input'];
+  gender?: InputMaybe<Scalars['Int']['input']>;
+  genreId?: InputMaybe<Scalars['Int']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['Int']['input']>;
+  synopsis?: InputMaybe<Scalars['String']['input']>;
+  tagIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
+
+
+export type MutationUpdateChapterArgs = {
+  bookId: Scalars['Int']['input'];
+  chapterId: Scalars['Int']['input'];
+  content: Scalars['String']['input'];
+  publishAt: Scalars['Timestamp']['input'];
+  title: Scalars['String']['input'];
+  unlockPrice: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateChaptersArgs = {
+  bookId: Scalars['Int']['input'];
+  chapterIds: Array<Scalars['Int']['input']>;
+  publishAt: Scalars['Timestamp']['input'];
+  unlockPrice: Scalars['Int']['input'];
 };
 
 
 export type MutationUpdateConvertBookArgs = {
   authorName: Scalars['String']['input'];
   gender: Scalars['Int']['input'];
-  genre: Scalars['String']['input'];
+  genreId: Scalars['Int']['input'];
   id: Scalars['Int']['input'];
   name: Scalars['String']['input'];
   originalAuthorName: Scalars['String']['input'];
   originalName: Scalars['String']['input'];
   synopsis: Scalars['String']['input'];
-  tags: Array<Scalars['String']['input']>;
+  tagIds: Array<Scalars['Int']['input']>;
 };
 
 
@@ -273,6 +379,15 @@ export type NotificationSettings = {
   userId: Scalars['Int']['output'];
 };
 
+export type PaginatedBooksResponse = {
+  __typename?: 'PaginatedBooksResponse';
+  books: Array<Book>;
+  next?: Maybe<Scalars['Int']['output']>;
+  prev?: Maybe<Scalars['Int']['output']>;
+  total: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
 export type PaginatedReading = {
   __typename?: 'PaginatedReading';
   cursor?: Maybe<Scalars['Timestamp']['output']>;
@@ -283,16 +398,22 @@ export type PaginatedReading = {
 
 export type Query = {
   __typename?: 'Query';
+  analytics: Array<BookStatistic>;
   book?: Maybe<Book>;
-  books: Array<Book>;
+  chapter?: Maybe<Chapter>;
+  chapters: Array<Chapter>;
+  comments: Array<Comment>;
   copyright?: Maybe<Scalars['String']['output']>;
+  createdBooks: PaginatedBooksResponse;
   genders: Array<Scalars['Int']['output']>;
   genres: Array<Genre>;
   kinds: Array<Scalars['Int']['output']>;
   me?: Maybe<User>;
   notificationSettings: NotificationSettings;
+  paginatedBooks: PaginatedBooksResponse;
   privacyPolicy?: Maybe<Scalars['String']['output']>;
   reading: PaginatedReading;
+  reviews: Array<Review>;
   status: Array<Scalars['Int']['output']>;
   tags: Array<Tag>;
   termsOfService?: Maybe<Scalars['String']['output']>;
@@ -305,9 +426,53 @@ export type QueryBookArgs = {
 };
 
 
+export type QueryChapterArgs = {
+  chapterId: Scalars['Int']['input'];
+};
+
+
+export type QueryChaptersArgs = {
+  bookId: Scalars['Int']['input'];
+};
+
+
+export type QueryCommentsArgs = {
+  bookId: Scalars['Int']['input'];
+};
+
+
+export type QueryCreatedBooksArgs = {
+  gender?: InputMaybe<Scalars['Int']['input']>;
+  genreId?: InputMaybe<Scalars['Int']['input']>;
+  keyword?: Scalars['String']['input'];
+  page?: Scalars['Int']['input'];
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<SortOrder>;
+  tagIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  take?: Scalars['Int']['input'];
+};
+
+
+export type QueryPaginatedBooksArgs = {
+  gender?: InputMaybe<Scalars['Int']['input']>;
+  genreId?: InputMaybe<Scalars['Int']['input']>;
+  keyword?: Scalars['String']['input'];
+  page?: Scalars['Int']['input'];
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<SortOrder>;
+  tagIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  take?: Scalars['Int']['input'];
+};
+
+
 export type QueryReadingArgs = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   take: Scalars['Int']['input'];
+};
+
+
+export type QueryReviewsArgs = {
+  bookId: Scalars['Int']['input'];
 };
 
 
@@ -324,17 +489,37 @@ export type Reading = {
   userId: Scalars['Int']['output'];
 };
 
+export type Review = {
+  __typename?: 'Review';
+  bookId: Scalars['Int']['output'];
+  content: Scalars['String']['output'];
+  createdAt: Scalars['Timestamp']['output'];
+  id: Scalars['Int']['output'];
+  isSpoiler: Scalars['Boolean']['output'];
+  point: Scalars['Float']['output'];
+  userId: Scalars['Int']['output'];
+};
+
+export enum SortOrder {
+  Asc = 'asc',
+  Desc = 'desc'
+}
+
+export type SwapChapterInput = {
+  id: Scalars['Int']['input'];
+  newOrder: Scalars['Int']['input'];
+};
+
 export type Tag = {
   __typename?: 'Tag';
-  bookCnt: Scalars['Int']['output'];
-  category: TagCategory;
-  categoryId: Scalars['Int']['output'];
+  group: TagGroup;
+  groupId: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   name: Scalars['String']['output'];
 };
 
-export type TagCategory = {
-  __typename?: 'TagCategory';
+export type TagGroup = {
+  __typename?: 'TagGroup';
   bgColor: Scalars['String']['output'];
   color: Scalars['String']['output'];
   id: Scalars['Int']['output'];
@@ -377,7 +562,9 @@ export enum UserRole {
   User = 'USER'
 }
 
-export type BookFragment = { __typename?: 'Book', id: number, name: string, originalName?: string | null, authorId?: number | null, synopsis: string, poster: string, kind: number, gender: number, status: number, genreId: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string }>, genre: { __typename?: 'Genre', id: number, name: string } };
+export type BookFragment = { __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } };
+
+export type ChapterFragment = { __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any };
 
 export type UserFragment = { __typename?: 'User', id: number, email: string, nickname: string, avatar: string, pendant: string, role: UserRole, emailVerified?: any | null, isTwoFactorEnable: boolean, gender: number, introduce: string, phone: string, dob: any, urls: Array<string>, keyNum: number, ticketNum: number, candyNum: number, createdAt: any };
 
@@ -453,74 +640,6 @@ export type ResendTwoFactorCodeMutationVariables = Exact<{
 
 export type ResendTwoFactorCodeMutation = { __typename?: 'Mutation', resendTwoFactorCode: { __typename?: 'MutationResponse', success: boolean, message: string } };
 
-export type CreateBookMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  synopsis: Scalars['String']['input'];
-  gender: Scalars['Int']['input'];
-  genre: Scalars['String']['input'];
-  tags: Array<Scalars['String']['input']> | Scalars['String']['input'];
-}>;
-
-
-export type CreateBookMutation = { __typename?: 'Mutation', createBook: { __typename?: 'BookResponse', success: boolean, message: string, book?: { __typename?: 'Book', id: number, name: string, originalName?: string | null, authorId?: number | null, synopsis: string, poster: string, kind: number, gender: number, status: number, genreId: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string }>, genre: { __typename?: 'Genre', id: number, name: string } } | null } };
-
-export type UpdateBookMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  synopsis: Scalars['String']['input'];
-  gender: Scalars['Int']['input'];
-  genre: Scalars['String']['input'];
-  tags: Array<Scalars['String']['input']> | Scalars['String']['input'];
-  id: Scalars['Int']['input'];
-}>;
-
-
-export type UpdateBookMutation = { __typename?: 'Mutation', updateBook: { __typename?: 'BookResponse', success: boolean, message: string, book?: { __typename?: 'Book', id: number, name: string, originalName?: string | null, authorId?: number | null, synopsis: string, poster: string, kind: number, gender: number, status: number, genreId: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string }>, genre: { __typename?: 'Genre', id: number, name: string } } | null } };
-
-export type ConvertBookMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  originalName: Scalars['String']['input'];
-  authorName: Scalars['String']['input'];
-  originalAuthorName: Scalars['String']['input'];
-  synopsis: Scalars['String']['input'];
-  gender: Scalars['Int']['input'];
-  genre: Scalars['String']['input'];
-  tags: Array<Scalars['String']['input']> | Scalars['String']['input'];
-}>;
-
-
-export type ConvertBookMutation = { __typename?: 'Mutation', convertBook: { __typename?: 'BookResponse', success: boolean, message: string, book?: { __typename?: 'Book', id: number, name: string, originalName?: string | null, authorId?: number | null, synopsis: string, poster: string, kind: number, gender: number, status: number, genreId: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string }>, genre: { __typename?: 'Genre', id: number, name: string } } | null } };
-
-export type UpdateConvertBookMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-  synopsis: Scalars['String']['input'];
-  gender: Scalars['Int']['input'];
-  genre: Scalars['String']['input'];
-  tags: Array<Scalars['String']['input']> | Scalars['String']['input'];
-  originalName: Scalars['String']['input'];
-  authorName: Scalars['String']['input'];
-  originalAuthorName: Scalars['String']['input'];
-  id: Scalars['Int']['input'];
-}>;
-
-
-export type UpdateConvertBookMutation = { __typename?: 'Mutation', updateConvertBook: { __typename?: 'BookResponse', success: boolean, message: string, book?: { __typename?: 'Book', id: number, name: string, originalName?: string | null, authorId?: number | null, synopsis: string, poster: string, kind: number, gender: number, status: number, genreId: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string }>, genre: { __typename?: 'Genre', id: number, name: string } } | null } };
-
-export type ChangePosterMutationVariables = Exact<{
-  poster: Scalars['Upload']['input'];
-  bookId: Scalars['Int']['input'];
-}>;
-
-
-export type ChangePosterMutation = { __typename?: 'Mutation', changePoster: { __typename?: 'Book', id: number, name: string, originalName?: string | null, authorId?: number | null, synopsis: string, poster: string, kind: number, gender: number, status: number, genreId: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string }>, genre: { __typename?: 'Genre', id: number, name: string } } };
-
-export type UpdateNotificationSettingsMutationVariables = Exact<{
-  newChapter: Scalars['Boolean']['input'];
-  newInteraction: Scalars['Boolean']['input'];
-}>;
-
-
-export type UpdateNotificationSettingsMutation = { __typename?: 'Mutation', updateNotificationSettings: { __typename?: 'NotificationSettings', newChapter: boolean, newInteraction: boolean } };
-
 export type ChangeProfileMutationVariables = Exact<{
   nickname: Scalars['String']['input'];
   introduce: Scalars['String']['input'];
@@ -547,22 +666,49 @@ export type ChangePasswordMutationVariables = Exact<{
 
 export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'MutationResponse', message: string, success: boolean } };
 
+export type UpdateNotificationSettingsMutationVariables = Exact<{
+  newChapter: Scalars['Boolean']['input'];
+  newInteraction: Scalars['Boolean']['input'];
+}>;
+
+
+export type UpdateNotificationSettingsMutation = { __typename?: 'Mutation', updateNotificationSettings: { __typename?: 'NotificationSettings', newChapter: boolean, newInteraction: boolean } };
+
 export type BookOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type BookOptionsQuery = { __typename?: 'Query', kinds: Array<number>, genders: Array<number>, status: Array<number>, genres: Array<{ __typename?: 'Genre', id: number, name: string, bookCnt: number }>, tags: Array<{ __typename?: 'Tag', id: number, name: string, bookCnt: number, category: { __typename?: 'TagCategory', name: string, color: string, bgColor: string } }> };
+export type BookOptionsQuery = { __typename?: 'Query', kinds: Array<number>, genders: Array<number>, status: Array<number>, genres: Array<{ __typename?: 'Genre', id: number, name: string }>, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }> };
 
 export type BookQueryVariables = Exact<{
   bookId: Scalars['Int']['input'];
 }>;
 
 
-export type BookQuery = { __typename?: 'Query', book?: { __typename?: 'Book', id: number, name: string, originalName?: string | null, authorId?: number | null, synopsis: string, poster: string, kind: number, gender: number, status: number, genreId: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string }>, genre: { __typename?: 'Genre', id: number, name: string } } | null };
+export type BookQuery = { __typename?: 'Query', book?: { __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } } | null };
+
+export type HomePageDataQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type HomePageDataQuery = { __typename?: 'Query', paginatedBooks: { __typename?: 'PaginatedBooksResponse', total: number, prev?: number | null, next?: number | null, totalPages: number, books: Array<{ __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } }> } };
+
+export type ChapterQueryVariables = Exact<{
+  chapterId: Scalars['Int']['input'];
+}>;
+
+
+export type ChapterQuery = { __typename?: 'Query', chapter?: { __typename?: 'Chapter', content: string, id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any } | null };
+
+export type ChaptersQueryVariables = Exact<{
+  bookId: Scalars['Int']['input'];
+}>;
+
+
+export type ChaptersQuery = { __typename?: 'Query', chapters: Array<{ __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any }> };
 
 export type FullQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type FullQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, email: string, nickname: string, avatar: string, pendant: string, role: UserRole, emailVerified?: any | null, isTwoFactorEnable: boolean, gender: number, introduce: string, phone: string, dob: any, urls: Array<string>, keyNum: number, ticketNum: number, candyNum: number, createdAt: any } | null, reading: { __typename?: 'PaginatedReading', totalCount: number, cursor?: any | null, hasMore: boolean, reading: Array<{ __typename?: 'Reading', currentChapter: number, readingAt: any, book: { __typename?: 'Book', id: number, name: string } }> } };
+export type FullQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, email: string, nickname: string, avatar: string, pendant: string, role: UserRole, emailVerified?: any | null, isTwoFactorEnable: boolean, gender: number, introduce: string, phone: string, dob: any, urls: Array<string>, keyNum: number, ticketNum: number, candyNum: number, createdAt: any } | null };
 
 export type NotificationSettingsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -574,13 +720,11 @@ export const BookFragmentDoc = gql`
   id
   name
   originalName
-  authorId
   synopsis
   poster
   kind
   gender
   status
-  genreId
   wordCnt
   flowerCnt
   readCnt
@@ -589,6 +733,7 @@ export const BookFragmentDoc = gql`
   commentCnt
   points
   createdAt
+  newChapterAt
   author {
     id
     name
@@ -603,11 +748,28 @@ export const BookFragmentDoc = gql`
   tags {
     id
     name
+    group {
+      name
+      color
+      bgColor
+    }
   }
   genre {
     id
     name
   }
+}
+    `;
+export const ChapterFragmentDoc = gql`
+    fragment chapter on Chapter {
+  id
+  bookId
+  order
+  title
+  unlockPrice
+  publishAt
+  createdAt
+  updatedAt
 }
     `;
 export const UserFragmentDoc = gql`
@@ -974,282 +1136,6 @@ export function useResendTwoFactorCodeMutation(baseOptions?: Apollo.MutationHook
 export type ResendTwoFactorCodeMutationHookResult = ReturnType<typeof useResendTwoFactorCodeMutation>;
 export type ResendTwoFactorCodeMutationResult = Apollo.MutationResult<ResendTwoFactorCodeMutation>;
 export type ResendTwoFactorCodeMutationOptions = Apollo.BaseMutationOptions<ResendTwoFactorCodeMutation, ResendTwoFactorCodeMutationVariables>;
-export const CreateBookDocument = gql`
-    mutation CreateBook($name: String!, $synopsis: String!, $gender: Int!, $genre: String!, $tags: [String!]!) {
-  createBook(
-    name: $name
-    synopsis: $synopsis
-    gender: $gender
-    genre: $genre
-    tags: $tags
-  ) {
-    success
-    message
-    book {
-      ...book
-    }
-  }
-}
-    ${BookFragmentDoc}`;
-export type CreateBookMutationFn = Apollo.MutationFunction<CreateBookMutation, CreateBookMutationVariables>;
-
-/**
- * __useCreateBookMutation__
- *
- * To run a mutation, you first call `useCreateBookMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateBookMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createBookMutation, { data, loading, error }] = useCreateBookMutation({
- *   variables: {
- *      name: // value for 'name'
- *      synopsis: // value for 'synopsis'
- *      gender: // value for 'gender'
- *      genre: // value for 'genre'
- *      tags: // value for 'tags'
- *   },
- * });
- */
-export function useCreateBookMutation(baseOptions?: Apollo.MutationHookOptions<CreateBookMutation, CreateBookMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateBookMutation, CreateBookMutationVariables>(CreateBookDocument, options);
-      }
-export type CreateBookMutationHookResult = ReturnType<typeof useCreateBookMutation>;
-export type CreateBookMutationResult = Apollo.MutationResult<CreateBookMutation>;
-export type CreateBookMutationOptions = Apollo.BaseMutationOptions<CreateBookMutation, CreateBookMutationVariables>;
-export const UpdateBookDocument = gql`
-    mutation UpdateBook($name: String!, $synopsis: String!, $gender: Int!, $genre: String!, $tags: [String!]!, $id: Int!) {
-  updateBook(
-    name: $name
-    synopsis: $synopsis
-    gender: $gender
-    genre: $genre
-    tags: $tags
-    id: $id
-  ) {
-    success
-    message
-    book {
-      ...book
-    }
-  }
-}
-    ${BookFragmentDoc}`;
-export type UpdateBookMutationFn = Apollo.MutationFunction<UpdateBookMutation, UpdateBookMutationVariables>;
-
-/**
- * __useUpdateBookMutation__
- *
- * To run a mutation, you first call `useUpdateBookMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateBookMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateBookMutation, { data, loading, error }] = useUpdateBookMutation({
- *   variables: {
- *      name: // value for 'name'
- *      synopsis: // value for 'synopsis'
- *      gender: // value for 'gender'
- *      genre: // value for 'genre'
- *      tags: // value for 'tags'
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useUpdateBookMutation(baseOptions?: Apollo.MutationHookOptions<UpdateBookMutation, UpdateBookMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateBookMutation, UpdateBookMutationVariables>(UpdateBookDocument, options);
-      }
-export type UpdateBookMutationHookResult = ReturnType<typeof useUpdateBookMutation>;
-export type UpdateBookMutationResult = Apollo.MutationResult<UpdateBookMutation>;
-export type UpdateBookMutationOptions = Apollo.BaseMutationOptions<UpdateBookMutation, UpdateBookMutationVariables>;
-export const ConvertBookDocument = gql`
-    mutation ConvertBook($name: String!, $originalName: String!, $authorName: String!, $originalAuthorName: String!, $synopsis: String!, $gender: Int!, $genre: String!, $tags: [String!]!) {
-  convertBook(
-    name: $name
-    originalName: $originalName
-    authorName: $authorName
-    originalAuthorName: $originalAuthorName
-    synopsis: $synopsis
-    gender: $gender
-    genre: $genre
-    tags: $tags
-  ) {
-    success
-    message
-    book {
-      ...book
-    }
-  }
-}
-    ${BookFragmentDoc}`;
-export type ConvertBookMutationFn = Apollo.MutationFunction<ConvertBookMutation, ConvertBookMutationVariables>;
-
-/**
- * __useConvertBookMutation__
- *
- * To run a mutation, you first call `useConvertBookMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useConvertBookMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [convertBookMutation, { data, loading, error }] = useConvertBookMutation({
- *   variables: {
- *      name: // value for 'name'
- *      originalName: // value for 'originalName'
- *      authorName: // value for 'authorName'
- *      originalAuthorName: // value for 'originalAuthorName'
- *      synopsis: // value for 'synopsis'
- *      gender: // value for 'gender'
- *      genre: // value for 'genre'
- *      tags: // value for 'tags'
- *   },
- * });
- */
-export function useConvertBookMutation(baseOptions?: Apollo.MutationHookOptions<ConvertBookMutation, ConvertBookMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<ConvertBookMutation, ConvertBookMutationVariables>(ConvertBookDocument, options);
-      }
-export type ConvertBookMutationHookResult = ReturnType<typeof useConvertBookMutation>;
-export type ConvertBookMutationResult = Apollo.MutationResult<ConvertBookMutation>;
-export type ConvertBookMutationOptions = Apollo.BaseMutationOptions<ConvertBookMutation, ConvertBookMutationVariables>;
-export const UpdateConvertBookDocument = gql`
-    mutation UpdateConvertBook($name: String!, $synopsis: String!, $gender: Int!, $genre: String!, $tags: [String!]!, $originalName: String!, $authorName: String!, $originalAuthorName: String!, $id: Int!) {
-  updateConvertBook(
-    name: $name
-    synopsis: $synopsis
-    gender: $gender
-    genre: $genre
-    tags: $tags
-    originalName: $originalName
-    authorName: $authorName
-    originalAuthorName: $originalAuthorName
-    id: $id
-  ) {
-    success
-    message
-    book {
-      ...book
-    }
-  }
-}
-    ${BookFragmentDoc}`;
-export type UpdateConvertBookMutationFn = Apollo.MutationFunction<UpdateConvertBookMutation, UpdateConvertBookMutationVariables>;
-
-/**
- * __useUpdateConvertBookMutation__
- *
- * To run a mutation, you first call `useUpdateConvertBookMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateConvertBookMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateConvertBookMutation, { data, loading, error }] = useUpdateConvertBookMutation({
- *   variables: {
- *      name: // value for 'name'
- *      synopsis: // value for 'synopsis'
- *      gender: // value for 'gender'
- *      genre: // value for 'genre'
- *      tags: // value for 'tags'
- *      originalName: // value for 'originalName'
- *      authorName: // value for 'authorName'
- *      originalAuthorName: // value for 'originalAuthorName'
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useUpdateConvertBookMutation(baseOptions?: Apollo.MutationHookOptions<UpdateConvertBookMutation, UpdateConvertBookMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateConvertBookMutation, UpdateConvertBookMutationVariables>(UpdateConvertBookDocument, options);
-      }
-export type UpdateConvertBookMutationHookResult = ReturnType<typeof useUpdateConvertBookMutation>;
-export type UpdateConvertBookMutationResult = Apollo.MutationResult<UpdateConvertBookMutation>;
-export type UpdateConvertBookMutationOptions = Apollo.BaseMutationOptions<UpdateConvertBookMutation, UpdateConvertBookMutationVariables>;
-export const ChangePosterDocument = gql`
-    mutation ChangePoster($poster: Upload!, $bookId: Int!) {
-  changePoster(poster: $poster, bookId: $bookId) {
-    ...book
-  }
-}
-    ${BookFragmentDoc}`;
-export type ChangePosterMutationFn = Apollo.MutationFunction<ChangePosterMutation, ChangePosterMutationVariables>;
-
-/**
- * __useChangePosterMutation__
- *
- * To run a mutation, you first call `useChangePosterMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useChangePosterMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [changePosterMutation, { data, loading, error }] = useChangePosterMutation({
- *   variables: {
- *      poster: // value for 'poster'
- *      bookId: // value for 'bookId'
- *   },
- * });
- */
-export function useChangePosterMutation(baseOptions?: Apollo.MutationHookOptions<ChangePosterMutation, ChangePosterMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<ChangePosterMutation, ChangePosterMutationVariables>(ChangePosterDocument, options);
-      }
-export type ChangePosterMutationHookResult = ReturnType<typeof useChangePosterMutation>;
-export type ChangePosterMutationResult = Apollo.MutationResult<ChangePosterMutation>;
-export type ChangePosterMutationOptions = Apollo.BaseMutationOptions<ChangePosterMutation, ChangePosterMutationVariables>;
-export const UpdateNotificationSettingsDocument = gql`
-    mutation UpdateNotificationSettings($newChapter: Boolean!, $newInteraction: Boolean!) {
-  updateNotificationSettings(
-    newChapter: $newChapter
-    newInteraction: $newInteraction
-  ) {
-    newChapter
-    newInteraction
-  }
-}
-    `;
-export type UpdateNotificationSettingsMutationFn = Apollo.MutationFunction<UpdateNotificationSettingsMutation, UpdateNotificationSettingsMutationVariables>;
-
-/**
- * __useUpdateNotificationSettingsMutation__
- *
- * To run a mutation, you first call `useUpdateNotificationSettingsMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateNotificationSettingsMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateNotificationSettingsMutation, { data, loading, error }] = useUpdateNotificationSettingsMutation({
- *   variables: {
- *      newChapter: // value for 'newChapter'
- *      newInteraction: // value for 'newInteraction'
- *   },
- * });
- */
-export function useUpdateNotificationSettingsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateNotificationSettingsMutation, UpdateNotificationSettingsMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateNotificationSettingsMutation, UpdateNotificationSettingsMutationVariables>(UpdateNotificationSettingsDocument, options);
-      }
-export type UpdateNotificationSettingsMutationHookResult = ReturnType<typeof useUpdateNotificationSettingsMutation>;
-export type UpdateNotificationSettingsMutationResult = Apollo.MutationResult<UpdateNotificationSettingsMutation>;
-export type UpdateNotificationSettingsMutationOptions = Apollo.BaseMutationOptions<UpdateNotificationSettingsMutation, UpdateNotificationSettingsMutationVariables>;
 export const ChangeProfileDocument = gql`
     mutation ChangeProfile($nickname: String!, $introduce: String!, $urls: [String!]!, $gender: Int!, $dob: Timestamp!) {
   changeProfile(
@@ -1361,6 +1247,44 @@ export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptio
 export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
+export const UpdateNotificationSettingsDocument = gql`
+    mutation UpdateNotificationSettings($newChapter: Boolean!, $newInteraction: Boolean!) {
+  updateNotificationSettings(
+    newChapter: $newChapter
+    newInteraction: $newInteraction
+  ) {
+    newChapter
+    newInteraction
+  }
+}
+    `;
+export type UpdateNotificationSettingsMutationFn = Apollo.MutationFunction<UpdateNotificationSettingsMutation, UpdateNotificationSettingsMutationVariables>;
+
+/**
+ * __useUpdateNotificationSettingsMutation__
+ *
+ * To run a mutation, you first call `useUpdateNotificationSettingsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateNotificationSettingsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateNotificationSettingsMutation, { data, loading, error }] = useUpdateNotificationSettingsMutation({
+ *   variables: {
+ *      newChapter: // value for 'newChapter'
+ *      newInteraction: // value for 'newInteraction'
+ *   },
+ * });
+ */
+export function useUpdateNotificationSettingsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateNotificationSettingsMutation, UpdateNotificationSettingsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateNotificationSettingsMutation, UpdateNotificationSettingsMutationVariables>(UpdateNotificationSettingsDocument, options);
+      }
+export type UpdateNotificationSettingsMutationHookResult = ReturnType<typeof useUpdateNotificationSettingsMutation>;
+export type UpdateNotificationSettingsMutationResult = Apollo.MutationResult<UpdateNotificationSettingsMutation>;
+export type UpdateNotificationSettingsMutationOptions = Apollo.BaseMutationOptions<UpdateNotificationSettingsMutation, UpdateNotificationSettingsMutationVariables>;
 export const BookOptionsDocument = gql`
     query BookOptions {
   kinds
@@ -1369,13 +1293,11 @@ export const BookOptionsDocument = gql`
   genres {
     id
     name
-    bookCnt
   }
   tags {
     id
     name
-    bookCnt
-    category {
+    group {
       name
       color
       bgColor
@@ -1455,23 +1377,136 @@ export type BookQueryHookResult = ReturnType<typeof useBookQuery>;
 export type BookLazyQueryHookResult = ReturnType<typeof useBookLazyQuery>;
 export type BookSuspenseQueryHookResult = ReturnType<typeof useBookSuspenseQuery>;
 export type BookQueryResult = Apollo.QueryResult<BookQuery, BookQueryVariables>;
+export const HomePageDataDocument = gql`
+    query HomePageData {
+  paginatedBooks(page: 1, take: 10) {
+    total
+    books {
+      ...book
+    }
+    prev
+    next
+    totalPages
+  }
+}
+    ${BookFragmentDoc}`;
+
+/**
+ * __useHomePageDataQuery__
+ *
+ * To run a query within a React component, call `useHomePageDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHomePageDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHomePageDataQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useHomePageDataQuery(baseOptions?: Apollo.QueryHookOptions<HomePageDataQuery, HomePageDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HomePageDataQuery, HomePageDataQueryVariables>(HomePageDataDocument, options);
+      }
+export function useHomePageDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomePageDataQuery, HomePageDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HomePageDataQuery, HomePageDataQueryVariables>(HomePageDataDocument, options);
+        }
+export function useHomePageDataSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<HomePageDataQuery, HomePageDataQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<HomePageDataQuery, HomePageDataQueryVariables>(HomePageDataDocument, options);
+        }
+export type HomePageDataQueryHookResult = ReturnType<typeof useHomePageDataQuery>;
+export type HomePageDataLazyQueryHookResult = ReturnType<typeof useHomePageDataLazyQuery>;
+export type HomePageDataSuspenseQueryHookResult = ReturnType<typeof useHomePageDataSuspenseQuery>;
+export type HomePageDataQueryResult = Apollo.QueryResult<HomePageDataQuery, HomePageDataQueryVariables>;
+export const ChapterDocument = gql`
+    query Chapter($chapterId: Int!) {
+  chapter(chapterId: $chapterId) {
+    ...chapter
+    content
+  }
+}
+    ${ChapterFragmentDoc}`;
+
+/**
+ * __useChapterQuery__
+ *
+ * To run a query within a React component, call `useChapterQuery` and pass it any options that fit your needs.
+ * When your component renders, `useChapterQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useChapterQuery({
+ *   variables: {
+ *      chapterId: // value for 'chapterId'
+ *   },
+ * });
+ */
+export function useChapterQuery(baseOptions: Apollo.QueryHookOptions<ChapterQuery, ChapterQueryVariables> & ({ variables: ChapterQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ChapterQuery, ChapterQueryVariables>(ChapterDocument, options);
+      }
+export function useChapterLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ChapterQuery, ChapterQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ChapterQuery, ChapterQueryVariables>(ChapterDocument, options);
+        }
+export function useChapterSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ChapterQuery, ChapterQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ChapterQuery, ChapterQueryVariables>(ChapterDocument, options);
+        }
+export type ChapterQueryHookResult = ReturnType<typeof useChapterQuery>;
+export type ChapterLazyQueryHookResult = ReturnType<typeof useChapterLazyQuery>;
+export type ChapterSuspenseQueryHookResult = ReturnType<typeof useChapterSuspenseQuery>;
+export type ChapterQueryResult = Apollo.QueryResult<ChapterQuery, ChapterQueryVariables>;
+export const ChaptersDocument = gql`
+    query Chapters($bookId: Int!) {
+  chapters(bookId: $bookId) {
+    ...chapter
+  }
+}
+    ${ChapterFragmentDoc}`;
+
+/**
+ * __useChaptersQuery__
+ *
+ * To run a query within a React component, call `useChaptersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useChaptersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useChaptersQuery({
+ *   variables: {
+ *      bookId: // value for 'bookId'
+ *   },
+ * });
+ */
+export function useChaptersQuery(baseOptions: Apollo.QueryHookOptions<ChaptersQuery, ChaptersQueryVariables> & ({ variables: ChaptersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ChaptersQuery, ChaptersQueryVariables>(ChaptersDocument, options);
+      }
+export function useChaptersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ChaptersQuery, ChaptersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ChaptersQuery, ChaptersQueryVariables>(ChaptersDocument, options);
+        }
+export function useChaptersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ChaptersQuery, ChaptersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ChaptersQuery, ChaptersQueryVariables>(ChaptersDocument, options);
+        }
+export type ChaptersQueryHookResult = ReturnType<typeof useChaptersQuery>;
+export type ChaptersLazyQueryHookResult = ReturnType<typeof useChaptersLazyQuery>;
+export type ChaptersSuspenseQueryHookResult = ReturnType<typeof useChaptersSuspenseQuery>;
+export type ChaptersQueryResult = Apollo.QueryResult<ChaptersQuery, ChaptersQueryVariables>;
 export const FullDocument = gql`
     query Full {
   me {
     ...user
-  }
-  reading(take: 10, cursor: null) {
-    totalCount
-    cursor
-    hasMore
-    reading {
-      currentChapter
-      readingAt
-      book {
-        id
-        name
-      }
-    }
   }
 }
     ${UserFragmentDoc}`;

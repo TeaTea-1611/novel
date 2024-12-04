@@ -1,21 +1,17 @@
 "use client";
 
+import { cache } from "@/apollo-client/cache";
+import { accessTokenVar } from "@/apollo-client/vars/access-token-var";
 import {
   RefreshTokenDocument,
   RefreshTokenMutation,
-} from "@/generated/graphql";
-import {
-  clearAccessToken,
-  getAccessToken,
-  setAccessToken,
-} from "@/hooks/use-access-token";
+} from "@/apollo-client/__generated";
 import { ApolloLink, fromPromise, Observable } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import {
   ApolloClient,
   ApolloNextAppProvider,
-  InMemoryCache,
   SSRMultipartLink,
 } from "@apollo/experimental-nextjs-app-support";
 import { createUploadLink } from "apollo-upload-client";
@@ -46,7 +42,8 @@ function makeClient() {
   });
 
   const authLink = setContext(async (_, { headers }) => {
-    const accessToken = getAccessToken();
+    const accessToken = accessTokenVar();
+
     return {
       headers: {
         ...headers,
@@ -69,7 +66,7 @@ function makeClient() {
                 refreshTokenPromise
                   .then((res) => {
                     if (!res) {
-                      clearAccessToken();
+                      accessTokenVar(null);
                       client.cache.modify({
                         fields: {
                           me() {
@@ -93,7 +90,8 @@ function makeClient() {
                 })
                 .flatMap((newAccessToken) => {
                   if (typeof newAccessToken === "string") {
-                    setAccessToken(newAccessToken);
+                    accessTokenVar(newAccessToken);
+
                     const oldHeaders = operation.getContext().headers;
                     operation.setContext({
                       headers: {
@@ -105,8 +103,8 @@ function makeClient() {
                   return forward(operation);
                 });
             }
-            case "UNAUTHORIZED": {
-              toast.error("Bạn không có quyền truy cập!");
+            case "FORBIDDEN": {
+              toast.error(err.message);
               break;
             }
           }
@@ -125,13 +123,7 @@ function makeClient() {
       : ApolloLink.from([authLink, errorLink, httpLink]);
 
   return new ApolloClient({
-    cache: new InMemoryCache({
-      typePolicies: {
-        Query: {
-          fields: {},
-        },
-      },
-    }),
+    cache,
     link,
   });
 }

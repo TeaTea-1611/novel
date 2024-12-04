@@ -3,7 +3,6 @@ import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
 import { Book } from "../models/Book";
-import { BookStatisticType } from "../enums/BookStatisticType";
 
 @TypeGraphQL.ObjectType("BookStatistic", {})
 export class BookStatistic {
@@ -17,15 +16,20 @@ export class BookStatistic {
   })
   bookId!: number;
 
-  @TypeGraphQL.Field(_type => BookStatisticType, {
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: false
   })
-  type!: "READ" | "COMMENT" | "REVIEW";
+  read!: number;
 
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: false
   })
-  value!: number;
+  comment!: number;
+
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: false
+  })
+  review!: number;
 
   @TypeGraphQL.Field(_type => Date, {
     nullable: false

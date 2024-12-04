@@ -2,13 +2,11 @@ fragment book on Book {
   id
   name
   originalName
-  authorId
   synopsis
   poster
   kind
   gender
   status
-  genreId
   wordCnt
   flowerCnt
   readCnt
@@ -17,6 +15,7 @@ fragment book on Book {
   commentCnt
   points
   createdAt
+  newChapterAt
   author {
     id
     name
@@ -31,6 +30,11 @@ fragment book on Book {
   tags {
     id
     name
+    group {
+      name
+      color
+      bgColor
+    }
   }
   genre {
     id

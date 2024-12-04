@@ -44,6 +44,7 @@ export type Book = {
   kind: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   newChapterAt: Scalars['Timestamp']['output'];
+  originalLink: Scalars['String']['output'];
   originalName: Scalars['String']['output'];
   points: Scalars['Float']['output'];
   poster: Scalars['String']['output'];
@@ -62,6 +63,16 @@ export type BookResponse = IMutationResponse & {
   success: Scalars['Boolean']['output'];
 };
 
+export type BookStatistic = {
+  __typename?: 'BookStatistic';
+  bookId: Scalars['Int']['output'];
+  comment: Scalars['Int']['output'];
+  date: Scalars['Timestamp']['output'];
+  id: Scalars['Int']['output'];
+  read: Scalars['Int']['output'];
+  review: Scalars['Int']['output'];
+};
+
 export type Chapter = {
   __typename?: 'Chapter';
   bookId: Scalars['Int']['output'];
@@ -70,6 +81,7 @@ export type Chapter = {
   id: Scalars['Int']['output'];
   order: Scalars['Int']['output'];
   publishAt: Scalars['Timestamp']['output'];
+  readCnt: Scalars['Int']['output'];
   title: Scalars['String']['output'];
   unlockPrice: Scalars['Int']['output'];
   updatedAt: Scalars['Timestamp']['output'];
@@ -80,6 +92,17 @@ export type ChapterMutationResponse = IMutationResponse & {
   chapter?: Maybe<Chapter>;
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
+};
+
+export type Comment = {
+  __typename?: 'Comment';
+  bookId: Scalars['Int']['output'];
+  content: Scalars['String']['output'];
+  createdAt: Scalars['Timestamp']['output'];
+  id: Scalars['Int']['output'];
+  totalLike: Scalars['Int']['output'];
+  updatedAt: Scalars['Timestamp']['output'];
+  userId: Scalars['Int']['output'];
 };
 
 export type Genre = {
@@ -108,27 +131,39 @@ export type Mutation = {
   changePassword: MutationResponse;
   changePoster: Book;
   changeProfile: User;
+  comment: Comment;
   convertBook: BookResponse;
   createBook: BookResponse;
   createChapter: ChapterMutationResponse;
+  createGenre: Genre;
+  createTag: Tag;
+  createTagGroup: TagGroup;
   deleteBook: MutationResponse;
   deleteChapters: MutationResponse;
+  deleteGenres: MutationResponse;
+  deleteTagGroups: MutationResponse;
+  deleteTags: MutationResponse;
   googleLogin: LoginResponse;
   login: LoginResponse;
   logout: Scalars['Boolean']['output'];
   newPassword: MutationResponse;
   passwordReset: MutationResponse;
+  read: Scalars['Boolean']['output'];
   refreshToken?: Maybe<Scalars['String']['output']>;
   register: MutationResponse;
   resendTwoFactorCode: MutationResponse;
+  review: Review;
   swapChapters: Array<Chapter>;
   updateBook: BookResponse;
   updateChapter: ChapterMutationResponse;
   updateChapters: MutationResponse;
   updateConvertBook: BookResponse;
   updateCopyright?: Maybe<Scalars['Boolean']['output']>;
+  updateGenre: Genre;
   updateNotificationSettings: NotificationSettings;
   updatePrivacyPolicy?: Maybe<Scalars['Boolean']['output']>;
+  updateTag: Tag;
+  updateTagGroup: TagGroup;
   updateTermsOfService?: Maybe<Scalars['Boolean']['output']>;
   updateTwoFactor: TwoFactorResponse;
   verification: MutationResponse;
@@ -158,6 +193,12 @@ export type MutationChangeProfileArgs = {
   introduce: Scalars['String']['input'];
   nickname: Scalars['String']['input'];
   urls: Array<Scalars['String']['input']>;
+};
+
+
+export type MutationCommentArgs = {
+  bookId: Scalars['Int']['input'];
+  content: Scalars['String']['input'];
 };
 
 
@@ -192,6 +233,24 @@ export type MutationCreateChapterArgs = {
 };
 
 
+export type MutationCreateGenreArgs = {
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateTagArgs = {
+  groupId: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateTagGroupArgs = {
+  bgColor: Scalars['String']['input'];
+  color: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteBookArgs = {
   bookId: Scalars['Int']['input'];
 };
@@ -200,6 +259,21 @@ export type MutationDeleteBookArgs = {
 export type MutationDeleteChaptersArgs = {
   bookId: Scalars['Int']['input'];
   chapterIds: Array<Scalars['Int']['input']>;
+};
+
+
+export type MutationDeleteGenresArgs = {
+  genreIds: Array<Scalars['Int']['input']>;
+};
+
+
+export type MutationDeleteTagGroupsArgs = {
+  tagGroupIds: Array<Scalars['Int']['input']>;
+};
+
+
+export type MutationDeleteTagsArgs = {
+  tagIds: Array<Scalars['Int']['input']>;
 };
 
 
@@ -226,6 +300,11 @@ export type MutationPasswordResetArgs = {
 };
 
 
+export type MutationReadArgs = {
+  chapterId: Scalars['Int']['input'];
+};
+
+
 export type MutationRegisterArgs = {
   email: Scalars['String']['input'];
   nickname: Scalars['String']['input'];
@@ -235,6 +314,14 @@ export type MutationRegisterArgs = {
 
 export type MutationResendTwoFactorCodeArgs = {
   email: Scalars['String']['input'];
+};
+
+
+export type MutationReviewArgs = {
+  bookId: Scalars['Int']['input'];
+  content: Scalars['String']['input'];
+  isSpoiler: Scalars['Boolean']['input'];
+  point: Scalars['Int']['input'];
 };
 
 
@@ -291,6 +378,12 @@ export type MutationUpdateCopyrightArgs = {
 };
 
 
+export type MutationUpdateGenreArgs = {
+  genreId: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateNotificationSettingsArgs = {
   newChapter: Scalars['Boolean']['input'];
   newInteraction: Scalars['Boolean']['input'];
@@ -299,6 +392,21 @@ export type MutationUpdateNotificationSettingsArgs = {
 
 export type MutationUpdatePrivacyPolicyArgs = {
   value: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateTagArgs = {
+  groupId: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  tagId: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateTagGroupArgs = {
+  bgColor: Scalars['String']['input'];
+  color: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  tagGroupId: Scalars['Int']['input'];
 };
 
 
@@ -333,7 +441,10 @@ export type NotificationSettings = {
 export type PaginatedBooksResponse = {
   __typename?: 'PaginatedBooksResponse';
   books: Array<Book>;
+  next?: Maybe<Scalars['Int']['output']>;
+  prev?: Maybe<Scalars['Int']['output']>;
   total: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
 };
 
 export type PaginatedReading = {
@@ -346,10 +457,11 @@ export type PaginatedReading = {
 
 export type Query = {
   __typename?: 'Query';
+  analytics: Array<BookStatistic>;
   book?: Maybe<Book>;
-  books: Array<Book>;
   chapter?: Maybe<Chapter>;
   chapters: Array<Chapter>;
+  comments: Array<Comment>;
   copyright?: Maybe<Scalars['String']['output']>;
   createdBooks: PaginatedBooksResponse;
   genders: Array<Scalars['Int']['output']>;
@@ -357,9 +469,12 @@ export type Query = {
   kinds: Array<Scalars['Int']['output']>;
   me?: Maybe<User>;
   notificationSettings: NotificationSettings;
+  paginatedBooks: PaginatedBooksResponse;
   privacyPolicy?: Maybe<Scalars['String']['output']>;
   reading: PaginatedReading;
+  reviews: Array<Review>;
   status: Array<Scalars['Int']['output']>;
+  tagGroups: Array<TagGroup>;
   tags: Array<Tag>;
   termsOfService?: Maybe<Scalars['String']['output']>;
   user?: Maybe<User>;
@@ -381,7 +496,24 @@ export type QueryChaptersArgs = {
 };
 
 
+export type QueryCommentsArgs = {
+  bookId: Scalars['Int']['input'];
+};
+
+
 export type QueryCreatedBooksArgs = {
+  gender?: InputMaybe<Scalars['Int']['input']>;
+  genreId?: InputMaybe<Scalars['Int']['input']>;
+  keyword?: Scalars['String']['input'];
+  page?: Scalars['Int']['input'];
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<SortOrder>;
+  tagIds?: InputMaybe<Array<Scalars['Int']['input']>>;
+  take?: Scalars['Int']['input'];
+};
+
+
+export type QueryPaginatedBooksArgs = {
   gender?: InputMaybe<Scalars['Int']['input']>;
   genreId?: InputMaybe<Scalars['Int']['input']>;
   keyword?: Scalars['String']['input'];
@@ -399,6 +531,11 @@ export type QueryReadingArgs = {
 };
 
 
+export type QueryReviewsArgs = {
+  bookId: Scalars['Int']['input'];
+};
+
+
 export type QueryUserArgs = {
   userId: Scalars['Int']['input'];
 };
@@ -409,6 +546,17 @@ export type Reading = {
   bookId: Scalars['Int']['output'];
   currentChapter: Scalars['Int']['output'];
   readingAt: Scalars['Timestamp']['output'];
+  userId: Scalars['Int']['output'];
+};
+
+export type Review = {
+  __typename?: 'Review';
+  bookId: Scalars['Int']['output'];
+  content: Scalars['String']['output'];
+  createdAt: Scalars['Timestamp']['output'];
+  id: Scalars['Int']['output'];
+  isSpoiler: Scalars['Boolean']['output'];
+  point: Scalars['Float']['output'];
   userId: Scalars['Int']['output'];
 };
 
@@ -479,6 +627,83 @@ export type BookFragment = { __typename?: 'Book', id: number, name: string, orig
 export type ChapterFragment = { __typename?: 'Chapter', id: number, bookId: number, order: number, title: string, unlockPrice: number, publishAt: any, createdAt: any, updatedAt: any };
 
 export type UserFragment = { __typename?: 'User', id: number, email: string, nickname: string, avatar: string, pendant: string, role: UserRole, emailVerified?: any | null, isTwoFactorEnable: boolean, gender: number, introduce: string, phone: string, dob: any, urls: Array<string>, keyNum: number, ticketNum: number, candyNum: number, createdAt: any };
+
+export type CreateGenreMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+}>;
+
+
+export type CreateGenreMutation = { __typename?: 'Mutation', createGenre: { __typename?: 'Genre', id: number, name: string } };
+
+export type UpdateGenreMutationVariables = Exact<{
+  name: Scalars['String']['input'];
+  genreId: Scalars['Int']['input'];
+}>;
+
+
+export type UpdateGenreMutation = { __typename?: 'Mutation', updateGenre: { __typename?: 'Genre', id: number, name: string } };
+
+export type DeleteGenresMutationVariables = Exact<{
+  genreIds: Array<Scalars['Int']['input']> | Scalars['Int']['input'];
+}>;
+
+
+export type DeleteGenresMutation = { __typename?: 'Mutation', deleteGenres: { __typename?: 'MutationResponse', success: boolean, message: string } };
+
+export type CreateTagMutationVariables = Exact<{
+  groupId: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type CreateTagMutation = { __typename?: 'Mutation', createTag: { __typename?: 'Tag', id: number, groupId: number, name: string, group: { __typename?: 'TagGroup', id: number, name: string, color: string, bgColor: string } } };
+
+export type UpdateTagMutationVariables = Exact<{
+  groupId: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  tagId: Scalars['Int']['input'];
+}>;
+
+
+export type UpdateTagMutation = { __typename?: 'Mutation', updateTag: { __typename?: 'Tag', id: number, groupId: number, name: string, group: { __typename?: 'TagGroup', id: number, name: string, color: string, bgColor: string } } };
+
+export type DeleteTagsMutationVariables = Exact<{
+  tagIds: Array<Scalars['Int']['input']> | Scalars['Int']['input'];
+}>;
+
+
+export type DeleteTagsMutation = { __typename?: 'Mutation', deleteTags: { __typename?: 'MutationResponse', success: boolean, message: string } };
+
+export type CreateTagGroupMutationVariables = Exact<{
+  bgColor: Scalars['String']['input'];
+  color: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+}>;
+
+
+export type CreateTagGroupMutation = { __typename?: 'Mutation', createTagGroup: { __typename?: 'TagGroup', id: number, name: string, color: string, bgColor: string } };
+
+export type UpdateTagGroupMutationVariables = Exact<{
+  bgColor: Scalars['String']['input'];
+  color: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  tagGroupId: Scalars['Int']['input'];
+}>;
+
+
+export type UpdateTagGroupMutation = { __typename?: 'Mutation', updateTagGroup: { __typename?: 'TagGroup', id: number, name: string, color: string, bgColor: string } };
+
+export type DeleteTagGroupsMutationVariables = Exact<{
+  tagGroupIds: Array<Scalars['Int']['input']> | Scalars['Int']['input'];
+}>;
+
+
+export type DeleteTagGroupsMutation = { __typename?: 'Mutation', deleteTagGroups: { __typename?: 'MutationResponse', success: boolean, message: string } };
+
+export type TagGroupsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type TagGroupsQuery = { __typename?: 'Query', tagGroups: Array<{ __typename?: 'TagGroup', id: number, name: string, color: string, bgColor: string }> };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -608,10 +833,15 @@ export type UpdateChaptersMutationVariables = Exact<{
 
 export type UpdateChaptersMutation = { __typename?: 'Mutation', updateChapters: { __typename?: 'MutationResponse', success: boolean, message: string } };
 
+export type AnalyticsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AnalyticsQuery = { __typename?: 'Query', analytics: Array<{ __typename?: 'BookStatistic', id: number, bookId: number, date: any, read: number, comment: number, review: number }> };
+
 export type BookOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type BookOptionsQuery = { __typename?: 'Query', kinds: Array<number>, genders: Array<number>, status: Array<number>, genres: Array<{ __typename?: 'Genre', id: number, name: string }>, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }> };
+export type BookOptionsQuery = { __typename?: 'Query', kinds: Array<number>, genders: Array<number>, status: Array<number>, genres: Array<{ __typename?: 'Genre', id: number, name: string }>, tags: Array<{ __typename?: 'Tag', id: number, name: string, groupId: number, group: { __typename?: 'TagGroup', id: number, name: string, color: string, bgColor: string } }> };
 
 export type BookQueryVariables = Exact<{
   bookId: Scalars['Int']['input'];
@@ -730,6 +960,388 @@ export const UserFragmentDoc = gql`
   createdAt
 }
     `;
+export const CreateGenreDocument = gql`
+    mutation CreateGenre($name: String!) {
+  createGenre(name: $name) {
+    id
+    name
+  }
+}
+    `;
+export type CreateGenreMutationFn = Apollo.MutationFunction<CreateGenreMutation, CreateGenreMutationVariables>;
+
+/**
+ * __useCreateGenreMutation__
+ *
+ * To run a mutation, you first call `useCreateGenreMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateGenreMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createGenreMutation, { data, loading, error }] = useCreateGenreMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useCreateGenreMutation(baseOptions?: Apollo.MutationHookOptions<CreateGenreMutation, CreateGenreMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateGenreMutation, CreateGenreMutationVariables>(CreateGenreDocument, options);
+      }
+export type CreateGenreMutationHookResult = ReturnType<typeof useCreateGenreMutation>;
+export type CreateGenreMutationResult = Apollo.MutationResult<CreateGenreMutation>;
+export type CreateGenreMutationOptions = Apollo.BaseMutationOptions<CreateGenreMutation, CreateGenreMutationVariables>;
+export const UpdateGenreDocument = gql`
+    mutation UpdateGenre($name: String!, $genreId: Int!) {
+  updateGenre(name: $name, genreId: $genreId) {
+    id
+    name
+  }
+}
+    `;
+export type UpdateGenreMutationFn = Apollo.MutationFunction<UpdateGenreMutation, UpdateGenreMutationVariables>;
+
+/**
+ * __useUpdateGenreMutation__
+ *
+ * To run a mutation, you first call `useUpdateGenreMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateGenreMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateGenreMutation, { data, loading, error }] = useUpdateGenreMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      genreId: // value for 'genreId'
+ *   },
+ * });
+ */
+export function useUpdateGenreMutation(baseOptions?: Apollo.MutationHookOptions<UpdateGenreMutation, UpdateGenreMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateGenreMutation, UpdateGenreMutationVariables>(UpdateGenreDocument, options);
+      }
+export type UpdateGenreMutationHookResult = ReturnType<typeof useUpdateGenreMutation>;
+export type UpdateGenreMutationResult = Apollo.MutationResult<UpdateGenreMutation>;
+export type UpdateGenreMutationOptions = Apollo.BaseMutationOptions<UpdateGenreMutation, UpdateGenreMutationVariables>;
+export const DeleteGenresDocument = gql`
+    mutation DeleteGenres($genreIds: [Int!]!) {
+  deleteGenres(genreIds: $genreIds) {
+    success
+    message
+  }
+}
+    `;
+export type DeleteGenresMutationFn = Apollo.MutationFunction<DeleteGenresMutation, DeleteGenresMutationVariables>;
+
+/**
+ * __useDeleteGenresMutation__
+ *
+ * To run a mutation, you first call `useDeleteGenresMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteGenresMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteGenresMutation, { data, loading, error }] = useDeleteGenresMutation({
+ *   variables: {
+ *      genreIds: // value for 'genreIds'
+ *   },
+ * });
+ */
+export function useDeleteGenresMutation(baseOptions?: Apollo.MutationHookOptions<DeleteGenresMutation, DeleteGenresMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteGenresMutation, DeleteGenresMutationVariables>(DeleteGenresDocument, options);
+      }
+export type DeleteGenresMutationHookResult = ReturnType<typeof useDeleteGenresMutation>;
+export type DeleteGenresMutationResult = Apollo.MutationResult<DeleteGenresMutation>;
+export type DeleteGenresMutationOptions = Apollo.BaseMutationOptions<DeleteGenresMutation, DeleteGenresMutationVariables>;
+export const CreateTagDocument = gql`
+    mutation CreateTag($groupId: Int!, $name: String!) {
+  createTag(groupId: $groupId, name: $name) {
+    id
+    groupId
+    name
+    groupId
+    group {
+      id
+      name
+      color
+      bgColor
+    }
+  }
+}
+    `;
+export type CreateTagMutationFn = Apollo.MutationFunction<CreateTagMutation, CreateTagMutationVariables>;
+
+/**
+ * __useCreateTagMutation__
+ *
+ * To run a mutation, you first call `useCreateTagMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTagMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTagMutation, { data, loading, error }] = useCreateTagMutation({
+ *   variables: {
+ *      groupId: // value for 'groupId'
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useCreateTagMutation(baseOptions?: Apollo.MutationHookOptions<CreateTagMutation, CreateTagMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTagMutation, CreateTagMutationVariables>(CreateTagDocument, options);
+      }
+export type CreateTagMutationHookResult = ReturnType<typeof useCreateTagMutation>;
+export type CreateTagMutationResult = Apollo.MutationResult<CreateTagMutation>;
+export type CreateTagMutationOptions = Apollo.BaseMutationOptions<CreateTagMutation, CreateTagMutationVariables>;
+export const UpdateTagDocument = gql`
+    mutation UpdateTag($groupId: Int!, $name: String!, $tagId: Int!) {
+  updateTag(groupId: $groupId, name: $name, tagId: $tagId) {
+    id
+    groupId
+    name
+    groupId
+    group {
+      id
+      name
+      color
+      bgColor
+    }
+  }
+}
+    `;
+export type UpdateTagMutationFn = Apollo.MutationFunction<UpdateTagMutation, UpdateTagMutationVariables>;
+
+/**
+ * __useUpdateTagMutation__
+ *
+ * To run a mutation, you first call `useUpdateTagMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTagMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTagMutation, { data, loading, error }] = useUpdateTagMutation({
+ *   variables: {
+ *      groupId: // value for 'groupId'
+ *      name: // value for 'name'
+ *      tagId: // value for 'tagId'
+ *   },
+ * });
+ */
+export function useUpdateTagMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTagMutation, UpdateTagMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTagMutation, UpdateTagMutationVariables>(UpdateTagDocument, options);
+      }
+export type UpdateTagMutationHookResult = ReturnType<typeof useUpdateTagMutation>;
+export type UpdateTagMutationResult = Apollo.MutationResult<UpdateTagMutation>;
+export type UpdateTagMutationOptions = Apollo.BaseMutationOptions<UpdateTagMutation, UpdateTagMutationVariables>;
+export const DeleteTagsDocument = gql`
+    mutation DeleteTags($tagIds: [Int!]!) {
+  deleteTags(tagIds: $tagIds) {
+    success
+    message
+  }
+}
+    `;
+export type DeleteTagsMutationFn = Apollo.MutationFunction<DeleteTagsMutation, DeleteTagsMutationVariables>;
+
+/**
+ * __useDeleteTagsMutation__
+ *
+ * To run a mutation, you first call `useDeleteTagsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTagsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTagsMutation, { data, loading, error }] = useDeleteTagsMutation({
+ *   variables: {
+ *      tagIds: // value for 'tagIds'
+ *   },
+ * });
+ */
+export function useDeleteTagsMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTagsMutation, DeleteTagsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTagsMutation, DeleteTagsMutationVariables>(DeleteTagsDocument, options);
+      }
+export type DeleteTagsMutationHookResult = ReturnType<typeof useDeleteTagsMutation>;
+export type DeleteTagsMutationResult = Apollo.MutationResult<DeleteTagsMutation>;
+export type DeleteTagsMutationOptions = Apollo.BaseMutationOptions<DeleteTagsMutation, DeleteTagsMutationVariables>;
+export const CreateTagGroupDocument = gql`
+    mutation CreateTagGroup($bgColor: String!, $color: String!, $name: String!) {
+  createTagGroup(bgColor: $bgColor, color: $color, name: $name) {
+    id
+    name
+    color
+    bgColor
+  }
+}
+    `;
+export type CreateTagGroupMutationFn = Apollo.MutationFunction<CreateTagGroupMutation, CreateTagGroupMutationVariables>;
+
+/**
+ * __useCreateTagGroupMutation__
+ *
+ * To run a mutation, you first call `useCreateTagGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTagGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTagGroupMutation, { data, loading, error }] = useCreateTagGroupMutation({
+ *   variables: {
+ *      bgColor: // value for 'bgColor'
+ *      color: // value for 'color'
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useCreateTagGroupMutation(baseOptions?: Apollo.MutationHookOptions<CreateTagGroupMutation, CreateTagGroupMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTagGroupMutation, CreateTagGroupMutationVariables>(CreateTagGroupDocument, options);
+      }
+export type CreateTagGroupMutationHookResult = ReturnType<typeof useCreateTagGroupMutation>;
+export type CreateTagGroupMutationResult = Apollo.MutationResult<CreateTagGroupMutation>;
+export type CreateTagGroupMutationOptions = Apollo.BaseMutationOptions<CreateTagGroupMutation, CreateTagGroupMutationVariables>;
+export const UpdateTagGroupDocument = gql`
+    mutation UpdateTagGroup($bgColor: String!, $color: String!, $name: String!, $tagGroupId: Int!) {
+  updateTagGroup(
+    bgColor: $bgColor
+    color: $color
+    name: $name
+    tagGroupId: $tagGroupId
+  ) {
+    id
+    name
+    color
+    bgColor
+  }
+}
+    `;
+export type UpdateTagGroupMutationFn = Apollo.MutationFunction<UpdateTagGroupMutation, UpdateTagGroupMutationVariables>;
+
+/**
+ * __useUpdateTagGroupMutation__
+ *
+ * To run a mutation, you first call `useUpdateTagGroupMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTagGroupMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTagGroupMutation, { data, loading, error }] = useUpdateTagGroupMutation({
+ *   variables: {
+ *      bgColor: // value for 'bgColor'
+ *      color: // value for 'color'
+ *      name: // value for 'name'
+ *      tagGroupId: // value for 'tagGroupId'
+ *   },
+ * });
+ */
+export function useUpdateTagGroupMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTagGroupMutation, UpdateTagGroupMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTagGroupMutation, UpdateTagGroupMutationVariables>(UpdateTagGroupDocument, options);
+      }
+export type UpdateTagGroupMutationHookResult = ReturnType<typeof useUpdateTagGroupMutation>;
+export type UpdateTagGroupMutationResult = Apollo.MutationResult<UpdateTagGroupMutation>;
+export type UpdateTagGroupMutationOptions = Apollo.BaseMutationOptions<UpdateTagGroupMutation, UpdateTagGroupMutationVariables>;
+export const DeleteTagGroupsDocument = gql`
+    mutation DeleteTagGroups($tagGroupIds: [Int!]!) {
+  deleteTagGroups(tagGroupIds: $tagGroupIds) {
+    success
+    message
+  }
+}
+    `;
+export type DeleteTagGroupsMutationFn = Apollo.MutationFunction<DeleteTagGroupsMutation, DeleteTagGroupsMutationVariables>;
+
+/**
+ * __useDeleteTagGroupsMutation__
+ *
+ * To run a mutation, you first call `useDeleteTagGroupsMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTagGroupsMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTagGroupsMutation, { data, loading, error }] = useDeleteTagGroupsMutation({
+ *   variables: {
+ *      tagGroupIds: // value for 'tagGroupIds'
+ *   },
+ * });
+ */
+export function useDeleteTagGroupsMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTagGroupsMutation, DeleteTagGroupsMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTagGroupsMutation, DeleteTagGroupsMutationVariables>(DeleteTagGroupsDocument, options);
+      }
+export type DeleteTagGroupsMutationHookResult = ReturnType<typeof useDeleteTagGroupsMutation>;
+export type DeleteTagGroupsMutationResult = Apollo.MutationResult<DeleteTagGroupsMutation>;
+export type DeleteTagGroupsMutationOptions = Apollo.BaseMutationOptions<DeleteTagGroupsMutation, DeleteTagGroupsMutationVariables>;
+export const TagGroupsDocument = gql`
+    query TagGroups {
+  tagGroups {
+    id
+    name
+    color
+    bgColor
+  }
+}
+    `;
+
+/**
+ * __useTagGroupsQuery__
+ *
+ * To run a query within a React component, call `useTagGroupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTagGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTagGroupsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useTagGroupsQuery(baseOptions?: Apollo.QueryHookOptions<TagGroupsQuery, TagGroupsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TagGroupsQuery, TagGroupsQueryVariables>(TagGroupsDocument, options);
+      }
+export function useTagGroupsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TagGroupsQuery, TagGroupsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TagGroupsQuery, TagGroupsQueryVariables>(TagGroupsDocument, options);
+        }
+export function useTagGroupsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<TagGroupsQuery, TagGroupsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<TagGroupsQuery, TagGroupsQueryVariables>(TagGroupsDocument, options);
+        }
+export type TagGroupsQueryHookResult = ReturnType<typeof useTagGroupsQuery>;
+export type TagGroupsLazyQueryHookResult = ReturnType<typeof useTagGroupsLazyQuery>;
+export type TagGroupsSuspenseQueryHookResult = ReturnType<typeof useTagGroupsSuspenseQuery>;
+export type TagGroupsQueryResult = Apollo.QueryResult<TagGroupsQuery, TagGroupsQueryVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout
@@ -1273,6 +1885,50 @@ export function useUpdateChaptersMutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateChaptersMutationHookResult = ReturnType<typeof useUpdateChaptersMutation>;
 export type UpdateChaptersMutationResult = Apollo.MutationResult<UpdateChaptersMutation>;
 export type UpdateChaptersMutationOptions = Apollo.BaseMutationOptions<UpdateChaptersMutation, UpdateChaptersMutationVariables>;
+export const AnalyticsDocument = gql`
+    query Analytics {
+  analytics {
+    id
+    bookId
+    date
+    read
+    comment
+    review
+  }
+}
+    `;
+
+/**
+ * __useAnalyticsQuery__
+ *
+ * To run a query within a React component, call `useAnalyticsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAnalyticsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAnalyticsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAnalyticsQuery(baseOptions?: Apollo.QueryHookOptions<AnalyticsQuery, AnalyticsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AnalyticsQuery, AnalyticsQueryVariables>(AnalyticsDocument, options);
+      }
+export function useAnalyticsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AnalyticsQuery, AnalyticsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AnalyticsQuery, AnalyticsQueryVariables>(AnalyticsDocument, options);
+        }
+export function useAnalyticsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<AnalyticsQuery, AnalyticsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<AnalyticsQuery, AnalyticsQueryVariables>(AnalyticsDocument, options);
+        }
+export type AnalyticsQueryHookResult = ReturnType<typeof useAnalyticsQuery>;
+export type AnalyticsLazyQueryHookResult = ReturnType<typeof useAnalyticsLazyQuery>;
+export type AnalyticsSuspenseQueryHookResult = ReturnType<typeof useAnalyticsSuspenseQuery>;
+export type AnalyticsQueryResult = Apollo.QueryResult<AnalyticsQuery, AnalyticsQueryVariables>;
 export const BookOptionsDocument = gql`
     query BookOptions {
   kinds
@@ -1285,7 +1941,9 @@ export const BookOptionsDocument = gql`
   tags {
     id
     name
+    groupId
     group {
+      id
       name
       color
       bgColor

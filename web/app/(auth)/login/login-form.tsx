@@ -1,7 +1,7 @@
 "use client";
 
 import { Icons } from "@/components/icons";
-import { Button, buttonVariants } from "@repo/ui/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -9,20 +9,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@repo/ui/components/ui/form";
+} from "@/components/ui/form";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@repo/ui/components/ui/input-otp";
+} from "@/components/ui/input-otp";
 import {
   FullDocument,
   useGoogleLoginMutation,
   useLoginMutation,
   useResendTwoFactorCodeMutation,
-} from "@/generated/graphql";
-import { useAccessToken } from "@/hooks/use-access-token";
-import { cn } from "@repo/ui/lib/utils";
+} from "@/apollo-client/__generated";
+import { cn } from "@/lib/utils";
 import { useApolloClient } from "@apollo/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -31,15 +30,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { loginSchema, z } from "@repo/shared-schemas";
-import { Input } from "@repo/ui/components/ui/input";
-import { PasswordInput } from "@repo/ui/components/ui/password-input";
+import { loginSchema } from "@/schemas";
+import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
+import { accessTokenVar } from "@/apollo-client/vars/access-token-var";
+import { z } from "zod";
 
 export const LoginForm = () => {
   const [countdown, setCountdown] = useState(0);
   const [showTwoFactorCode, setShowTwoFactorCode] = useState(false);
   const client = useApolloClient();
-  const { saveAccessToken } = useAccessToken();
 
   useEffect(() => {
     if (countdown > 0) {
@@ -58,7 +58,7 @@ export const LoginForm = () => {
         setShowTwoFactorCode(true);
         setCountdown(10);
       } else if (data.login.success && data.login.accessToken) {
-        saveAccessToken(data.login.accessToken);
+        accessTokenVar(data.login.accessToken);
         client.refetchQueries({
           include: [FullDocument],
         });
@@ -75,7 +75,7 @@ export const LoginForm = () => {
         data.googleLogin.message,
       );
       if (data.googleLogin.success && data.googleLogin.accessToken) {
-        saveAccessToken(data.googleLogin.accessToken);
+        accessTokenVar(data.googleLogin.accessToken);
         client.refetchQueries({
           include: [FullDocument],
         });

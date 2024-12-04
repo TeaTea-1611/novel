@@ -5,6 +5,7 @@ export enum BookScalarFieldEnum {
   name = "name",
   originalName = "originalName",
   authorId = "authorId",
+  originalLink = "originalLink",
   synopsis = "synopsis",
   kind = "kind",
   gender = "gender",

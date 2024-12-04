@@ -1,0 +1,101 @@
+mutation CreateGenre($name: String!) {
+  createGenre(name: $name) {
+    id
+    name
+  }
+}
+
+mutation UpdateGenre($name: String!, $genreId: Int!) {
+  updateGenre(name: $name, genreId: $genreId) {
+    id
+    name
+  }
+}
+
+mutation DeleteGenres($genreIds: [Int!]!) {
+  deleteGenres(genreIds: $genreIds) {
+    success
+    message
+  }
+}
+
+mutation CreateTag($groupId: Int!, $name: String!) {
+  createTag(groupId: $groupId, name: $name) {
+    id
+    groupId
+    name
+    groupId
+    group {
+      id
+      name
+      color
+      bgColor
+    }
+  }
+}
+
+mutation UpdateTag($groupId: Int!, $name: String!, $tagId: Int!) {
+  updateTag(groupId: $groupId, name: $name, tagId: $tagId) {
+    id
+    groupId
+    name
+    groupId
+    group {
+      id
+      name
+      color
+      bgColor
+    }
+  }
+}
+
+mutation DeleteTags($tagIds: [Int!]!) {
+  deleteTags(tagIds: $tagIds) {
+    success
+    message
+  }
+}
+
+mutation CreateTagGroup($bgColor: String!, $color: String!, $name: String!) {
+  createTagGroup(bgColor: $bgColor, color: $color, name: $name) {
+    id
+    name
+    color
+    bgColor
+  }
+}
+
+mutation UpdateTagGroup(
+  $bgColor: String!
+  $color: String!
+  $name: String!
+  $tagGroupId: Int!
+) {
+  updateTagGroup(
+    bgColor: $bgColor
+    color: $color
+    name: $name
+    tagGroupId: $tagGroupId
+  ) {
+    id
+    name
+    color
+    bgColor
+  }
+}
+
+mutation DeleteTagGroups($tagGroupIds: [Int!]!) {
+  deleteTagGroups(tagGroupIds: $tagGroupIds) {
+    success
+    message
+  }
+}
+
+query TagGroups {
+  tagGroups {
+    id
+    name
+    color
+    bgColor
+  }
+}

@@ -128,6 +128,7 @@ Table book {
   name String [unique, not null]
   originalName String [not null, default: '']
   authorId Int
+  originalLink String [not null, default: '']
   synopsis String [not null]
   kind Int [not null]
   gender Int [not null]
@@ -224,6 +225,7 @@ Table chapter {
   title String [not null]
   content String [not null, note: '@TypeGraphQL.omit(output: true)']
   unlockPrice Int [not null]
+  readCnt Int [not null, default: 0]
   publishAt DateTime [default: `now()`, not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
@@ -233,13 +235,14 @@ Table chapter {
 Table book_statistic {
   id Int [pk, increment]
   bookId Int [not null]
-  type BookStatisticType [not null]
-  value Int [not null, default: 0]
+  read Int [not null, default: 0]
+  comment Int [not null, default: 0]
+  review Int [not null, default: 0]
   date DateTime [not null]
   book book [not null]
 
   indexes {
-    (bookId, type, date) [unique]
+    (bookId, date) [unique]
   }
 }
 
@@ -275,12 +278,6 @@ Enum UserRole {
   USER
 }
 
-Enum BookStatisticType {
-  READ
-  COMMENT
-  REVIEW
-}
-
 Ref: refresh_token.userId > user.id [delete: Cascade]
 
 Ref: notification_settings.userId - user.id [delete: Cascade]
@@ -297,7 +294,7 @@ Ref: event_asset.assetId > asset.id [delete: Cascade]
 
 Ref: book.authorId > author.id
 
-Ref: book.genreId > genre.id [delete: Cascade]
+Ref: book.genreId > genre.id
 
 Ref: book.createdById > user.id [delete: Cascade]
 

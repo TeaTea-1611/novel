@@ -1,11 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@repo/ui/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import userPng from "@/public/user.png";
 

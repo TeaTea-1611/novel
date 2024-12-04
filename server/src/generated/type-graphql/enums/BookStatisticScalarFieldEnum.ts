@@ -3,8 +3,9 @@ import * as TypeGraphQL from "type-graphql";
 export enum BookStatisticScalarFieldEnum {
   id = "id",
   bookId = "bookId",
-  type = "type",
-  value = "value",
+  read = "read",
+  comment = "comment",
+  review = "review",
   date = "date"
 }
 TypeGraphQL.registerEnumType(BookStatisticScalarFieldEnum, {

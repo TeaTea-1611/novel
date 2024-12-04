@@ -1,11 +1,14 @@
 "use client";
 
 import { Icons } from "@/components/icons";
-import { useChangeProfileMutation, UserFragment } from "@/generated/graphql";
+import {
+  useChangeProfileMutation,
+  UserFragment,
+} from "@/apollo-client/__generated";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { changeProfileSchema, z } from "@repo/shared-schemas";
-import { Button } from "@repo/ui/components/ui/button";
-import { DatetimePicker } from "@repo/ui/components/ui/datetime-picker";
+import { changeProfileSchema } from "@/schemas";
+import { Button } from "@/components/ui/button";
+import { DatetimePicker } from "@/components/ui/datetime-picker";
 import {
   Form,
   FormControl,
@@ -14,19 +17,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@repo/ui/components/ui/form";
-import { Input } from "@repo/ui/components/ui/input";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@repo/ui/components/ui/select";
-import { Textarea } from "@repo/ui/components/ui/textarea";
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { z } from "zod";
 
 interface Props {
   initialData: UserFragment;

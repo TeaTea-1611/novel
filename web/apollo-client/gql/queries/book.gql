@@ -22,3 +22,15 @@ query Book($bookId: Int!) {
     ...book
   }
 }
+
+query HomePageData {
+  paginatedBooks(page: 1, take: 10) {
+    total
+    books {
+      ...book
+    }
+    prev
+    next
+    totalPages
+  }
+}

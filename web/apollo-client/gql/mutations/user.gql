@@ -28,3 +28,16 @@ mutation ChangePassword($newPassword: String!, $password: String) {
     success
   }
 }
+
+mutation UpdateNotificationSettings(
+  $newChapter: Boolean!
+  $newInteraction: Boolean!
+) {
+  updateNotificationSettings(
+    newChapter: $newChapter
+    newInteraction: $newInteraction
+  ) {
+    newChapter
+    newInteraction
+  }
+}

@@ -1,0 +1,10 @@
+query Analytics {
+  analytics {
+    id
+    bookId
+    date
+    read
+    comment
+    review
+  }
+}

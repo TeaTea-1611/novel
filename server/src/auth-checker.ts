@@ -30,15 +30,13 @@ export const authChecker: AuthChecker<Context> = (
     throw new GraphQLError(
       "Truy cập bị từ chối! Bạn cần phải được xác thực để thực hiện hành động này!",
       {
-        extensions: {
-          code: "UNAUTHENTICATED",
-        },
+        extensions: { code: "UNAUTHENTICATED" },
       },
     );
   }
 
   if (roles.length > 0 && !roles.includes(user.role)) {
-    throwForbiddenError();
+    return throwForbiddenError();
   }
 
   return true;

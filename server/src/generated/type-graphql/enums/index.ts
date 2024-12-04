@@ -3,7 +3,6 @@ export { AssetScalarFieldEnum } from "./AssetScalarFieldEnum";
 export { AuthorScalarFieldEnum } from "./AuthorScalarFieldEnum";
 export { BookScalarFieldEnum } from "./BookScalarFieldEnum";
 export { BookStatisticScalarFieldEnum } from "./BookStatisticScalarFieldEnum";
-export { BookStatisticType } from "./BookStatisticType";
 export { BookmarkScalarFieldEnum } from "./BookmarkScalarFieldEnum";
 export { ChapterScalarFieldEnum } from "./ChapterScalarFieldEnum";
 export { CommentScalarFieldEnum } from "./CommentScalarFieldEnum";

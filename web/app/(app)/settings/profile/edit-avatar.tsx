@@ -2,16 +2,16 @@
 
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@repo/ui/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@repo/ui/components/ui/dialog";
-import { Skeleton } from "@repo/ui/components/ui/skeleton";
-import { Slider } from "@repo/ui/components/ui/slider";
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
 import { useCallback, useState } from "react";
 import Cropper, { Area } from "react-easy-crop";
 import { toast } from "sonner";
