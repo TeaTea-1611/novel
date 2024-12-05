@@ -1,6 +1,9 @@
 "use client";
 
-import { Genre, useUpdateGenreMutation } from "@/apollo-client/__generated";
+import {
+  TagGroup,
+  useUpdateTagGroupMutation,
+} from "@/apollo-client/__generated";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
 import { DataTableEditInput } from "@/components/data-table-edit-input";
 import { Button } from "@/components/ui/button";
@@ -17,7 +20,7 @@ import { MoreHorizontalIcon, TrashIcon } from "lucide-react";
 import { toast } from "sonner";
 import { DeleteDialog } from "./delete-dialog";
 
-export const columns: ColumnDef<Genre>[] = [
+export const columns: ColumnDef<TagGroup>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -59,9 +62,40 @@ export const columns: ColumnDef<Genre>[] = [
       );
     },
     cell: ({ row }) => {
-      return <GenreName genre={row.original} />;
+      return <TagGroupName tagGroup={row.original} />;
     },
-    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "color",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Màu chữ"
+          className="w-full"
+        />
+      );
+    },
+    cell: ({ row }) => {
+      return <TagGroupColor tagGroup={row.original} />;
+    },
+    enableHiding: false,
+  },
+  {
+    accessorKey: "bgColor",
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader
+          column={column}
+          title="Màu nền"
+          className="w-full"
+        />
+      );
+    },
+    cell: ({ row }) => {
+      return <TagGroupBgColor tagGroup={row.original} />;
+    },
     enableHiding: false,
   },
   {
@@ -78,7 +112,7 @@ export const columns: ColumnDef<Genre>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Tác vụ</DropdownMenuLabel>
-            <DeleteDialog genreIds={[row.original.id]}>
+            <DeleteDialog tagGroupIds={[row.original.id]}>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 <TrashIcon className="mr-2 size-4" />
                 Xóa
@@ -91,8 +125,8 @@ export const columns: ColumnDef<Genre>[] = [
   },
 ];
 
-const GenreName = ({ genre }: { genre: Genre }) => {
-  const [updateGenre, { loading }] = useUpdateGenreMutation({
+const TagGroupName = ({ tagGroup }: { tagGroup: TagGroup }) => {
+  const [updateTagGroup, { loading }] = useUpdateTagGroupMutation({
     onError(error) {
       toast.error(error.message);
     },
@@ -100,15 +134,72 @@ const GenreName = ({ genre }: { genre: Genre }) => {
 
   return (
     <DataTableEditInput
-      initialValue={genre.name}
+      initialValue={tagGroup.name}
       loading={loading}
       onSave={(value) => {
-        updateGenre({
+        updateTagGroup({
           variables: {
-            genreId: genre.id,
+            tagGroupId: tagGroup.id,
             name: value,
+            color: tagGroup.color,
+            bgColor: tagGroup.bgColor,
           },
         });
+      }}
+    />
+  );
+};
+
+const TagGroupColor = ({ tagGroup }: { tagGroup: TagGroup }) => {
+  const [updateTagGroup, { loading }] = useUpdateTagGroupMutation({
+    onError(error) {
+      toast.error(error.message);
+    },
+  });
+
+  return (
+    <DataTableEditInput
+      initialValue={tagGroup.color}
+      loading={loading}
+      onSave={(value) => {
+        updateTagGroup({
+          variables: {
+            tagGroupId: tagGroup.id,
+            name: tagGroup.name,
+            color: value,
+            bgColor: tagGroup.bgColor,
+          },
+        });
+      }}
+      style={{ color: tagGroup.color, background: tagGroup.bgColor }}
+    />
+  );
+};
+
+const TagGroupBgColor = ({ tagGroup }: { tagGroup: TagGroup }) => {
+  const [updateTagGroup, { loading }] = useUpdateTagGroupMutation({
+    onError(error) {
+      toast.error(error.message);
+    },
+  });
+
+  return (
+    <DataTableEditInput
+      initialValue={tagGroup.bgColor}
+      loading={loading}
+      onSave={(value) => {
+        updateTagGroup({
+          variables: {
+            tagGroupId: tagGroup.id,
+            name: tagGroup.name,
+            color: tagGroup.color,
+            bgColor: value,
+          },
+        });
+      }}
+      style={{
+        color: tagGroup.color,
+        background: tagGroup.bgColor,
       }}
     />
   );

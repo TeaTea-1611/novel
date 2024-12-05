@@ -112,6 +112,15 @@ export function AdminSidebar() {
                     <SidebarMenuSub>
                       <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
+                          <Link href="/admin/tables/tag-groups">
+                            <span>Nhóm thẻ</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild>
                           <Link href="/admin/tables/tags">
                             <span>Thẻ</span>
                           </Link>

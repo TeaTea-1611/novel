@@ -30,7 +30,6 @@ export type Book = {
   __typename?: 'Book';
   author?: Maybe<Author>;
   authorId?: Maybe<Scalars['Int']['output']>;
-  authorName: Scalars['String']['output'];
   chapterCnt: Scalars['Int']['output'];
   commentCnt: Scalars['Int']['output'];
   createdAt: Scalars['Timestamp']['output'];
@@ -44,10 +43,13 @@ export type Book = {
   kind: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   newChapterAt: Scalars['Timestamp']['output'];
+  nominateMonthly?: Maybe<Scalars['Int']['output']>;
+  originalLink: Scalars['String']['output'];
   originalName: Scalars['String']['output'];
   points: Scalars['Float']['output'];
   poster: Scalars['String']['output'];
   readCnt: Scalars['Int']['output'];
+  readMonthly?: Maybe<Scalars['Int']['output']>;
   reviewCnt: Scalars['Int']['output'];
   status: Scalars['Int']['output'];
   synopsis: Scalars['String']['output'];
@@ -64,18 +66,25 @@ export type BookResponse = IMutationResponse & {
 
 export type BookStatistic = {
   __typename?: 'BookStatistic';
+  book: Book;
   bookId: Scalars['Int']['output'];
+  comment: Scalars['Int']['output'];
   date: Scalars['Timestamp']['output'];
+  flower: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
-  type: BookStatisticType;
-  value: Scalars['Int']['output'];
+  nominate: Scalars['Int']['output'];
+  read: Scalars['Int']['output'];
+  review: Scalars['Int']['output'];
 };
 
-export enum BookStatisticType {
-  Comment = 'COMMENT',
-  Read = 'READ',
-  Review = 'REVIEW'
-}
+export type BookSummary = {
+  __typename?: 'BookSummary';
+  avgPoints: Scalars['Float']['output'];
+  chapterCnt: Scalars['Int']['output'];
+  commentCnt: Scalars['Int']['output'];
+  readCnt: Scalars['Int']['output'];
+  reviewCnt: Scalars['Int']['output'];
+};
 
 export type Chapter = {
   __typename?: 'Chapter';
@@ -98,9 +107,17 @@ export type ChapterMutationResponse = IMutationResponse & {
   success: Scalars['Boolean']['output'];
 };
 
+export type ChapterStatistic = {
+  __typename?: 'ChapterStatistic';
+  chapterId: Scalars['Int']['output'];
+  date: Scalars['Timestamp']['output'];
+  id: Scalars['Int']['output'];
+  read: Scalars['Int']['output'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
-  bookId: Scalars['Int']['output'];
+  chapterId: Scalars['Int']['output'];
   content: Scalars['String']['output'];
   createdAt: Scalars['Timestamp']['output'];
   id: Scalars['Int']['output'];
@@ -139,8 +156,14 @@ export type Mutation = {
   convertBook: BookResponse;
   createBook: BookResponse;
   createChapter: ChapterMutationResponse;
+  createGenre: Genre;
+  createTag: Tag;
+  createTagGroup: TagGroup;
   deleteBook: MutationResponse;
   deleteChapters: MutationResponse;
+  deleteGenres: MutationResponse;
+  deleteTagGroups: MutationResponse;
+  deleteTags: MutationResponse;
   googleLogin: LoginResponse;
   login: LoginResponse;
   logout: Scalars['Boolean']['output'];
@@ -157,8 +180,11 @@ export type Mutation = {
   updateChapters: MutationResponse;
   updateConvertBook: BookResponse;
   updateCopyright?: Maybe<Scalars['Boolean']['output']>;
+  updateGenre: Genre;
   updateNotificationSettings: NotificationSettings;
   updatePrivacyPolicy?: Maybe<Scalars['Boolean']['output']>;
+  updateTag: Tag;
+  updateTagGroup: TagGroup;
   updateTermsOfService?: Maybe<Scalars['Boolean']['output']>;
   updateTwoFactor: TwoFactorResponse;
   verification: MutationResponse;
@@ -228,6 +254,24 @@ export type MutationCreateChapterArgs = {
 };
 
 
+export type MutationCreateGenreArgs = {
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateTagArgs = {
+  groupId: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateTagGroupArgs = {
+  bgColor: Scalars['String']['input'];
+  color: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteBookArgs = {
   bookId: Scalars['Int']['input'];
 };
@@ -236,6 +280,21 @@ export type MutationDeleteBookArgs = {
 export type MutationDeleteChaptersArgs = {
   bookId: Scalars['Int']['input'];
   chapterIds: Array<Scalars['Int']['input']>;
+};
+
+
+export type MutationDeleteGenresArgs = {
+  genreIds: Array<Scalars['Int']['input']>;
+};
+
+
+export type MutationDeleteTagGroupsArgs = {
+  tagGroupIds: Array<Scalars['Int']['input']>;
+};
+
+
+export type MutationDeleteTagsArgs = {
+  tagIds: Array<Scalars['Int']['input']>;
 };
 
 
@@ -340,6 +399,12 @@ export type MutationUpdateCopyrightArgs = {
 };
 
 
+export type MutationUpdateGenreArgs = {
+  genreId: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateNotificationSettingsArgs = {
   newChapter: Scalars['Boolean']['input'];
   newInteraction: Scalars['Boolean']['input'];
@@ -348,6 +413,21 @@ export type MutationUpdateNotificationSettingsArgs = {
 
 export type MutationUpdatePrivacyPolicyArgs = {
   value: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateTagArgs = {
+  groupId: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+  tagId: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateTagGroupArgs = {
+  bgColor: Scalars['String']['input'];
+  color: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  tagGroupId: Scalars['Int']['input'];
 };
 
 
@@ -388,6 +468,14 @@ export type PaginatedBooksResponse = {
   totalPages: Scalars['Int']['output'];
 };
 
+export enum PaginatedRankingType {
+  Comment = 'comment',
+  Flower = 'flower',
+  Nominate = 'nominate',
+  Read = 'read',
+  Review = 'review'
+}
+
 export type PaginatedReading = {
   __typename?: 'PaginatedReading';
   cursor?: Maybe<Scalars['Timestamp']['output']>;
@@ -398,9 +486,10 @@ export type PaginatedReading = {
 
 export type Query = {
   __typename?: 'Query';
-  analytics: Array<BookStatistic>;
   book?: Maybe<Book>;
+  bookStatistics: Array<BookStatistic>;
   chapter?: Maybe<Chapter>;
+  chapterStatistics: Array<ChapterStatistic>;
   chapters: Array<Chapter>;
   comments: Array<Comment>;
   copyright?: Maybe<Scalars['String']['output']>;
@@ -409,12 +498,16 @@ export type Query = {
   genres: Array<Genre>;
   kinds: Array<Scalars['Int']['output']>;
   me?: Maybe<User>;
+  myBookStatistics: Array<BookStatistic>;
+  myBookSummary: BookSummary;
   notificationSettings: NotificationSettings;
   paginatedBooks: PaginatedBooksResponse;
+  paginatedRankingBooks: PaginatedBooksResponse;
   privacyPolicy?: Maybe<Scalars['String']['output']>;
   reading: PaginatedReading;
   reviews: Array<Review>;
   status: Array<Scalars['Int']['output']>;
+  tagGroups: Array<TagGroup>;
   tags: Array<Tag>;
   termsOfService?: Maybe<Scalars['String']['output']>;
   user?: Maybe<User>;
@@ -426,8 +519,20 @@ export type QueryBookArgs = {
 };
 
 
+export type QueryBookStatisticsArgs = {
+  bookId: Scalars['Int']['input'];
+  days: Scalars['Int']['input'];
+};
+
+
 export type QueryChapterArgs = {
   chapterId: Scalars['Int']['input'];
+};
+
+
+export type QueryChapterStatisticsArgs = {
+  bookId: Scalars['Int']['input'];
+  days: Scalars['Int']['input'];
 };
 
 
@@ -453,6 +558,11 @@ export type QueryCreatedBooksArgs = {
 };
 
 
+export type QueryMyBookStatisticsArgs = {
+  days: Scalars['Int']['input'];
+};
+
+
 export type QueryPaginatedBooksArgs = {
   gender?: InputMaybe<Scalars['Int']['input']>;
   genreId?: InputMaybe<Scalars['Int']['input']>;
@@ -462,6 +572,15 @@ export type QueryPaginatedBooksArgs = {
   sortOrder?: InputMaybe<SortOrder>;
   tagIds?: InputMaybe<Array<Scalars['Int']['input']>>;
   take?: Scalars['Int']['input'];
+};
+
+
+export type QueryPaginatedRankingBooksArgs = {
+  month: Scalars['Int']['input'];
+  page: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
+  type: PaginatedRankingType;
+  year: Scalars['Int']['input'];
 };
 
 
@@ -686,10 +805,13 @@ export type BookQueryVariables = Exact<{
 
 export type BookQuery = { __typename?: 'Query', book?: { __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } } | null };
 
-export type HomePageDataQueryVariables = Exact<{ [key: string]: never; }>;
+export type HomePageDataQueryVariables = Exact<{
+  month: Scalars['Int']['input'];
+  year: Scalars['Int']['input'];
+}>;
 
 
-export type HomePageDataQuery = { __typename?: 'Query', paginatedBooks: { __typename?: 'PaginatedBooksResponse', total: number, prev?: number | null, next?: number | null, totalPages: number, books: Array<{ __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } }> } };
+export type HomePageDataQuery = { __typename?: 'Query', editorPicks: { __typename?: 'PaginatedBooksResponse', books: Array<{ __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } }> }, recentUpdates: { __typename?: 'PaginatedBooksResponse', books: Array<{ __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } }> }, mostReadBooks: { __typename?: 'PaginatedBooksResponse', books: Array<{ __typename?: 'Book', readMonthly?: number | null, id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } }> }, topNominations: { __typename?: 'PaginatedBooksResponse', books: Array<{ __typename?: 'Book', nominateMonthly?: number | null, id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } }> } };
 
 export type ChapterQueryVariables = Exact<{
   chapterId: Scalars['Int']['input'];
@@ -1378,15 +1500,45 @@ export type BookLazyQueryHookResult = ReturnType<typeof useBookLazyQuery>;
 export type BookSuspenseQueryHookResult = ReturnType<typeof useBookSuspenseQuery>;
 export type BookQueryResult = Apollo.QueryResult<BookQuery, BookQueryVariables>;
 export const HomePageDataDocument = gql`
-    query HomePageData {
-  paginatedBooks(page: 1, take: 10) {
-    total
+    query HomePageData($month: Int!, $year: Int!) {
+  editorPicks: paginatedBooks(page: 1, take: 6) {
     books {
       ...book
     }
-    prev
-    next
-    totalPages
+  }
+  recentUpdates: paginatedBooks(
+    page: 1
+    take: 10
+    sortBy: "newChapterAt"
+    sortOrder: desc
+  ) {
+    books {
+      ...book
+    }
+  }
+  mostReadBooks: paginatedRankingBooks(
+    page: 1
+    take: 10
+    type: read
+    month: $month
+    year: $year
+  ) {
+    books {
+      ...book
+      readMonthly
+    }
+  }
+  topNominations: paginatedRankingBooks(
+    page: 1
+    take: 10
+    type: nominate
+    month: $month
+    year: $year
+  ) {
+    books {
+      ...book
+      nominateMonthly
+    }
   }
 }
     ${BookFragmentDoc}`;
@@ -1403,10 +1555,12 @@ export const HomePageDataDocument = gql`
  * @example
  * const { data, loading, error } = useHomePageDataQuery({
  *   variables: {
+ *      month: // value for 'month'
+ *      year: // value for 'year'
  *   },
  * });
  */
-export function useHomePageDataQuery(baseOptions?: Apollo.QueryHookOptions<HomePageDataQuery, HomePageDataQueryVariables>) {
+export function useHomePageDataQuery(baseOptions: Apollo.QueryHookOptions<HomePageDataQuery, HomePageDataQueryVariables> & ({ variables: HomePageDataQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<HomePageDataQuery, HomePageDataQueryVariables>(HomePageDataDocument, options);
       }

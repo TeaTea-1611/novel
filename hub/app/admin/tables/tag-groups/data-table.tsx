@@ -21,12 +21,12 @@ import {
 import { PlusIcon, TrashIcon } from "lucide-react";
 import * as React from "react";
 import { CreateDialog } from "./create-dialog";
-import { Genre } from "@/apollo-client/__generated";
+import { TagGroup } from "@/apollo-client/__generated";
 import { DeleteDialog } from "./delete-dialog";
 
 interface DataTableProps {
-  columns: ColumnDef<Genre, Genre>[];
-  data: Genre[];
+  columns: ColumnDef<TagGroup, TagGroup>[];
+  data: TagGroup[];
 }
 
 export function DataTable({ data, columns }: DataTableProps) {
@@ -69,7 +69,7 @@ export function DataTable({ data, columns }: DataTableProps) {
         <div className="flex items-center space-x-2">
           {!!table.getFilteredSelectedRowModel().rows.length && (
             <DeleteDialog
-              genreIds={Object.keys(rowSelection).map((value) =>
+              tagGroupIds={Object.keys(rowSelection).map((value) =>
                 parseInt(value),
               )}
             >

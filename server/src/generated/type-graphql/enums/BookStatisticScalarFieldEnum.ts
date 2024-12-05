@@ -7,6 +7,7 @@ export enum BookStatisticScalarFieldEnum {
   read = "read",
   comment = "comment",
   review = "review",
+  nominate = "nominate",
   date = "date"
 }
 TypeGraphQL.registerEnumType(BookStatisticScalarFieldEnum, {

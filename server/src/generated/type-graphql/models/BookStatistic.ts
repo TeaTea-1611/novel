@@ -36,6 +36,11 @@ export class BookStatistic {
   })
   review!: number;
 
+  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
+    nullable: false
+  })
+  nominate!: number;
+
   @TypeGraphQL.Field(_type => Date, {
     nullable: false
   })

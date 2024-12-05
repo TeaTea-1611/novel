@@ -240,6 +240,7 @@ Table book_statistic {
   read Int [not null, default: 0]
   comment Int [not null, default: 0]
   review Int [not null, default: 0]
+  nominate Int [not null, default: 0]
   date DateTime [not null]
   book book [not null]
 

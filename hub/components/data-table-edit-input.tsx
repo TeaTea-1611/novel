@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { LoaderIcon, SaveIcon } from "lucide-react";
 
@@ -8,9 +8,15 @@ interface Props {
   initialValue: string;
   onSave: (value: string) => void;
   loading: boolean;
+  style?: CSSProperties;
 }
 
-export function DataTableEditInput({ initialValue, onSave, loading }: Props) {
+export function DataTableEditInput({
+  initialValue,
+  onSave,
+  loading,
+  style,
+}: Props) {
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
@@ -24,6 +30,7 @@ export function DataTableEditInput({ initialValue, onSave, loading }: Props) {
         value={value as string}
         onChange={(e) => setValue(e.target.value)}
         className="px-1 py-2 -mx-1 bg-transparent rounded-md outline-none size-full focus:ring-1"
+        style={style}
       />
       {initialValue !== value && (
         <Button

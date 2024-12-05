@@ -1,34 +1,27 @@
 "use client";
 
 import { useHomePageDataQuery } from "@/apollo-client/__generated";
-import { BookCard } from "@/components/book-card";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
+import EditorPicks from "./editor-picks";
+import { MostReadBooks } from "./most-read-books";
+import { TopNominations } from "./top-nominations";
+import RecentUpdates from "./recent-updates";
 
 export default function Page() {
-  const { data, loading } = useHomePageDataQuery();
+  const { data, loading } = useHomePageDataQuery({
+    variables: {
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+    },
+  });
 
   return (
-    <div>
-      <div className="flex flex-col p-2 space-y-4 border shadow rounded-xl bg-card md:p-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold tracking-tight">Đề cử</h2>
-          <Button variant="linkHover2" asChild>
-            <Link href={"/books"}>Xem thêm</Link>
-          </Button>
-        </div>
-        <Separator />
-        <div className="grid gap-3 sm:grid-cols-2">
-          {loading ? (
-            <div></div>
-          ) : (
-            data?.paginatedBooks.books.map((book) => (
-              <BookCard key={book.id} book={book} />
-            ))
-          )}
-        </div>
+    <>
+      <EditorPicks data={data?.editorPicks.books} loading={loading} />
+      <div className="grid gap-4 md:grid-cols-2">
+        <MostReadBooks data={data?.mostReadBooks.books} loading={loading} />
+        <TopNominations data={data?.topNominations.books} loading={loading} />
       </div>
-    </div>
+      <RecentUpdates data={data?.recentUpdates.books} loading={loading} />
+    </>
   );
 }

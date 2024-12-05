@@ -23,14 +23,44 @@ query Book($bookId: Int!) {
   }
 }
 
-query HomePageData {
-  paginatedBooks(page: 1, take: 10) {
-    total
+query HomePageData($month: Int!, $year: Int!) {
+  editorPicks: paginatedBooks(page: 1, take: 6) {
     books {
       ...book
     }
-    prev
-    next
-    totalPages
+  }
+  recentUpdates: paginatedBooks(
+    page: 1
+    take: 10
+    sortBy: "newChapterAt"
+    sortOrder: desc
+  ) {
+    books {
+      ...book
+    }
+  }
+  mostReadBooks: paginatedRankingBooks(
+    page: 1
+    take: 10
+    type: read
+    month: $month
+    year: $year
+  ) {
+    books {
+      ...book
+      readMonthly
+    }
+  }
+  topNominations: paginatedRankingBooks(
+    page: 1
+    take: 10
+    type: nominate
+    month: $month
+    year: $year
+  ) {
+    books {
+      ...book
+      nominateMonthly
+    }
   }
 }

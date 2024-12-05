@@ -890,7 +890,7 @@ export type BookStatisticsQuery = { __typename?: 'Query', bookStatistics: Array<
 export type BookOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type BookOptionsQuery = { __typename?: 'Query', kinds: Array<number>, genders: Array<number>, status: Array<number>, genres: Array<{ __typename?: 'Genre', id: number, name: string }>, tags: Array<{ __typename?: 'Tag', id: number, name: string, groupId: number, group: { __typename?: 'TagGroup', id: number, name: string, color: string, bgColor: string } }> };
+export type BookOptionsQuery = { __typename?: 'Query', kinds: Array<number>, genders: Array<number>, status: Array<number>, genres: Array<{ __typename?: 'Genre', id: number, name: string }>, tags: Array<{ __typename?: 'Tag', id: number, name: string, groupId: number, group: { __typename?: 'TagGroup', id: number, name: string, color: string, bgColor: string } }>, tagGroups: Array<{ __typename?: 'TagGroup', id: number, name: string, color: string, bgColor: string }> };
 
 export type BookQueryVariables = Exact<{
   bookId: Scalars['Int']['input'];
@@ -2056,6 +2056,12 @@ export const BookOptionsDocument = gql`
       color
       bgColor
     }
+  }
+  tagGroups {
+    id
+    name
+    color
+    bgColor
   }
 }
     `;

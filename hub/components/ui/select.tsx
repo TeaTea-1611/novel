@@ -15,9 +15,10 @@ const SelectValue = SelectPrimitive.Value;
 const SelectTrigger = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & {
-    label: string;
+    label?: string;
+    padding?: boolean;
   }
->(({ className, children, label, ...props }, ref) => (
+>(({ className, children, label, padding = true, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
@@ -26,15 +27,23 @@ const SelectTrigger = React.forwardRef<
     )}
     {...props}
   >
-    <div className="px-2 pb-2 pt-6 h-11 w-full rounded-md border border-input bg-background shadow-sm flex items-center justify-between whitespace-nowrap text-sm disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1">
+    <div
+      className={cn(
+        "px-2 pb-2 pt-6 h-11 w-full rounded-md border border-input bg-background shadow-sm flex items-center justify-between whitespace-nowrap text-sm disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+        label ? "pt-6" : "pt-2",
+        { "p-0 h-auto": !padding },
+      )}
+    >
       {children}
     </div>
     <SelectPrimitive.Icon asChild>
       <ChevronDown className="absolute top-1/2 -translate-y-1/2 right-2 h-4 w-4 opacity-50" />
     </SelectPrimitive.Icon>
-    <label className="absolute block top-1 left-2 text-muted-foreground font-bold text-xs uppercase transition-all duration-300">
-      {label}
-    </label>
+    {label && (
+      <label className="absolute block top-1 left-2 text-muted-foreground font-bold text-xs uppercase transition-all duration-300">
+        {label}
+      </label>
+    )}
   </SelectPrimitive.Trigger>
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;

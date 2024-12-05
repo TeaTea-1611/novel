@@ -17,6 +17,12 @@ query BookOptions {
       bgColor
     }
   }
+  tagGroups {
+    id
+    name
+    color
+    bgColor
+  }
 }
 
 query Book($bookId: Int!) {

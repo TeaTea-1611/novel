@@ -21,22 +21,22 @@ import {
 import { PlusIcon, TrashIcon } from "lucide-react";
 import * as React from "react";
 import { CreateDialog } from "./create-dialog";
-import { Genre } from "@/apollo-client/__generated";
+import { Tag } from "@/apollo-client/__generated";
 import { DeleteDialog } from "./delete-dialog";
 
 interface DataTableProps {
-  columns: ColumnDef<Genre, Genre>[];
-  data: Genre[];
+  columns: ColumnDef<Tag, Tag>[];
+  data: Tag[];
 }
 
 export function DataTable({ data, columns }: DataTableProps) {
   const [rowSelection, setRowSelection] = React.useState<{
     [key: string]: boolean;
   }>({});
-  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data,
@@ -44,14 +44,14 @@ export function DataTable({ data, columns }: DataTableProps) {
     getRowId: (row) => row.id.toString(),
     getCoreRowModel: getCoreRowModel(),
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     state: {
       rowSelection,
-      sorting,
       columnFilters,
+      sorting,
     },
   });
 
@@ -69,9 +69,7 @@ export function DataTable({ data, columns }: DataTableProps) {
         <div className="flex items-center space-x-2">
           {!!table.getFilteredSelectedRowModel().rows.length && (
             <DeleteDialog
-              genreIds={Object.keys(rowSelection).map((value) =>
-                parseInt(value),
-              )}
+              tagIds={Object.keys(rowSelection).map((value) => parseInt(value))}
             >
               <Button variant={"destructive"} className="h-8">
                 <TrashIcon className="mr-2 size-4" />

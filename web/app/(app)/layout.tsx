@@ -10,6 +10,7 @@ import {
   CarouselThumbsContainer,
   SliderMainItem,
 } from "@/components/extension/carousel";
+import MainFooter from "@/components/main-footer";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -46,6 +47,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="absolute size-full bg-gradient-to-b from-gradient-from to-gradient-to"></div>
         <div className="absolute w-full h-full bg-[url('/mask-image.svg')] bg-repeat"></div>
       </div>
+      <MainFooter />
     </>
   );
 }

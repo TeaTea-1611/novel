@@ -34,6 +34,7 @@ import {
   ConvertBookArgs,
   CreateBookArgs,
   PaginatedBooksArgs,
+  PaginatedRankingBooksArgs,
   UpdateBookArgs,
   UpdateConvertBookArgs,
 } from "./args";
@@ -88,9 +89,14 @@ export class BookResolver {
       : null;
   }
 
-  @FieldResolver(() => String)
-  authorName(@Root() book: Book) {
-    return book.kind === 1 ? book.author?.name : book.createdBy?.nickname;
+  @FieldResolver(() => Int, { nullable: true })
+  readMonthly(@Root() book: Book) {
+    return (book as any)?.readMonthly;
+  }
+
+  @FieldResolver(() => Int, { nullable: true })
+  nominateMonthly(@Root() book: Book) {
+    return (book as any)?.nominateMonthly;
   }
 
   @Authorized()
@@ -378,6 +384,79 @@ export class BookResolver {
     return {
       total,
       books,
+      prev,
+      next,
+      totalPages,
+    };
+  }
+
+  @Query(() => PaginatedBooksResponse)
+  async paginatedRankingBooks(
+    @Args()
+    { page, take, type, month, year }: PaginatedRankingBooksArgs,
+    @Ctx() { prisma }: Context,
+  ): Promise<PaginatedBooksResponse> {
+    const realTake = Math.min(take, 50);
+    const currentPage = Math.max(page, 1);
+
+    const startDate = new Date(Date.UTC(year, month - 1, 1));
+    const endDate = new Date(Date.UTC(year, month, 1));
+
+    const bookRankings = await prisma.bookStatistic.groupBy({
+      by: ["bookId"],
+      where: {
+        date: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      _sum: { [type]: true },
+      orderBy: {
+        _sum: { [type]: "desc" },
+      },
+      take: realTake,
+      skip: (currentPage - 1) * realTake,
+    });
+
+    const [total, books] = await Promise.all([
+      await prisma.bookStatistic
+        .groupBy({
+          by: ["bookId"],
+          where: {
+            date: {
+              gte: startDate,
+              lt: endDate,
+            },
+          },
+          _count: {
+            bookId: true,
+          },
+        })
+        .then((result) => result.length),
+      await prisma.book.findMany({
+        where: {
+          id: { in: bookRankings.map((ranking) => ranking.bookId) },
+        },
+      }),
+    ]);
+
+    const booksWithMonthlyTotal = books
+      .map((book) => {
+        const ranking = bookRankings.find((r) => r.bookId === book.id);
+        return {
+          ...book,
+          [`${type}Monthly`]: ranking?._sum[type] ?? 0,
+        };
+      })
+      .sort((a: any, b: any) => b[`${type}Monthly`] - a[`${type}Monthly`]);
+
+    const totalPages = Math.ceil(total / realTake);
+    const prev = page > 1 ? page - 1 : null;
+    const next = page < totalPages ? page + 1 : null;
+
+    return {
+      total,
+      books: booksWithMonthlyTotal,
       prev,
       next,
       totalPages,

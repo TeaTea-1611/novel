@@ -44,14 +44,15 @@ export const BookCard = ({ book }: Props) => {
             {new Date(book.createdAt).toLocaleDateString("vi-VN")}
           </span>
         </div>
-        <div className="flex items-start justify-between gap-2">
-          <Badge className="whitespace-nowrap">
+        <div className="flex items-start justify-between gap-1">
+          <Badge variant={"outline"} className="whitespace-nowrap px-1 py-0.5">
             <Cuboid className="mr-2 size-4" />
             {book.genre.name}
           </Badge>
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            {book.tags.map((tag) => (
+          <div className="flex flex-wrap items-center justify-end gap-1">
+            {book.tags.slice(0, 2).map((tag) => (
               <Badge
+                className="px-1 py-0.5"
                 key={tag.id}
                 style={{
                   color: tag.group.color,

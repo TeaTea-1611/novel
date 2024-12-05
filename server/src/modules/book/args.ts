@@ -1,4 +1,10 @@
-import { ArgsType, Field, Int } from "type-graphql";
+import {
+  ArgsType,
+  Field,
+  InputType,
+  Int,
+  registerEnumType,
+} from "type-graphql";
 import { SortOrder } from "../../generated/type-graphql";
 
 @ArgsType()
@@ -86,4 +92,35 @@ export class PaginatedBooksArgs {
 
   @Field(() => SortOrder, { nullable: true, defaultValue: SortOrder.asc })
   sortOrder?: SortOrder;
+}
+
+export enum PaginatedRankingTypeEnum {
+  read = "read",
+  flower = "flower",
+  comment = "comment",
+  review = "review",
+  nominate = "nominate",
+}
+
+registerEnumType(PaginatedRankingTypeEnum, {
+  name: "PaginatedRankingType",
+  description: undefined,
+});
+
+@ArgsType()
+export class PaginatedRankingBooksArgs {
+  @Field(() => Int)
+  page!: number;
+
+  @Field(() => Int)
+  take!: number;
+
+  @Field(() => PaginatedRankingTypeEnum)
+  type!: PaginatedRankingTypeEnum;
+
+  @Field(() => Int)
+  month!: number;
+
+  @Field(() => Int)
+  year!: number;
 }
