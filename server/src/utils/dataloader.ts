@@ -11,6 +11,15 @@ const createUserLoader = (prisma: PrismaClient) => {
   });
 };
 
+const createBookLoader = (prisma: PrismaClient) => {
+  return new DataLoader(async (bookIds: readonly number[]) => {
+    const books = await prisma.book.findMany({
+      where: { id: { in: [...bookIds] } },
+    });
+    return bookIds.map((bookId) => books.find((book) => book.id === bookId));
+  });
+};
+
 const createGenreLoader = (prisma: PrismaClient) => {
   return new DataLoader(async (genreIds: readonly number[]) => {
     const genres = await prisma.genre.findMany({
@@ -66,6 +75,7 @@ const createAuthorLoader = (prisma: PrismaClient) => {
 
 export const buildDataLoaders = (prisma: PrismaClient) => ({
   userLoader: createUserLoader(prisma),
+  bookLoader: createBookLoader(prisma),
   authorLoader: createAuthorLoader(prisma),
   genreLoader: createGenreLoader(prisma),
   tagOnBookLoader: createTagOnBookLoader(prisma),

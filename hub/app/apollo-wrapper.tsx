@@ -111,7 +111,7 @@ function makeClient() {
       }
       if (networkError) {
         console.log(`[Network error]: ${networkError}`);
-        toast.error(`[Lỗi network]`);
+        toast.error(`Có lỗi, vui lòng thử lại`);
       }
     },
   );

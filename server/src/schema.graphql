@@ -24,7 +24,10 @@ type Query {
   reading(cursor: String, take: Int!): PaginatedReading!
   comments(bookId: Int!): [Comment!]!
   reviews(bookId: Int!): [Review!]!
-  analytics: [BookStatistic!]!
+  myBookStatistics(days: Int!): [BookStatistic!]!
+  bookStatistics(days: Int!, bookId: Int!): [BookStatistic!]!
+  myBookSummary: BookSummary!
+  chapterStatistics(bookId: Int!, days: Int!): [ChapterStatistic!]!
 }
 
 type User {
@@ -164,7 +167,7 @@ type Reading {
 type Comment {
   id: Int!
   userId: Int!
-  bookId: Int!
+  chapterId: Int!
   content: String!
   totalLike: Int!
   createdAt: Timestamp!
@@ -184,9 +187,26 @@ type Review {
 type BookStatistic {
   id: Int!
   bookId: Int!
+  flower: Int!
   read: Int!
   comment: Int!
   review: Int!
+  date: Timestamp!
+  book: Book!
+}
+
+type BookSummary {
+  readCnt: Int!
+  commentCnt: Int!
+  chapterCnt: Int!
+  reviewCnt: Int!
+  avgPoints: Float!
+}
+
+type ChapterStatistic {
+  id: Int!
+  chapterId: Int!
+  read: Int!
   date: Timestamp!
 }
 

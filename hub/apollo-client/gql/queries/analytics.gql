@@ -1,10 +1,28 @@
-query Analytics {
-  analytics {
+query Analytics($days: Int!) {
+  myBookStatistics(days: $days) {
     id
-    bookId
-    date
+    flower
     read
     comment
     review
+    date
+  }
+  myBookSummary {
+    readCnt
+    commentCnt
+    chapterCnt
+    reviewCnt
+    avgPoints
+  }
+}
+
+query BookStatistics($days: Int!, $bookId: Int!) {
+  bookStatistics(days: $days, bookId: $bookId) {
+    id
+    flower
+    read
+    comment
+    review
+    date
   }
 }

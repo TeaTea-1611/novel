@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
   Card,
@@ -16,34 +16,17 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-// const chartData = [
-//   { date: "2024-06-06", read: 294, comment: 250, review: 255 },
-//   { date: "2024-06-07", read: 323, comment: 370, review: 375 },
-//   { date: "2024-06-08", read: 385, comment: 320, review: 325 },
-//   { date: "2024-06-09", read: 438, comment: 480, review: 485 },
-//   { date: "2024-06-10", read: 155, comment: 200, review: 205 },
-//   { date: "2024-06-11", read: 92, comment: 150, review: 155 },
-//   { date: "2024-06-12", read: 492, comment: 420, review: 425 },
-//   { date: "2024-06-13", read: 81, comment: 130, review: 135 },
-//   { date: "2024-06-14", read: 426, comment: 380, review: 385 },
-//   { date: "2024-06-15", read: 307, comment: 350, review: 355 },
-//   { date: "2024-06-16", read: 371, comment: 310, review: 315 },
-//   { date: "2024-06-17", read: 475, comment: 520, review: 525 },
-//   { date: "2024-06-18", read: 107, comment: 170, review: 175 },
-//   { date: "2024-06-19", read: 341, comment: 290, review: 295 },
-//   { date: "2024-06-20", read: 408, comment: 450, review: 455 },
-//   { date: "2024-06-21", read: 169, comment: 210, review: 215 },
-//   { date: "2024-06-22", read: 317, comment: 270, review: 275 },
-//   { date: "2024-06-23", read: 480, comment: 530, review: 535 },
-//   { date: "2024-06-24", read: 132, comment: 180, review: 185 },
-//   { date: "2024-06-25", read: 141, comment: 190, review: 195 },
-//   { date: "2024-06-26", read: 434, comment: 380, review: 385 },
-//   { date: "2024-06-27", read: 448, comment: 490, review: 495 },
-//   { date: "2024-06-28", read: 149, comment: 200, review: 205 },
-//   { date: "2024-06-29", read: 103, comment: 160, review: 165 },
-//   { date: "2024-06-30", read: 446, comment: 400, review: 405 },
-// ];
+import NumberTicker from "@/components/ui/number-ticker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { formatDate } from "date-fns";
 
 const chartConfig = {
   views: {
@@ -61,107 +44,195 @@ const chartConfig = {
     label: "Đánh giá",
     color: "hsl(var(--chart-3))",
   },
+  flower: {
+    label: "Tặng hoa",
+    color: "hsl(var(--chart-4))",
+  },
 } satisfies ChartConfig;
 
 interface Props {
-  data: {
-    date: number;
+  data?: {
+    id: number;
+    flower: number;
     read: number;
     comment: number;
     review: number;
+    date: number;
   }[];
+  loading: boolean;
+  days: number;
+  daysOptions: number[];
+  onSelectDays: (days: number) => void;
 }
 
-export function Chart({ data }: Props) {
+export function Chart({
+  data,
+  loading,
+  days,
+  daysOptions,
+  onSelectDays,
+}: Props) {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>("read");
 
+  const chartData = React.useMemo(() => {
+    if (data) {
+      const groupedData = data.reduce((map, stat) => {
+        const { date, read, comment, review, flower } = stat;
+
+        const formattedDate = formatDate(new Date(date), "yyyy-MM-dd");
+
+        if (!map.has(formattedDate)) {
+          map.set(formattedDate, {
+            date: formattedDate,
+            read: 0,
+            comment: 0,
+            review: 0,
+            flower: 0,
+          });
+        }
+        const entry = map.get(formattedDate)!;
+        entry.read += read;
+        entry.comment += comment;
+        entry.review += review;
+        entry.flower += flower;
+        return map;
+      }, new Map<string, { date: string; read: number; comment: number; review: number; flower: number }>());
+
+      return Array.from(groupedData.values());
+    } else {
+      return [];
+    }
+  }, [data]);
+
   const total = React.useMemo(
     () => ({
-      read: data.reduce((acc, curr) => acc + curr.read, 0),
-      comment: data.reduce((acc, curr) => acc + curr.comment, 0),
-      review: data.reduce((acc, curr) => acc + curr.review, 0),
+      read: chartData.reduce((acc, curr) => acc + curr.read, 0),
+      comment: chartData.reduce((acc, curr) => acc + curr.comment, 0),
+      review: chartData.reduce((acc, curr) => acc + curr.review, 0),
+      flower: chartData.reduce((acc, curr) => acc + curr.flower, 0),
     }),
-    [data],
+    [chartData],
   );
 
   return (
-    <Card className="col-span-3">
-      <CardHeader className="flex flex-col items-stretch p-0 space-y-0 border-b sm:flex-row">
-        <div className="flex flex-col justify-center flex-1 gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Biểu Đồ Thanh - Tương Tác</CardTitle>
-          <CardDescription>
-            Hiển thị tổng số lượt xem trong 28 ngày qua
-          </CardDescription>
-        </div>
-        <div className="flex">
-          {["read", "comment", "review"].map((key) => {
-            const chart = key as keyof typeof chartConfig;
-            return (
-              <button
-                key={chart}
-                data-active={activeChart === chart}
-                className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
-                onClick={() => setActiveChart(chart)}
-              >
-                <span className="text-xs text-muted-foreground">
-                  {chartConfig[chart].label}
-                </span>
-                <span className="text-lg font-bold leading-none sm:text-3xl">
-                  {total[key as keyof typeof total].toLocaleString()}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </CardHeader>
-      <CardContent className="px-2 sm:p-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
-        >
-          <BarChart
-            accessibilityLayer
-            data={data}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
+    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      {["read", "comment", "review", "flower"].map((key) => {
+        const chart = key as keyof typeof chartConfig;
+        return (
+          <button
+            key={chart}
+            className={cn(
+              "col-span-1 border w-full shadow rounded-xl bg-card text-card-foreground space-y-1.5 p-6 flex flex-col items-center hover:ring-1 ring-primary",
+              { "ring-1 ring-primary": activeChart === chart },
+            )}
+            onClick={() => setActiveChart(chart)}
           >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("vi-VN", {
-                  month: "short",
-                  day: "numeric",
-                });
+            <h2 className="font-semibold leading-none tracking-tight">
+              {chartConfig[chart].label}
+            </h2>
+            <span className="flex items-center text-3xl">
+              {total[key as keyof typeof total] ? (
+                <NumberTicker
+                  value={total[key as keyof typeof total]}
+                  stiffness={500}
+                />
+              ) : (
+                total[key as keyof typeof total].toLocaleString()
+              )}
+            </span>
+          </button>
+        );
+      })}
+      <Card className="col-span-2 md:col-span-4">
+        <CardHeader className="flex flex-col items-stretch p-0 space-y-0 border-b sm:flex-row">
+          <div className="flex flex-col justify-center flex-1 gap-1 px-6 py-5 sm:py-6">
+            <CardTitle>Biểu Đồ Thanh - Tương Tác</CardTitle>
+            <CardDescription>
+              Hiển thị tổng số liệu trong {days} ngày qua
+            </CardDescription>
+          </div>
+          <div className="flex gap-1 px-6 py-5 sm:py-6">
+            <Select
+              value={days.toString()}
+              onValueChange={(value) => {
+                onSelectDays(parseInt(value));
               }}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  className="w-[150px]"
-                  nameKey="views"
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("vi-VN", {
+            >
+              <SelectTrigger label="Số ngày" className="w-48">
+                <SelectValue placeholder="Select page size">
+                  {days} ngày qua
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {daysOptions.map((option) => (
+                  <SelectItem key={option} value={String(option)}>
+                    {option} ngày qua
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardHeader>
+        <CardContent className="px-2 sm:p-6">
+          {loading ? (
+            <Skeleton className="aspect-auto h-[250px] w-full" />
+          ) : (
+            <ChartContainer
+              config={chartConfig}
+              className="aspect-auto h-[250px] w-full"
+            >
+              <AreaChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  left: 12,
+                  right: 12,
+                }}
+              >
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  minTickGap={32}
+                  tickFormatter={(value) => {
+                    const date = new Date(value);
+                    return date.toLocaleDateString("vi-VN", {
                       month: "short",
                       day: "numeric",
-                      year: "numeric",
                     });
                   }}
                 />
-              }
-            />
-            <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      className="w-[150px]"
+                      nameKey="views"
+                      labelFormatter={(value) => {
+                        return new Date(value).toLocaleDateString("vi-VN", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        });
+                      }}
+                    />
+                  }
+                />
+
+                <Area
+                  type="natural"
+                  fillOpacity={0.4}
+                  dataKey={activeChart}
+                  fill={`var(--color-${activeChart})`}
+                  stroke={`var(--color-${activeChart})`}
+                />
+              </AreaChart>
+            </ChartContainer>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

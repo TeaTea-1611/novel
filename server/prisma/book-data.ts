@@ -34,7 +34,7 @@ async function generateBookStatistics() {
   const genres = await prisma.genre.findMany({ select: { id: true } });
   const tags = await prisma.tag.findMany({ select: { id: true } });
 
-  const chunkSize = 1;
+  const chunkSize = 5;
   const baseDate = new Date();
   baseDate.setMonth(baseDate.getMonth() - Math.floor(Math.random() * 2) - 1);
 
@@ -71,13 +71,10 @@ async function generateBookStatistics() {
       },
     });
 
-    let totalReadCnt = 0;
+    let totalRead = 0;
+
     const chapterPromises = [...Array(10)].map(async (_, j) => {
       const chapterCreatedDate = new Date(bookCreatedDate);
-      chapterCreatedDate.setDate(bookCreatedDate.getDate() + j);
-
-      const chapterReadCnt = fakerVI.number.int({ min: 0, max: 1000 });
-      totalReadCnt += chapterReadCnt;
 
       return prisma.chapter.create({
         data: {
@@ -88,76 +85,55 @@ async function generateBookStatistics() {
             .map(() => fakerVI.lorem.paragraphs(3))
             .join("\n\n"),
           order: j + 1,
-          unlockPrice: fakerVI.number.int({ min: 0, max: 50 }),
-          readCnt: chapterReadCnt,
+          unlockPrice: fakerVI.number.int({ min: 0, max: 50, multipleOf: 10 }),
         },
       });
     });
 
     await Promise.all(chapterPromises);
 
-    // Cập nhật tổng số lượt đọc cho sách
-    await prisma.book.update({
-      where: { id: book.id },
-      data: { readCnt: totalReadCnt },
-    });
-
     // Tạo bookStatistic từ ngày tạo sách đến hiện tại
     const currentDate = new Date();
     let statisticDate = new Date(bookCreatedDate);
 
     while (statisticDate <= currentDate) {
-      // Tính toán số ngày còn lại để phân bổ
-      const totalRemainingDays =
-        Math.ceil(
-          (currentDate.getTime() - statisticDate.getTime()) /
-            (24 * 60 * 60 * 1000),
-        ) + 1;
+      const chapters = await prisma.chapter.findMany({
+        where: { bookId: book.id },
+        select: { id: true },
+      });
 
-      // Kiểm tra tổng giá trị đã được phân bổ trước đó
-      const previousTotalValue =
-        (
-          await prisma.bookStatistic.aggregate({
-            where: {
-              bookId: book.id,
-              date: { lt: statisticDate },
-            },
-            _sum: { read: true },
-          })
-        )._sum.read || 0;
+      let totalDailyRead = 0;
 
-      // Tính toán số lượt đọc còn lại
-      const remainingReads = totalReadCnt - previousTotalValue;
-
-      // Phân bổ trung bình với một chút ngẫu nhiên
-      if (remainingReads > 0) {
-        const averageDailyValue = Math.floor(
-          remainingReads / totalRemainingDays,
-        );
-        const dailyVariation = Math.floor(averageDailyValue * 0.3); // Cho phép dao động 30%
-
-        const dailyValue = Math.min(
-          Math.max(
-            Math.floor(
-              averageDailyValue + (Math.random() * 2 - 1) * dailyVariation,
-            ),
-            0,
-          ),
-          remainingReads,
-        );
-
-        await prisma.bookStatistic.create({
+      for (let j = 0; j < chapters.length; j++) {
+        const readCnt = fakerVI.number.int({ min: 0, max: 1000 });
+        totalDailyRead += readCnt;
+        totalRead += readCnt;
+        await prisma.chapterStatistic.create({
           data: {
+            chapterId: chapters[j].id,
             date: statisticDate,
-            bookId: book.id,
-            read: dailyValue,
+            read: readCnt,
           },
         });
       }
 
-      // Tăng ngày
+      await prisma.bookStatistic.create({
+        data: {
+          date: statisticDate,
+          bookId: book.id,
+          read: totalDailyRead,
+        },
+      });
+
       statisticDate.setDate(statisticDate.getDate() + 1);
     }
+
+    await prisma.book.update({
+      where: { id: book.id },
+      data: {
+        readCnt: totalRead,
+      },
+    });
   }
 }
 

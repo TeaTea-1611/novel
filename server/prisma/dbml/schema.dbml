@@ -149,7 +149,6 @@ Table book {
   genre genre [not null]
   createdBy user [not null]
   reviews review [not null]
-  comments comment [not null]
   chapters chapter [not null]
   statistics book_statistic [not null]
   tagOnBooks tag_on_book [not null]
@@ -209,12 +208,12 @@ Table review {
 Table comment {
   id Int [pk, increment]
   userId Int [not null]
-  bookId Int [not null]
+  chapterId Int [not null]
   content String [not null]
   totalLike Int [not null, default: 0]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  book book [not null]
+  chapter chapter [not null]
   user user [not null]
 }
 
@@ -230,11 +229,14 @@ Table chapter {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   book book [not null]
+  comments comment [not null]
+  statistics chapter_statistic [not null]
 }
 
 Table book_statistic {
   id Int [pk, increment]
   bookId Int [not null]
+  flower Int [not null, default: 0]
   read Int [not null, default: 0]
   comment Int [not null, default: 0]
   review Int [not null, default: 0]
@@ -243,6 +245,18 @@ Table book_statistic {
 
   indexes {
     (bookId, date) [unique]
+  }
+}
+
+Table chapter_statistic {
+  id Int [pk, increment]
+  chapterId Int [not null]
+  read Int [not null, default: 0]
+  date DateTime [not null]
+  chapter chapter [not null]
+
+  indexes {
+    (chapterId, date) [unique]
   }
 }
 
@@ -308,13 +322,15 @@ Ref: review.bookId > book.id [delete: Cascade]
 
 Ref: review.userId > user.id [delete: Cascade]
 
-Ref: comment.bookId > book.id [delete: Cascade]
+Ref: comment.chapterId > chapter.id [delete: Cascade]
 
 Ref: comment.userId > user.id [delete: Cascade]
 
 Ref: chapter.bookId > book.id [delete: Cascade]
 
 Ref: book_statistic.bookId > book.id [delete: Cascade]
+
+Ref: chapter_statistic.chapterId > chapter.id [delete: Cascade]
 
 Ref: reading.bookId > book.id [delete: Cascade]
 

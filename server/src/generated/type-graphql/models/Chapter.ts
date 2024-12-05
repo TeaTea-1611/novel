@@ -3,6 +3,8 @@ import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
 import { Book } from "../models/Book";
+import { ChapterStatistic } from "../models/ChapterStatistic";
+import { Comment } from "../models/Comment";
 
 @TypeGraphQL.ObjectType("Chapter", {})
 export class Chapter {
@@ -54,4 +56,8 @@ export class Chapter {
   updatedAt!: Date;
 
   book?: Book;
+
+  comments?: Comment[];
+
+  statistics?: ChapterStatistic[];
 }

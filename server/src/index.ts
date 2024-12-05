@@ -27,7 +27,8 @@ import {
   ReadingResolver,
   CommentResolver,
   ReviewResolver,
-  AnalyticsResolver,
+  BookStatisticResolver,
+  ChapterStatisticResolver,
 } from "./modules";
 import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.mjs";
 import { env } from "./env";
@@ -52,7 +53,8 @@ import { env } from "./env";
       ReadingResolver,
       CommentResolver,
       ReviewResolver,
-      AnalyticsResolver,
+      BookStatisticResolver,
+      ChapterStatisticResolver,
     ],
     emitSchemaFile: {
       path: "src/schema.graphql",

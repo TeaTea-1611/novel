@@ -5,6 +5,7 @@ export { BookScalarFieldEnum } from "./BookScalarFieldEnum";
 export { BookStatisticScalarFieldEnum } from "./BookStatisticScalarFieldEnum";
 export { BookmarkScalarFieldEnum } from "./BookmarkScalarFieldEnum";
 export { ChapterScalarFieldEnum } from "./ChapterScalarFieldEnum";
+export { ChapterStatisticScalarFieldEnum } from "./ChapterStatisticScalarFieldEnum";
 export { CommentScalarFieldEnum } from "./CommentScalarFieldEnum";
 export { EventAssetScalarFieldEnum } from "./EventAssetScalarFieldEnum";
 export { EventScalarFieldEnum } from "./EventScalarFieldEnum";

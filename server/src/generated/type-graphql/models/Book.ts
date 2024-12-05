@@ -6,7 +6,6 @@ import { Author } from "../models/Author";
 import { BookStatistic } from "../models/BookStatistic";
 import { Bookmark } from "../models/Bookmark";
 import { Chapter } from "../models/Chapter";
-import { Comment } from "../models/Comment";
 import { Genre } from "../models/Genre";
 import { Reading } from "../models/Reading";
 import { Review } from "../models/Review";
@@ -127,8 +126,6 @@ export class Book {
   createdBy?: User;
 
   reviews?: Review[];
-
-  comments?: Comment[];
 
   chapters?: Chapter[];
 

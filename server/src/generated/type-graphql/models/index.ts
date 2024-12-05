@@ -5,6 +5,7 @@ export { Book } from "./Book";
 export { BookStatistic } from "./BookStatistic";
 export { Bookmark } from "./Bookmark";
 export { Chapter } from "./Chapter";
+export { ChapterStatistic } from "./ChapterStatistic";
 export { Comment } from "./Comment";
 export { Event } from "./Event";
 export { EventAsset } from "./EventAsset";

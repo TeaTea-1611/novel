@@ -9,4 +9,5 @@ export * from "./genre";
 export * from "./reading";
 export * from "./comment";
 export * from "./review";
-export * from "./analytics";
+export * from "./book-statistic";
+export * from "./chapter-statistic";

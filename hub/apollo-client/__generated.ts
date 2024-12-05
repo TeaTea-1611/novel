@@ -65,12 +65,23 @@ export type BookResponse = IMutationResponse & {
 
 export type BookStatistic = {
   __typename?: 'BookStatistic';
+  book: Book;
   bookId: Scalars['Int']['output'];
   comment: Scalars['Int']['output'];
   date: Scalars['Timestamp']['output'];
+  flower: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
   read: Scalars['Int']['output'];
   review: Scalars['Int']['output'];
+};
+
+export type BookSummary = {
+  __typename?: 'BookSummary';
+  avgPoints: Scalars['Float']['output'];
+  chapterCnt: Scalars['Int']['output'];
+  commentCnt: Scalars['Int']['output'];
+  readCnt: Scalars['Int']['output'];
+  reviewCnt: Scalars['Int']['output'];
 };
 
 export type Chapter = {
@@ -94,9 +105,17 @@ export type ChapterMutationResponse = IMutationResponse & {
   success: Scalars['Boolean']['output'];
 };
 
+export type ChapterStatistic = {
+  __typename?: 'ChapterStatistic';
+  chapterId: Scalars['Int']['output'];
+  date: Scalars['Timestamp']['output'];
+  id: Scalars['Int']['output'];
+  read: Scalars['Int']['output'];
+};
+
 export type Comment = {
   __typename?: 'Comment';
-  bookId: Scalars['Int']['output'];
+  chapterId: Scalars['Int']['output'];
   content: Scalars['String']['output'];
   createdAt: Scalars['Timestamp']['output'];
   id: Scalars['Int']['output'];
@@ -457,9 +476,10 @@ export type PaginatedReading = {
 
 export type Query = {
   __typename?: 'Query';
-  analytics: Array<BookStatistic>;
   book?: Maybe<Book>;
+  bookStatistics: Array<BookStatistic>;
   chapter?: Maybe<Chapter>;
+  chapterStatistics: Array<ChapterStatistic>;
   chapters: Array<Chapter>;
   comments: Array<Comment>;
   copyright?: Maybe<Scalars['String']['output']>;
@@ -468,6 +488,8 @@ export type Query = {
   genres: Array<Genre>;
   kinds: Array<Scalars['Int']['output']>;
   me?: Maybe<User>;
+  myBookStatistics: Array<BookStatistic>;
+  myBookSummary: BookSummary;
   notificationSettings: NotificationSettings;
   paginatedBooks: PaginatedBooksResponse;
   privacyPolicy?: Maybe<Scalars['String']['output']>;
@@ -486,8 +508,20 @@ export type QueryBookArgs = {
 };
 
 
+export type QueryBookStatisticsArgs = {
+  bookId: Scalars['Int']['input'];
+  days: Scalars['Int']['input'];
+};
+
+
 export type QueryChapterArgs = {
   chapterId: Scalars['Int']['input'];
+};
+
+
+export type QueryChapterStatisticsArgs = {
+  bookId: Scalars['Int']['input'];
+  days: Scalars['Int']['input'];
 };
 
 
@@ -510,6 +544,11 @@ export type QueryCreatedBooksArgs = {
   sortOrder?: InputMaybe<SortOrder>;
   tagIds?: InputMaybe<Array<Scalars['Int']['input']>>;
   take?: Scalars['Int']['input'];
+};
+
+
+export type QueryMyBookStatisticsArgs = {
+  days: Scalars['Int']['input'];
 };
 
 
@@ -833,10 +872,20 @@ export type UpdateChaptersMutationVariables = Exact<{
 
 export type UpdateChaptersMutation = { __typename?: 'Mutation', updateChapters: { __typename?: 'MutationResponse', success: boolean, message: string } };
 
-export type AnalyticsQueryVariables = Exact<{ [key: string]: never; }>;
+export type AnalyticsQueryVariables = Exact<{
+  days: Scalars['Int']['input'];
+}>;
 
 
-export type AnalyticsQuery = { __typename?: 'Query', analytics: Array<{ __typename?: 'BookStatistic', id: number, bookId: number, date: any, read: number, comment: number, review: number }> };
+export type AnalyticsQuery = { __typename?: 'Query', myBookStatistics: Array<{ __typename?: 'BookStatistic', id: number, flower: number, read: number, comment: number, review: number, date: any }>, myBookSummary: { __typename?: 'BookSummary', readCnt: number, commentCnt: number, chapterCnt: number, reviewCnt: number, avgPoints: number } };
+
+export type BookStatisticsQueryVariables = Exact<{
+  days: Scalars['Int']['input'];
+  bookId: Scalars['Int']['input'];
+}>;
+
+
+export type BookStatisticsQuery = { __typename?: 'Query', bookStatistics: Array<{ __typename?: 'BookStatistic', id: number, flower: number, read: number, comment: number, review: number, date: any }> };
 
 export type BookOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -881,6 +930,11 @@ export type FullQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type FullQuery = { __typename?: 'Query', me?: { __typename?: 'User', id: number, email: string, nickname: string, avatar: string, pendant: string, role: UserRole, emailVerified?: any | null, isTwoFactorEnable: boolean, gender: number, introduce: string, phone: string, dob: any, urls: Array<string>, keyNum: number, ticketNum: number, candyNum: number, createdAt: any } | null };
+
+export type OverviewPageQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type OverviewPageQuery = { __typename?: 'Query', createdBooks: { __typename?: 'PaginatedBooksResponse', total: number, books: Array<{ __typename?: 'Book', id: number, name: string, originalName: string, synopsis: string, poster: string, kind: number, gender: number, status: number, wordCnt: number, flowerCnt: number, readCnt: number, reviewCnt: number, chapterCnt: number, commentCnt: number, points: number, createdAt: any, newChapterAt: any, author?: { __typename?: 'Author', id: number, name: string, originalName: string } | null, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, pendant: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', name: string, color: string, bgColor: string } }>, genre: { __typename?: 'Genre', id: number, name: string } }> }, myBookSummary: { __typename?: 'BookSummary', readCnt: number, commentCnt: number, chapterCnt: number, reviewCnt: number, avgPoints: number } };
 
 export const BookFragmentDoc = gql`
     fragment book on Book {
@@ -1886,14 +1940,21 @@ export type UpdateChaptersMutationHookResult = ReturnType<typeof useUpdateChapte
 export type UpdateChaptersMutationResult = Apollo.MutationResult<UpdateChaptersMutation>;
 export type UpdateChaptersMutationOptions = Apollo.BaseMutationOptions<UpdateChaptersMutation, UpdateChaptersMutationVariables>;
 export const AnalyticsDocument = gql`
-    query Analytics {
-  analytics {
+    query Analytics($days: Int!) {
+  myBookStatistics(days: $days) {
     id
-    bookId
-    date
+    flower
     read
     comment
     review
+    date
+  }
+  myBookSummary {
+    readCnt
+    commentCnt
+    chapterCnt
+    reviewCnt
+    avgPoints
   }
 }
     `;
@@ -1910,10 +1971,11 @@ export const AnalyticsDocument = gql`
  * @example
  * const { data, loading, error } = useAnalyticsQuery({
  *   variables: {
+ *      days: // value for 'days'
  *   },
  * });
  */
-export function useAnalyticsQuery(baseOptions?: Apollo.QueryHookOptions<AnalyticsQuery, AnalyticsQueryVariables>) {
+export function useAnalyticsQuery(baseOptions: Apollo.QueryHookOptions<AnalyticsQuery, AnalyticsQueryVariables> & ({ variables: AnalyticsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<AnalyticsQuery, AnalyticsQueryVariables>(AnalyticsDocument, options);
       }
@@ -1929,6 +1991,52 @@ export type AnalyticsQueryHookResult = ReturnType<typeof useAnalyticsQuery>;
 export type AnalyticsLazyQueryHookResult = ReturnType<typeof useAnalyticsLazyQuery>;
 export type AnalyticsSuspenseQueryHookResult = ReturnType<typeof useAnalyticsSuspenseQuery>;
 export type AnalyticsQueryResult = Apollo.QueryResult<AnalyticsQuery, AnalyticsQueryVariables>;
+export const BookStatisticsDocument = gql`
+    query BookStatistics($days: Int!, $bookId: Int!) {
+  bookStatistics(days: $days, bookId: $bookId) {
+    id
+    flower
+    read
+    comment
+    review
+    date
+  }
+}
+    `;
+
+/**
+ * __useBookStatisticsQuery__
+ *
+ * To run a query within a React component, call `useBookStatisticsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBookStatisticsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBookStatisticsQuery({
+ *   variables: {
+ *      days: // value for 'days'
+ *      bookId: // value for 'bookId'
+ *   },
+ * });
+ */
+export function useBookStatisticsQuery(baseOptions: Apollo.QueryHookOptions<BookStatisticsQuery, BookStatisticsQueryVariables> & ({ variables: BookStatisticsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BookStatisticsQuery, BookStatisticsQueryVariables>(BookStatisticsDocument, options);
+      }
+export function useBookStatisticsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BookStatisticsQuery, BookStatisticsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BookStatisticsQuery, BookStatisticsQueryVariables>(BookStatisticsDocument, options);
+        }
+export function useBookStatisticsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<BookStatisticsQuery, BookStatisticsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<BookStatisticsQuery, BookStatisticsQueryVariables>(BookStatisticsDocument, options);
+        }
+export type BookStatisticsQueryHookResult = ReturnType<typeof useBookStatisticsQuery>;
+export type BookStatisticsLazyQueryHookResult = ReturnType<typeof useBookStatisticsLazyQuery>;
+export type BookStatisticsSuspenseQueryHookResult = ReturnType<typeof useBookStatisticsSuspenseQuery>;
+export type BookStatisticsQueryResult = Apollo.QueryResult<BookStatisticsQuery, BookStatisticsQueryVariables>;
 export const BookOptionsDocument = gql`
     query BookOptions {
   kinds
@@ -2200,3 +2308,52 @@ export type FullQueryHookResult = ReturnType<typeof useFullQuery>;
 export type FullLazyQueryHookResult = ReturnType<typeof useFullLazyQuery>;
 export type FullSuspenseQueryHookResult = ReturnType<typeof useFullSuspenseQuery>;
 export type FullQueryResult = Apollo.QueryResult<FullQuery, FullQueryVariables>;
+export const OverviewPageDocument = gql`
+    query OverviewPage {
+  createdBooks(page: 1, take: 5, sortBy: "newChapterAt", sortOrder: desc) {
+    total
+    books {
+      ...book
+    }
+  }
+  myBookSummary {
+    readCnt
+    commentCnt
+    chapterCnt
+    reviewCnt
+    avgPoints
+  }
+}
+    ${BookFragmentDoc}`;
+
+/**
+ * __useOverviewPageQuery__
+ *
+ * To run a query within a React component, call `useOverviewPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOverviewPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useOverviewPageQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useOverviewPageQuery(baseOptions?: Apollo.QueryHookOptions<OverviewPageQuery, OverviewPageQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<OverviewPageQuery, OverviewPageQueryVariables>(OverviewPageDocument, options);
+      }
+export function useOverviewPageLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<OverviewPageQuery, OverviewPageQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<OverviewPageQuery, OverviewPageQueryVariables>(OverviewPageDocument, options);
+        }
+export function useOverviewPageSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<OverviewPageQuery, OverviewPageQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<OverviewPageQuery, OverviewPageQueryVariables>(OverviewPageDocument, options);
+        }
+export type OverviewPageQueryHookResult = ReturnType<typeof useOverviewPageQuery>;
+export type OverviewPageLazyQueryHookResult = ReturnType<typeof useOverviewPageLazyQuery>;
+export type OverviewPageSuspenseQueryHookResult = ReturnType<typeof useOverviewPageSuspenseQuery>;
+export type OverviewPageQueryResult = Apollo.QueryResult<OverviewPageQuery, OverviewPageQueryVariables>;

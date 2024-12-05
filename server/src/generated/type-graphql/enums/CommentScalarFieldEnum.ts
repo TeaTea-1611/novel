@@ -3,7 +3,7 @@ import * as TypeGraphQL from "type-graphql";
 export enum CommentScalarFieldEnum {
   id = "id",
   userId = "userId",
-  bookId = "bookId",
+  chapterId = "chapterId",
   content = "content",
   totalLike = "totalLike",
   createdAt = "createdAt",

@@ -109,12 +109,11 @@ export function DataTable<TData, TValue>({
   );
 
   useEffect(() => {
-    if (debouncedValue && debouncedValue !== keyword) {
+    if (typeof debouncedValue === "string")
       updateUrlParams({
         keyword: debouncedValue,
       });
-    }
-  }, [debouncedValue, keyword, updateUrlParams]);
+  }, [debouncedValue, updateUrlParams]);
 
   useEffect(() => {
     if (sorting.length) {
@@ -260,7 +259,7 @@ export function DataTable<TData, TValue>({
           }}
         />
       </div>
-      <div className="rounded-md border text-sm">
+      <div className="text-sm border rounded-md">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -314,7 +313,7 @@ export function DataTable<TData, TValue>({
                   (_, i) => (
                     <TableRow
                       key={i}
-                      className="h-14 border-transparent"
+                      className="border-transparent h-14"
                     ></TableRow>
                   ),
                 )}
