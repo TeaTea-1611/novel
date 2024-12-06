@@ -19,11 +19,12 @@ type Query {
   termsOfService: String
   privacyPolicy: String
   copyright: String
-  chapter(chapterId: Int!): Chapter
+  chapterById(chapterId: Int!): Chapter
+  chapterByBookAndOrder(order: Int!, bookId: Int!): Chapter
   chapters(bookId: Int!): [Chapter!]!
   genres: [Genre!]!
   reading(cursor: String, take: Int!): PaginatedReading!
-  comments(bookId: Int!): [Comment!]!
+  comments(take: Int!, page: Int!, bookId: Int!): PaginatedCommentsResponse!
   reviews(bookId: Int!): [Review!]!
   myBookStatistics(days: Int!): [BookStatistic!]!
   bookStatistics(days: Int!, bookId: Int!): [BookStatistic!]!
@@ -112,6 +113,7 @@ type Book {
   author: Author
   readMonthly: Int
   nominateMonthly: Int
+  reading: Reading
 }
 
 type Genre {
@@ -123,6 +125,14 @@ type Author {
   id: Int!
   name: String!
   originalName: String!
+}
+
+type Reading {
+  userId: Int!
+  bookId: Int!
+  currentChapter: Int!
+  readingAt: Timestamp!
+  book: Book!
 }
 
 type PaginatedBooksResponse {
@@ -157,6 +167,7 @@ type Chapter {
   createdAt: Timestamp!
   updatedAt: Timestamp!
   content: String!
+  book: Book
 }
 
 type PaginatedReading {
@@ -166,20 +177,22 @@ type PaginatedReading {
   reading: [Reading!]!
 }
 
-type Reading {
-  userId: Int!
-  bookId: Int!
-  currentChapter: Int!
-  readingAt: Timestamp!
-  book: Book!
+type PaginatedCommentsResponse {
+  total: Int!
+  comments: [Comment!]!
+  prev: Int
+  next: Int
+  totalPages: Int!
 }
 
 type Comment {
   id: Int!
   userId: Int!
+  bookId: Int!
   chapterId: Int!
   content: String!
-  totalLike: Int!
+  likeCnt: Int!
+  replyCnt: Int!
   createdAt: Timestamp!
   updatedAt: Timestamp!
 }
@@ -260,7 +273,8 @@ type Mutation {
   updateGenre(name: String!, genreId: Int!): Genre!
   deleteGenres(genreIds: [Int!]!): MutationResponse!
   read(chapterId: Int!): Boolean!
-  comment(content: String!, bookId: Int!): Comment!
+  comment(content: String!, chapterId: Int!, bookId: Int!): Comment!
+  replyComment(content: String!, commentId: Int!): ReplyComment!
   review(point: Int!, isSpoiler: Boolean!, content: String!, bookId: Int!): Review!
 }
 
@@ -306,4 +320,14 @@ type ChapterMutationResponse implements IMutationResponse {
 input SwapChapterInput {
   id: Int!
   newOrder: Int!
+}
+
+type ReplyComment {
+  id: Int!
+  userId: Int!
+  commentId: Int!
+  content: String!
+  likeCnt: Int!
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
 }

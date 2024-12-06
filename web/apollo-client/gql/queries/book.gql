@@ -20,6 +20,10 @@ query BookOptions {
 query Book($bookId: Int!) {
   book(bookId: $bookId) {
     ...book
+    reading {
+      currentChapter
+      readingAt
+    }
   }
 }
 

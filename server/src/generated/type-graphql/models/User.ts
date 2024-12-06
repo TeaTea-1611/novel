@@ -9,6 +9,7 @@ import { Comment } from "../models/Comment";
 import { NotificationSettings } from "../models/NotificationSettings";
 import { Reading } from "../models/Reading";
 import { RefreshToken } from "../models/RefreshToken";
+import { ReplyComment } from "../models/ReplyComment";
 import { Review } from "../models/Review";
 import { UserAsset } from "../models/UserAsset";
 import { UserRole } from "../enums/UserRole";
@@ -118,5 +119,7 @@ export class User {
 
   reading?: Reading[];
 
-  Bookmarks?: Bookmark[];
+  bookmarks?: Bookmark[];
+
+  replyComments?: ReplyComment[];
 }

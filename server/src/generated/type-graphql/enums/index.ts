@@ -15,6 +15,7 @@ export { NullsOrder } from "./NullsOrder";
 export { QueryMode } from "./QueryMode";
 export { ReadingScalarFieldEnum } from "./ReadingScalarFieldEnum";
 export { RefreshTokenScalarFieldEnum } from "./RefreshTokenScalarFieldEnum";
+export { ReplyCommentScalarFieldEnum } from "./ReplyCommentScalarFieldEnum";
 export { ReviewScalarFieldEnum } from "./ReviewScalarFieldEnum";
 export { SortOrder } from "./SortOrder";
 export { TagGroupScalarFieldEnum } from "./TagGroupScalarFieldEnum";

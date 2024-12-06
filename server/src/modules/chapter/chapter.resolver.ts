@@ -12,7 +12,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 import type { Context } from "../../context";
-import { Chapter } from "../../generated/type-graphql";
+import { Book, Chapter } from "../../generated/type-graphql";
 import { throwForbiddenError } from "../../utils/errors";
 import { CreateChapterArgs, SwapChaptersArgs, UpdateChapterArgs } from "./args";
 import { ChapterMutationResponse } from "./types";
@@ -31,13 +31,32 @@ export class ChapterResolver {
     return chapter.content;
   }
 
+  @FieldResolver(() => Book, { nullable: true })
+  async book(
+    @Root() chapter: Chapter,
+    @Ctx() { prisma }: Context,
+  ): Promise<Book | null> {
+    return await prisma.book.findUnique({ where: { id: chapter.bookId } });
+  }
+
   @Query(() => Chapter, { nullable: true })
-  async chapter(
+  async chapterById(
     @Arg("chapterId", () => Int) chapterId: number,
     @Ctx() { prisma }: Context,
   ): Promise<Chapter | null> {
     return await prisma.chapter.findUnique({
       where: { id: chapterId },
+    });
+  }
+
+  @Query(() => Chapter, { nullable: true })
+  async chapterByBookAndOrder(
+    @Arg("bookId", () => Int) bookId: number,
+    @Arg("order", () => Int) order: number,
+    @Ctx() { prisma }: Context,
+  ): Promise<Chapter | null> {
+    return await prisma.chapter.findFirst({
+      where: { bookId, order },
     });
   }
 

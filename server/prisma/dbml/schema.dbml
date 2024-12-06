@@ -29,7 +29,8 @@ Table user {
   achieve achieve
   userAssets user_asset [not null]
   reading reading [not null]
-  Bookmarks bookmark [not null]
+  bookmarks bookmark [not null]
+  replyComments reply_comment [not null]
 }
 
 Table refresh_token {
@@ -154,6 +155,7 @@ Table book {
   tagOnBooks tag_on_book [not null]
   reading reading [not null]
   bookmarks bookmark [not null]
+  comments comment [not null]
 }
 
 Table genre {
@@ -208,12 +210,28 @@ Table review {
 Table comment {
   id Int [pk, increment]
   userId Int [not null]
+  bookId Int [not null]
   chapterId Int [not null]
   content String [not null]
-  totalLike Int [not null, default: 0]
+  likeCnt Int [not null, default: 0]
+  replyCnt Int [not null, default: 0]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   chapter chapter [not null]
+  book book [not null]
+  user user [not null]
+  replyComments reply_comment [not null]
+}
+
+Table reply_comment {
+  id Int [pk, increment]
+  userId Int [not null]
+  commentId Int [not null]
+  content String [not null]
+  likeCnt Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  comment comment [not null]
   user user [not null]
 }
 
@@ -325,7 +343,13 @@ Ref: review.userId > user.id [delete: Cascade]
 
 Ref: comment.chapterId > chapter.id [delete: Cascade]
 
+Ref: comment.bookId > book.id [delete: Cascade]
+
 Ref: comment.userId > user.id [delete: Cascade]
+
+Ref: reply_comment.commentId > comment.id [delete: Cascade]
+
+Ref: reply_comment.userId > user.id [delete: Cascade]
 
 Ref: chapter.bookId > book.id [delete: Cascade]
 

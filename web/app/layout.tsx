@@ -1,11 +1,12 @@
 import { ThemeProvider } from "@/components/theme-provider";
-import { ginto } from "@/styles/fonts";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import type { Metadata } from "next";
+import { inter } from "@/styles/fonts";
 import "@/styles/globals.css";
-import { ApolloWrapper } from "./apollo-wrapper";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import type { Metadata } from "next";
+import { ApolloWrapper } from "./apollo-wrapper";
+import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${ginto.className} antialiased font-semibold`}>
+      <body className={`${inter.className} antialiased font-semibold`}>
         <ApolloWrapper>
           <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
             <ThemeProvider
@@ -30,6 +31,7 @@ export default function RootLayout({
             >
               <TooltipProvider>
                 {children}
+                <ScrollToTopButton />
                 <Toaster position="top-center"></Toaster>
               </TooltipProvider>
             </ThemeProvider>

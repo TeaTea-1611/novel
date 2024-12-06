@@ -18,6 +18,18 @@ export const ginto = localFont({
   weight: "100 900",
 });
 
+export const inter = localFont({
+  src: "../public/fonts/Inter.woff2",
+  variable: "--font-inter",
+  weight: "100 900",
+});
+
+export const firaCodeVF = localFont({
+  src: "../public/fonts/FiraCode-VF.woff2",
+  variable: "--font-inter",
+  weight: "100 900",
+});
+
 export const cascadiaCode = localFont({
   src: "../public/fonts/CascadiaCode.woff2",
   variable: "--font-cascadia-code",

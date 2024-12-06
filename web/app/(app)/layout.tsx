@@ -40,7 +40,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </Carousel>
       </div>
-      <main className="flex flex-col flex-1 max-w-screen-xl gap-4 mx-auto md:p-2">
+      <main className="flex flex-col flex-1 max-w-screen-xl gap-4 mx-auto md:p-2 min-h-svh">
         {children}
       </main>
       <div className="fixed inset-0 pointer-events-none -z-50">

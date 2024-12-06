@@ -11,7 +11,7 @@ export default function NumberTicker({
   delay = 0,
   className,
   decimalPlaces = 0,
-  stiffness = 100,
+  stiffness = 200,
 }: {
   value: number;
   direction?: "up" | "down";
@@ -54,6 +54,7 @@ export default function NumberTicker({
           }).format(Number(latest.toFixed(decimalPlaces)));
         }
       }),
+
     [springValue, decimalPlaces],
   );
 
@@ -61,6 +62,8 @@ export default function NumberTicker({
     <span
       className={cn("inline-block tabular-nums tracking-wider", className)}
       ref={ref}
-    />
+    >
+      {value.toFixed(decimalPlaces)} {/* Giá trị mặc định */}
+    </span>
   );
 }

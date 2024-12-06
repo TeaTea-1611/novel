@@ -2,12 +2,6 @@ import { Field, Int, ObjectType } from "type-graphql";
 import { IMutationResponse } from "../../types";
 import { Book } from "../../generated/type-graphql";
 
-@ObjectType()
-export class BookCustomField extends Book {
-  @Field(() => Int, { nullable: true })
-  monthlyTotal?: number;
-}
-
 @ObjectType({ implements: IMutationResponse })
 export class BookResponse implements IMutationResponse {
   success!: boolean;

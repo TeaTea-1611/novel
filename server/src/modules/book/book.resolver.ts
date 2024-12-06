@@ -15,15 +15,17 @@ import {
   Query,
   Resolver,
   Root,
+  UseMiddleware,
 } from "type-graphql";
 import { Service } from "typedi";
 import {
   Author,
   Book,
   Genre,
+  Reading,
   Tag,
   User,
-} from "../../../src/generated/type-graphql";
+} from "../../generated/type-graphql";
 import type { Context } from "../../context";
 import { env } from "../../env";
 import { createBookSchema, updateBookSchema } from "../../schemas";
@@ -39,6 +41,7 @@ import {
   UpdateConvertBookArgs,
 } from "./args";
 import { BookResponse, PaginatedBooksResponse } from "./types";
+import { UserMiddleware } from "../../middlewares/user.middleware";
 
 @Service()
 @Resolver(() => Book)
@@ -97,6 +100,24 @@ export class BookResolver {
   @FieldResolver(() => Int, { nullable: true })
   nominateMonthly(@Root() book: Book) {
     return (book as any)?.nominateMonthly;
+  }
+
+  @UseMiddleware(UserMiddleware)
+  @FieldResolver(() => Reading, { nullable: true })
+  async reading(
+    @Root() book: Book,
+    @Ctx() { user, prisma }: Context,
+  ): Promise<Reading | null> {
+    if (!user) return null;
+
+    return await prisma.reading.findUnique({
+      where: {
+        userId_bookId: {
+          userId: user.id,
+          bookId: book.id,
+        },
+      },
+    });
   }
 
   @Authorized()

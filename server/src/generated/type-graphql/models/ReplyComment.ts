@@ -2,13 +2,11 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
-import { Book } from "../models/Book";
-import { Chapter } from "../models/Chapter";
-import { ReplyComment } from "../models/ReplyComment";
+import { Comment } from "../models/Comment";
 import { User } from "../models/User";
 
-@TypeGraphQL.ObjectType("Comment", {})
-export class Comment {
+@TypeGraphQL.ObjectType("ReplyComment", {})
+export class ReplyComment {
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: false
   })
@@ -22,12 +20,7 @@ export class Comment {
   @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
     nullable: false
   })
-  bookId!: number;
-
-  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
-    nullable: false
-  })
-  chapterId!: number;
+  commentId!: number;
 
   @TypeGraphQL.Field(_type => String, {
     nullable: false
@@ -39,11 +32,6 @@ export class Comment {
   })
   likeCnt!: number;
 
-  @TypeGraphQL.Field(_type => TypeGraphQL.Int, {
-    nullable: false
-  })
-  replyCnt!: number;
-
   @TypeGraphQL.Field(_type => Date, {
     nullable: false
   })
@@ -54,11 +42,7 @@ export class Comment {
   })
   updatedAt!: Date;
 
-  chapter?: Chapter;
-
-  book?: Book;
+  comment?: Comment;
 
   user?: User;
-
-  replyComments?: ReplyComment[];
 }

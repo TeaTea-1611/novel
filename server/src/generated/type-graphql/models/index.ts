@@ -13,6 +13,7 @@ export { Genre } from "./Genre";
 export { NotificationSettings } from "./NotificationSettings";
 export { Reading } from "./Reading";
 export { RefreshToken } from "./RefreshToken";
+export { ReplyComment } from "./ReplyComment";
 export { Review } from "./Review";
 export { Tag } from "./Tag";
 export { TagGroup } from "./TagGroup";

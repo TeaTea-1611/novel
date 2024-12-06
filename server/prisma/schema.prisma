@@ -54,7 +54,8 @@ model User {
   achieve              Achieve?
   userAssets           UserAsset[]
   reading              Reading[]
-  Bookmarks            Bookmark[]
+  bookmarks            Bookmark[]
+  replyComments        ReplyComment[]
 
   @@index([email])
   @@map("user")
@@ -200,6 +201,7 @@ model Book {
   tagOnBooks TagOnBook[]
   reading    Reading[]
   bookmarks  Bookmark[]
+  comments   Comment[]
 
   @@map("book")
 }
@@ -266,16 +268,35 @@ model Review {
 model Comment {
   id        Int      @id @default(autoincrement())
   userId    Int
+  bookId    Int
   chapterId Int
   content   String
-  totalLike Int      @default(0)
+  likeCnt   Int      @default(0)
+  replyCnt  Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chapter Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chapter       Chapter        @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  book          Book           @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replyComments ReplyComment[]
 
   @@map("comment")
+}
+
+model ReplyComment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  commentId Int
+  content   String
+  likeCnt   Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reply_comment")
 }
 
 model Chapter {
