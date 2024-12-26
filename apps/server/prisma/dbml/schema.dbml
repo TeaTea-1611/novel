@@ -1,0 +1,367 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table user {
+  id Int [pk, increment]
+  nickname String [not null]
+  email String [unique, not null]
+  password String [note: '@TypeGraphQL.omit(output: true)']
+  phone String [not null, default: '']
+  avatar String [not null, default: '']
+  avatarCover String [not null, default: '']
+  role UserRole [not null, default: 'USER']
+  gender Int [not null, default: 3]
+  introduce String [not null, default: '']
+  dob DateTime [default: `now()`, not null]
+  urls String[] [not null]
+  keyNum Int [not null, default: 0]
+  ticketNum Int [not null, default: 0]
+  candyNum Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  emailVerified DateTime
+  isTwoFactorEnable Boolean [not null, default: false]
+  notificationSettings notification_settings
+  reviews review [not null]
+  comments comment [not null]
+  createdBooks book [not null]
+  refreshTokens refresh_token [not null]
+  achieve achieve
+  userAssets user_asset [not null]
+  reading reading [not null]
+  bookmarks bookmark [not null]
+  replyComments reply_comment [not null]
+}
+
+Table refresh_token {
+  token String [pk]
+  userId Int [not null]
+  tokenFamily String [not null]
+  active Boolean [not null, default: true]
+  expiresAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  user user [not null]
+}
+
+Table two_factor_token {
+  id Int [pk, increment]
+  email String [unique, not null]
+  token String [not null]
+  expires DateTime [not null]
+}
+
+Table notification_settings {
+  userId Int [pk]
+  newChapter Boolean [not null, default: true]
+  newInteraction Boolean [not null, default: true]
+  user user [not null]
+}
+
+Table achieve {
+  id Int [pk]
+  followCnt Int [not null, default: 0]
+  readChapterCnt Int [not null, default: 0]
+  readBookCnt Int [not null, default: 0]
+  user user [not null]
+}
+
+Table asset {
+  id Int [pk, increment]
+  type Int [not null]
+  name String [not null]
+  description String [not null]
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  title String [not null]
+  url String [not null]
+  color String [not null, default: '']
+  isFree Boolean [not null]
+  eventAssets event_asset [not null]
+  userAssets user_asset [not null]
+}
+
+Table user_asset {
+  id Int [pk, increment]
+  userId Int [not null]
+  assetId Int [not null]
+  receivedAt DateTime [default: `now()`, not null]
+  user user [not null]
+  asset asset [not null]
+
+  indexes {
+    (userId, assetId) [unique]
+  }
+}
+
+Table event {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  webPath String [not null, default: '']
+  appPath String [not null, default: '']
+  startDate DateTime [not null]
+  endDate DateTime [not null]
+  eventAssets event_asset [not null]
+}
+
+Table event_asset {
+  eventId Int [not null]
+  assetId Int [not null]
+  event event [not null]
+  asset asset [not null]
+
+  indexes {
+    (eventId, assetId) [pk]
+  }
+}
+
+Table author {
+  id Int [pk, increment]
+  name String [not null]
+  originalName String [not null]
+  books book [not null]
+
+  indexes {
+    (name, originalName) [unique]
+  }
+}
+
+Table book {
+  id Int [pk, increment]
+  name String [unique, not null]
+  originalName String [not null, default: '']
+  authorId Int
+  originalLink String [not null, default: '']
+  synopsis String [not null]
+  kind Int [not null]
+  gender Int [not null]
+  status Int [not null, default: 1]
+  poster String [not null, default: '']
+  genreId Int [not null]
+  wordCnt Int [not null, default: 0]
+  flowerCnt Int [not null, default: 0]
+  readCnt Int [not null, default: 0]
+  reviewCnt Int [not null, default: 0]
+  chapterCnt Int [not null, default: 0]
+  commentCnt Int [not null, default: 0]
+  points Float [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  newChapterAt DateTime [default: `now()`, not null]
+  createdById Int [not null]
+  author author
+  genre genre [not null]
+  createdBy user [not null]
+  reviews review [not null]
+  chapters chapter [not null]
+  statistics book_statistic [not null]
+  tagOnBooks tag_on_book [not null]
+  reading reading [not null]
+  bookmarks bookmark [not null]
+  comments comment [not null]
+}
+
+Table genre {
+  id Int [pk, increment]
+  name String [unique, not null]
+  books book [not null]
+}
+
+Table tag_group {
+  id Int [pk, increment]
+  name String [unique, not null]
+  color String [not null]
+  tags tag [not null]
+}
+
+Table tag {
+  id Int [pk, increment]
+  groupId Int [not null]
+  name String [unique, not null]
+  tagOnBooks tag_on_book [not null]
+  group tag_group [not null]
+}
+
+Table tag_on_book {
+  bookId Int [not null]
+  tagId Int [not null]
+  book book [not null]
+  tag tag [not null]
+
+  indexes {
+    (bookId, tagId) [pk]
+  }
+}
+
+Table review {
+  id Int [pk, increment]
+  userId Int [not null]
+  bookId Int [not null]
+  point Float [not null]
+  content String [not null]
+  isSpoiler Boolean [not null]
+  createdAt DateTime [default: `now()`, not null]
+  book book [not null]
+  user user [not null]
+
+  indexes {
+    (userId, bookId) [unique]
+  }
+}
+
+Table comment {
+  id Int [pk, increment]
+  userId Int [not null]
+  bookId Int [not null]
+  chapterId Int [not null]
+  content String [not null]
+  likeCnt Int [not null, default: 0]
+  replyCnt Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  chapter chapter [not null]
+  book book [not null]
+  user user [not null]
+  replyComments reply_comment [not null]
+}
+
+Table reply_comment {
+  id Int [pk, increment]
+  userId Int [not null]
+  commentId Int [not null]
+  content String [not null]
+  likeCnt Int [not null, default: 0]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  comment comment [not null]
+  user user [not null]
+}
+
+Table chapter {
+  id Int [pk, increment]
+  bookId Int [not null]
+  order Int [not null]
+  title String [not null]
+  content String [not null, note: '@TypeGraphQL.omit(output: true)']
+  unlockPrice Int [not null]
+  readCnt Int [not null, default: 0]
+  publishAt DateTime [default: `now()`, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  book book [not null]
+  comments comment [not null]
+  statistics chapter_statistic [not null]
+}
+
+Table book_statistic {
+  id Int [pk, increment]
+  bookId Int [not null]
+  flower Int [not null, default: 0]
+  read Int [not null, default: 0]
+  comment Int [not null, default: 0]
+  review Int [not null, default: 0]
+  nominate Int [not null, default: 0]
+  date DateTime [not null]
+  book book [not null]
+
+  indexes {
+    (bookId, date) [unique]
+  }
+}
+
+Table chapter_statistic {
+  id Int [pk, increment]
+  chapterId Int [not null]
+  read Int [not null, default: 0]
+  date DateTime [not null]
+  chapter chapter [not null]
+
+  indexes {
+    (chapterId, date) [unique]
+  }
+}
+
+Table reading {
+  userId Int [not null]
+  bookId Int [not null]
+  currentChapter Int [not null]
+  readingAt DateTime [not null]
+  book book [not null]
+  user user [not null]
+
+  indexes {
+    (userId, bookId) [pk]
+  }
+}
+
+Table bookmark {
+  userId Int [not null]
+  bookId Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  book book [not null]
+  user user [not null]
+
+  indexes {
+    (userId, bookId) [pk]
+  }
+}
+
+Enum UserRole {
+  ADMIN
+  EDITOR
+  CONVERTER
+  USER
+}
+
+Ref: refresh_token.userId > user.id [delete: Cascade]
+
+Ref: notification_settings.userId - user.id [delete: Cascade]
+
+Ref: achieve.id - user.id [delete: Cascade]
+
+Ref: user_asset.userId > user.id [delete: Cascade]
+
+Ref: user_asset.assetId > asset.id [delete: Cascade]
+
+Ref: event_asset.eventId > event.id [delete: Cascade]
+
+Ref: event_asset.assetId > asset.id [delete: Cascade]
+
+Ref: book.authorId > author.id
+
+Ref: book.genreId > genre.id
+
+Ref: book.createdById > user.id [delete: Cascade]
+
+Ref: tag.groupId > tag_group.id
+
+Ref: tag_on_book.bookId > book.id [delete: Cascade]
+
+Ref: tag_on_book.tagId > tag.id [delete: Cascade]
+
+Ref: review.bookId > book.id [delete: Cascade]
+
+Ref: review.userId > user.id [delete: Cascade]
+
+Ref: comment.chapterId > chapter.id [delete: Cascade]
+
+Ref: comment.bookId > book.id [delete: Cascade]
+
+Ref: comment.userId > user.id [delete: Cascade]
+
+Ref: reply_comment.commentId > comment.id [delete: Cascade]
+
+Ref: reply_comment.userId > user.id [delete: Cascade]
+
+Ref: chapter.bookId > book.id [delete: Cascade]
+
+Ref: book_statistic.bookId > book.id [delete: Cascade]
+
+Ref: chapter_statistic.chapterId > chapter.id [delete: Cascade]
+
+Ref: reading.bookId > book.id [delete: Cascade]
+
+Ref: reading.userId > user.id [delete: Cascade]
+
+Ref: bookmark.bookId > book.id [delete: Cascade]
+
+Ref: bookmark.userId > user.id [delete: Cascade]
