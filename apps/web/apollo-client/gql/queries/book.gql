@@ -1,0 +1,69 @@
+query BookOptions {
+  kinds
+  genders
+  status
+  genres {
+    id
+    name
+  }
+  tags {
+    id
+    name
+    group {
+      name
+      color
+    }
+  }
+}
+
+query Book($bookId: Int!) {
+  book(bookId: $bookId) {
+    ...book
+    reading {
+      currentChapter
+      readingAt
+    }
+  }
+}
+
+query HomePageData($month: Int!, $year: Int!) {
+  editorPicks: paginatedBooks(page: 1, take: 6) {
+    books {
+      ...book
+    }
+  }
+  recentUpdates: paginatedBooks(
+    page: 1
+    take: 10
+    sortBy: "newChapterAt"
+    sortOrder: desc
+  ) {
+    books {
+      ...book
+    }
+  }
+  mostReadBooks: paginatedRankingBooks(
+    page: 1
+    take: 10
+    type: read
+    month: $month
+    year: $year
+  ) {
+    books {
+      ...book
+      readMonthly
+    }
+  }
+  topNominations: paginatedRankingBooks(
+    page: 1
+    take: 10
+    type: nominate
+    month: $month
+    year: $year
+  ) {
+    books {
+      ...book
+      nominateMonthly
+    }
+  }
+}

@@ -1,0 +1,118 @@
+# mutation CreateBook(
+#   $name: String!
+#   $synopsis: String!
+#   $gender: Int!
+#   $genreId: Int!
+#   $tagIds: [Int!]!
+# ) {
+#   createBook(
+#     name: $name
+#     synopsis: $synopsis
+#     gender: $gender
+#     genreId: $genreId
+#     tagIds: $tagIds
+#   ) {
+#     success
+#     message
+#     book {
+#       ...book
+#     }
+#   }
+# }
+
+# mutation UpdateBook(
+#   $bookId: Int!
+#   $status: Int
+#   $name: String
+#   $synopsis: String
+#   $gender: Int
+#   $genreId: Int
+#   $tagIds: [Int!]
+# ) {
+#   updateBook(
+#     bookId: $bookId
+#     status: $status
+#     name: $name
+#     synopsis: $synopsis
+#     gender: $gender
+#     genreId: $genreId
+#     tagIds: $tagIds
+#   ) {
+#     success
+#     message
+#     book {
+#       ...book
+#     }
+#   }
+# }
+
+# mutation ConvertBook(
+#   $name: String!
+#   $originalName: String!
+#   $authorName: String!
+#   $originalAuthorName: String!
+#   $synopsis: String!
+#   $gender: Int!
+#   $genreId: Int!
+#   $tagIds: [Int!]!
+# ) {
+#   convertBook(
+#     name: $name
+#     originalName: $originalName
+#     authorName: $authorName
+#     originalAuthorName: $originalAuthorName
+#     synopsis: $synopsis
+#     gender: $gender
+#     genreId: $genreId
+#     tagIds: $tagIds
+#   ) {
+#     success
+#     message
+#     book {
+#       ...book
+#     }
+#   }
+# }
+
+# mutation UpdateConvertBook(
+#   $name: String!
+#   $synopsis: String!
+#   $gender: Int!
+#   $genreId: Int!
+#   $tagIds: [Int!]!
+#   $originalName: String!
+#   $authorName: String!
+#   $originalAuthorName: String!
+#   $id: Int!
+# ) {
+#   updateConvertBook(
+#     name: $name
+#     synopsis: $synopsis
+#     gender: $gender
+#     genreId: $genreId
+#     tagIds: $tagIds
+#     originalName: $originalName
+#     authorName: $authorName
+#     originalAuthorName: $originalAuthorName
+#     id: $id
+#   ) {
+#     success
+#     message
+#     book {
+#       ...book
+#     }
+#   }
+# }
+
+# mutation ChangePoster($poster: Upload!, $bookId: Int!) {
+#   changePoster(poster: $poster, bookId: $bookId) {
+#     ...book
+#   }
+# }
+
+# mutation DeleteBook($bookId: Int!) {
+#   deleteBook(bookId: $bookId) {
+#     success
+#     message
+#   }
+# }

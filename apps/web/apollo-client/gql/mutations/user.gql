@@ -1,0 +1,43 @@
+mutation ChangeProfile(
+  $nickname: String!
+  $introduce: String!
+  $urls: [String!]!
+  $gender: Int!
+  $dob: Timestamp!
+) {
+  changeProfile(
+    nickname: $nickname
+    introduce: $introduce
+    urls: $urls
+    gender: $gender
+    dob: $dob
+  ) {
+    ...user
+  }
+}
+
+mutation ChangeAvatar($avatar: Upload!) {
+  changeAvatar(avatar: $avatar) {
+    ...user
+  }
+}
+
+# mutation ChangePassword($newPassword: String!, $password: String) {
+#   changePassword(newPassword: $newPassword, password: $password) {
+#     message
+#     success
+#   }
+# }
+
+mutation UpdateNotificationSettings(
+  $newChapter: Boolean!
+  $newInteraction: Boolean!
+) {
+  updateNotificationSettings(
+    newChapter: $newChapter
+    newInteraction: $newInteraction
+  ) {
+    newChapter
+    newInteraction
+  }
+}

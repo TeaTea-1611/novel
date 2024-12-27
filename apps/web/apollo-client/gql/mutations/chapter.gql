@@ -1,0 +1,77 @@
+# mutation CreateChapter(
+#   $bookId: Int!
+#   $order: Int!
+#   $title: String!
+#   $content: String!
+#   $publishAt: Timestamp!
+#   $unlockPrice: Int!
+# ) {
+#   createChapter(
+#     bookId: $bookId
+#     order: $order
+#     title: $title
+#     content: $content
+#     publishAt: $publishAt
+#     unlockPrice: $unlockPrice
+#   ) {
+#     success
+#     message
+#     chapter {
+#       ...chapter
+#     }
+#   }
+# }
+
+# mutation SwapChapters($bookId: Int!, $data: [SwapChapterInput!]!) {
+#   swapChapters(bookId: $bookId, data: $data) {
+#     ...chapter
+#   }
+# }
+
+# mutation UpdateChapter(
+#   $bookId: Int!
+#   $chapterId: Int!
+#   $title: String!
+#   $content: String!
+#   $publishAt: Timestamp!
+#   $unlockPrice: Int!
+# ) {
+#   updateChapter(
+#     bookId: $bookId
+#     chapterId: $chapterId
+#     title: $title
+#     content: $content
+#     publishAt: $publishAt
+#     unlockPrice: $unlockPrice
+#   ) {
+#     success
+#     message
+#     chapter {
+#       ...chapter
+#     }
+#   }
+# }
+
+# mutation DeleteChapters($chapterIds: [Int!]!, $bookId: Int!) {
+#   deleteChapters(chapterIds: $chapterIds, bookId: $bookId) {
+#     success
+#     message
+#   }
+# }
+
+# mutation UpdateChapters(
+#   $publishAt: Timestamp!
+#   $unlockPrice: Int!
+#   $chapterIds: [Int!]!
+#   $bookId: Int!
+# ) {
+#   updateChapters(
+#     publishAt: $publishAt
+#     unlockPrice: $unlockPrice
+#     chapterIds: $chapterIds
+#     bookId: $bookId
+#   ) {
+#     success
+#     message
+#   }
+# }
