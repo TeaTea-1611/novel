@@ -51,8 +51,6 @@ model User {
   comments             Comment[]
   createdBooks         Book[]
   refreshTokens        RefreshToken[]
-  achieve              Achieve?
-  userAssets           UserAsset[]
   reading              Reading[]
   bookmarks            Bookmark[]
   replyComments        ReplyComment[]
@@ -61,26 +59,16 @@ model User {
   @@map("user")
 }
 
+/// @@TypeGraphQL.omit(output: true)
 model RefreshToken {
-  token       String   @id @default(uuid()) @db.Uuid
-  userId      Int
-  tokenFamily String   @default(uuid()) @db.Uuid
-  active      Boolean  @default(true)
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
+  token     String   @id @default(uuid()) @db.Uuid
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_token")
-}
-
-model TwoFactorToken {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  token   String
-  expires DateTime
-
-  @@map("two_factor_token")
 }
 
 model NotificationSettings {
@@ -91,73 +79,6 @@ model NotificationSettings {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notification_settings")
-}
-
-model Achieve {
-  id             Int @id @unique
-  followCnt      Int @default(0)
-  readChapterCnt Int @default(0)
-  readBookCnt    Int @default(0)
-
-  user User @relation(fields: [id], references: [id], onDelete: Cascade)
-
-  @@map("achieve")
-}
-
-model Asset {
-  id          Int      @id @default(autoincrement())
-  type        Int
-  name        String
-  description String
-  startDate   DateTime
-  endDate     DateTime
-  title       String
-  url         String
-  color       String   @default("")
-  isFree      Boolean
-
-  eventAssets EventAsset[]
-  userAssets  UserAsset[]
-
-  @@map("asset")
-}
-
-model UserAsset {
-  id         Int      @id @default(autoincrement())
-  userId     Int
-  assetId    Int
-  receivedAt DateTime @default(now())
-
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, assetId])
-  @@map("user_asset")
-}
-
-model Event {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  webPath     String   @default("")
-  appPath     String   @default("")
-  startDate   DateTime
-  endDate     DateTime
-
-  eventAssets EventAsset[]
-
-  @@map("event")
-}
-
-model EventAsset {
-  eventId Int
-  assetId Int
-
-  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
-
-  @@id([eventId, assetId])
-  @@map("event_asset")
 }
 
 model Author {

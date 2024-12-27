@@ -2,7 +2,6 @@ import * as TypeGraphQL from "type-graphql";
 import * as GraphQLScalars from "graphql-scalars";
 import { Prisma } from "@prisma/client";
 import { DecimalJSScalar } from "../scalars";
-import { Achieve } from "../models/Achieve";
 import { Book } from "../models/Book";
 import { Bookmark } from "../models/Bookmark";
 import { Comment } from "../models/Comment";
@@ -11,7 +10,6 @@ import { Reading } from "../models/Reading";
 import { RefreshToken } from "../models/RefreshToken";
 import { ReplyComment } from "../models/ReplyComment";
 import { Review } from "../models/Review";
-import { UserAsset } from "../models/UserAsset";
 import { UserRole } from "../enums/UserRole";
 
 @TypeGraphQL.ObjectType("User", {})
@@ -112,10 +110,6 @@ export class User {
   createdBooks?: Book[];
 
   refreshTokens?: RefreshToken[];
-
-  achieve?: Achieve | null;
-
-  userAssets?: UserAsset[];
 
   reading?: Reading[];
 

@@ -17,7 +17,7 @@ import {
   User,
 } from "../../../prisma/generated/type-graphql";
 import { AuthService } from "../auth/auth.service";
-import type {
+import {
   ChangeProfileArgs,
   NotificationSettingsArgs,
   TwoFactorArgs,

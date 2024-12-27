@@ -2,15 +2,14 @@ import type { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import type { Request, Response } from "express";
 import { Redis } from "ioredis";
-import jwt from "jsonwebtoken";
 import { Service } from "typedi";
 import { env } from "../../env";
 import { sendEmail } from "../../emails/send";
-import VerificationEmail from "../../emails/components/verification-email";
-import PasswordResetEmail from "../../emails/components/password-reset-email";
-import TwoFactorEmail from "../../emails/components/two-factor-code-email";
+import VerificationEmail from "../../emails/templates/verification-email";
+import PasswordResetEmail from "../../emails/templates/password-reset-email";
+import TwoFactorEmail from "../../emails/templates/two-factor-code-email";
 import type { User } from "../../../prisma/generated/type-graphql";
-import { accessTokenManager } from "../../utils/jwt";
+import { accessTokenManager } from "../../shared/utils/jwt";
 
 @Service()
 export class AuthService {
@@ -20,7 +19,7 @@ export class AuthService {
 
   async createTokens(
     prisma: PrismaClient,
-    { userId, tokenFamily }: { userId: number; tokenFamily?: string },
+    { userId }: { userId: number },
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const existingTokens = await prisma.refreshToken.findMany({
       where: { userId },
@@ -38,24 +37,18 @@ export class AuthService {
 
     const accessToken = accessTokenManager.sign({ sub: userId });
 
-    const refreshToken = jwt.sign({ sub: userId }, env.REFRESH_TOKEN_SECRET, {
-      expiresIn: env.REFRESH_TOKEN_EXPIRY,
-    });
-
     const expiresAt = new Date(
       new Date().getTime() + env.REFRESH_TOKEN_EXPIRY * 1000,
     );
 
-    await prisma.refreshToken.create({
+    const rf = await prisma.refreshToken.create({
       data: {
         userId,
-        token: refreshToken,
-        tokenFamily,
         expiresAt,
       },
     });
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken: rf.token };
   }
 
   setRefreshTokenCookie(res: Response, refreshToken: string) {

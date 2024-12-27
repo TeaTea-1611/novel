@@ -9,7 +9,7 @@ import {
 export const loginSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
-  code: twoFactorCodeSchema,
+  code: twoFactorCodeSchema.optional(),
 });
 
 export const registerSchema = z.object({

@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { type Request, type Response } from "express";
 import { type Redis } from "ioredis";
-import { accessTokenManager } from "./utils/jwt";
+import { accessTokenManager } from "./shared/utils/jwt";
 import { redis } from "./redis";
-import { buildDataLoaders } from "./utils/dataloader";
+import { buildDataLoaders } from "./shared/utils/dataloader";
 import type { User } from "../prisma/generated/type-graphql";
 
 const prisma = new PrismaClient({

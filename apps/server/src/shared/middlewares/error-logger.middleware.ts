@@ -5,8 +5,8 @@ import {
   type ResolverData,
 } from "type-graphql";
 import { Service } from "typedi";
-import { type Context } from "../context";
-import { Logger } from "../logger";
+import { type Context } from "../../context";
+import { Logger } from "../../logger";
 
 @Service()
 export class ErrorLoggerMiddleware implements MiddlewareInterface<Context> {

@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "bun --watch run src/index.ts",
     "start": "bun run src/index.ts",
-    "email": "email dev --dir src/emails/components",
+    "email": "email dev --dir src/emails",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push --skip-generate",
+    "db:push": "prisma db push",
     "db:seed": "prisma db seed"
   },
   "devDependencies": {
@@ -51,5 +51,8 @@
     "type-graphql": "^2.0.0-rc.2",
     "typedi": "^0.10.0",
     "zod": "^3.24.1"
+  },
+  "prisma": {
+    "seed": "bun prisma/seed.ts"
   }
 }

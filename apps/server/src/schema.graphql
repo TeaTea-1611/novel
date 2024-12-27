@@ -7,10 +7,238 @@ type Query {
   termsOfService: String
   privacyPolicy: String
   copyright: String
+  me: User
+  user(userId: Int!): User
+  tags: [Tag!]!
+  tagGroups: [TagGroup!]!
+  genres: [Genre!]!
+  kinds: [Int!]!
+  genders: [Int!]!
+  status: [Int!]!
+  book(bookId: Int!): Book
+  paginatedBooks(page: Int! = 1, take: Int! = 10, keyword: String! = "", gender: Int, genreId: Int, tagIds: [Int!], sortBy: String, sortOrder: SortOrder = asc): PaginatedBooksResponse!
+  paginatedRankingBooks(page: Int!, take: Int!, type: PaginatedRankingType!, month: Int!, year: Int!): PaginatedBooksResponse!
+  createdBooks(page: Int! = 1, take: Int! = 10, keyword: String! = "", gender: Int, genreId: Int, tagIds: [Int!], sortBy: String, sortOrder: SortOrder = asc): PaginatedBooksResponse!
+  chapterById(chapterId: Int!): Chapter
+  chapterByBookAndOrder(order: Int!, bookId: Int!): Chapter
+  chapters(bookId: Int!): [Chapter!]!
+}
+
+type User {
+  id: Int!
+  nickname: String!
+  email: String!
+  phone: String!
+  avatar: String!
+  avatarCover: String!
+  role: UserRole!
+  gender: Int!
+  introduce: String!
+  dob: Timestamp!
+  urls: [String!]!
+  keyNum: Int!
+  ticketNum: Int!
+  candyNum: Int!
+  createdAt: Timestamp!
+  emailVerified: Timestamp
+  isTwoFactorEnable: Boolean!
+  notificationSettings: NotificationSettings!
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+  CONVERTER
+  USER
+}
+
+"""
+The javascript `Date` as integer. Type represents date and time as number of milliseconds from start of UNIX epoch.
+"""
+scalar Timestamp
+
+type NotificationSettings {
+  userId: Int!
+  newChapter: Boolean!
+  newInteraction: Boolean!
+}
+
+type Tag {
+  id: Int!
+  groupId: Int!
+  name: String!
+  group: TagGroup!
+}
+
+type TagGroup {
+  id: Int!
+  name: String!
+  color: String!
+}
+
+type Genre {
+  id: Int!
+  name: String!
+}
+
+type Book {
+  id: Int!
+  name: String!
+  originalName: String!
+  authorId: Int
+  originalLink: String!
+  synopsis: String!
+  kind: Int!
+  gender: Int!
+  status: Int!
+  poster: String!
+  genreId: Int!
+  wordCnt: Int!
+  flowerCnt: Int!
+  readCnt: Int!
+  reviewCnt: Int!
+  chapterCnt: Int!
+  commentCnt: Int!
+  points: Float!
+  createdAt: Timestamp!
+  newChapterAt: Timestamp!
+  createdById: Int!
+  createdBy: User!
+  genre: Genre!
+  tags: [Tag!]!
+  author: Author
+  readMonthly: Int
+  nominateMonthly: Int
+  reading: Reading
+}
+
+type Author {
+  id: Int!
+  name: String!
+  originalName: String!
+}
+
+type Reading {
+  userId: Int!
+  bookId: Int!
+  currentChapter: Int!
+  readingAt: Timestamp!
+}
+
+type PaginatedBooksResponse {
+  total: Int!
+  books: [Book!]!
+  prev: Int
+  next: Int
+  totalPages: Int!
+}
+
+enum SortOrder {
+  asc
+  desc
+}
+
+enum PaginatedRankingType {
+  read
+  flower
+  comment
+  review
+  nominate
+}
+
+type Chapter {
+  id: Int!
+  bookId: Int!
+  order: Int!
+  title: String!
+  unlockPrice: Int!
+  readCnt: Int!
+  publishAt: Timestamp!
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  content: String!
+  book: Book
 }
 
 type Mutation {
   updateTermsOfService(value: String!): Boolean
   updatePrivacyPolicy(value: String!): Boolean
   updateCopyright(value: String!): Boolean
+  register(nickname: String!, email: String!, password: String!): MutationResponse!
+  login(email: String!, password: String!, code: String): LoginResponse!
+  googleLogin(code: String!): LoginResponse!
+  logout: Boolean!
+  refreshToken: String
+  verification(token: String!): MutationResponse!
+  passwordReset(email: String!): MutationResponse!
+  newPassword(token: String!, newPassword: String!): MutationResponse!
+  resendTwoFactorCode(email: String!): MutationResponse!
+  changeProfile(nickname: String!, introduce: String!, urls: [String!]!, gender: Int!, dob: Timestamp!): User!
+  changeAvatar(avatar: Upload!): User!
+  updateTwoFactor(isTwoFactorEnable: Boolean!, code: String): TwoFactorResponse!
+  updateNotificationSettings(newChapter: Boolean!, newInteraction: Boolean!): NotificationSettings!
+  createTag(groupId: Int!, name: String!): Tag!
+  updateTag(groupId: Int!, name: String!, tagId: Int!): Tag!
+  deleteTags(tagIds: [Int!]!): MutationResponse!
+  createTagGroup(color: String!, name: String!): TagGroup!
+  updateTagGroup(color: String!, name: String!, tagGroupId: Int!): TagGroup!
+  deleteTagGroups(tagGroupIds: [Int!]!): MutationResponse!
+  createGenre(name: String!): Genre!
+  updateGenre(name: String!, genreId: Int!): Genre!
+  deleteGenres(genreIds: [Int!]!): MutationResponse!
+  createBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!): BookResponse!
+  updateBook(bookId: Int!, status: Int, name: String, synopsis: String, gender: Int, genreId: Int, tagIds: [Int!]): BookResponse!
+  convertBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!, originalName: String!, authorName: String!, originalAuthorName: String!): BookResponse!
+  updateConvertBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!, originalName: String!, authorName: String!, originalAuthorName: String!, id: Int!): BookResponse!
+  changePoster(poster: Upload!, bookId: Int!): Book!
+  deleteBook(bookId: Int!): MutationResponse!
+  createChapter(bookId: Int!, order: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
+  updateChapter(bookId: Int!, chapterId: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
+  deleteChapters(chapterIds: [Int!]!, bookId: Int!): MutationResponse!
+  updateChapters(publishAt: Timestamp!, unlockPrice: Int!, chapterIds: [Int!]!, bookId: Int!): MutationResponse!
+  swapChapters(bookId: Int!, data: [SwapChapterInput!]!): [Chapter!]!
+}
+
+type MutationResponse implements IMutationResponse {
+  success: Boolean!
+  message: String!
+}
+
+interface IMutationResponse {
+  success: Boolean!
+  message: String!
+}
+
+type LoginResponse implements IMutationResponse {
+  success: Boolean!
+  message: String!
+  user: User
+  twoFactor: Boolean
+  accessToken: String
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type TwoFactorResponse implements IMutationResponse {
+  success: Boolean!
+  message: String!
+  twoFactor: Boolean
+}
+
+type BookResponse implements IMutationResponse {
+  success: Boolean!
+  message: String!
+  book: Book
+}
+
+type ChapterMutationResponse implements IMutationResponse {
+  success: Boolean!
+  message: String!
+  chapter: Chapter
+}
+
+input SwapChapterInput {
+  id: Int!
+  newOrder: Int!
 }

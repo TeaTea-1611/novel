@@ -26,8 +26,6 @@ Table user {
   comments comment [not null]
   createdBooks book [not null]
   refreshTokens refresh_token [not null]
-  achieve achieve
-  userAssets user_asset [not null]
   reading reading [not null]
   bookmarks bookmark [not null]
   replyComments reply_comment [not null]
@@ -36,18 +34,11 @@ Table user {
 Table refresh_token {
   token String [pk]
   userId Int [not null]
-  tokenFamily String [not null]
-  active Boolean [not null, default: true]
   expiresAt DateTime [not null]
   createdAt DateTime [default: `now()`, not null]
   user user [not null]
-}
 
-Table two_factor_token {
-  id Int [pk, increment]
-  email String [unique, not null]
-  token String [not null]
-  expires DateTime [not null]
+  Note: '@@TypeGraphQL.omit(output: true)'
 }
 
 Table notification_settings {
@@ -55,64 +46,6 @@ Table notification_settings {
   newChapter Boolean [not null, default: true]
   newInteraction Boolean [not null, default: true]
   user user [not null]
-}
-
-Table achieve {
-  id Int [pk]
-  followCnt Int [not null, default: 0]
-  readChapterCnt Int [not null, default: 0]
-  readBookCnt Int [not null, default: 0]
-  user user [not null]
-}
-
-Table asset {
-  id Int [pk, increment]
-  type Int [not null]
-  name String [not null]
-  description String [not null]
-  startDate DateTime [not null]
-  endDate DateTime [not null]
-  title String [not null]
-  url String [not null]
-  color String [not null, default: '']
-  isFree Boolean [not null]
-  eventAssets event_asset [not null]
-  userAssets user_asset [not null]
-}
-
-Table user_asset {
-  id Int [pk, increment]
-  userId Int [not null]
-  assetId Int [not null]
-  receivedAt DateTime [default: `now()`, not null]
-  user user [not null]
-  asset asset [not null]
-
-  indexes {
-    (userId, assetId) [unique]
-  }
-}
-
-Table event {
-  id Int [pk, increment]
-  name String [not null]
-  description String [not null]
-  webPath String [not null, default: '']
-  appPath String [not null, default: '']
-  startDate DateTime [not null]
-  endDate DateTime [not null]
-  eventAssets event_asset [not null]
-}
-
-Table event_asset {
-  eventId Int [not null]
-  assetId Int [not null]
-  event event [not null]
-  asset asset [not null]
-
-  indexes {
-    (eventId, assetId) [pk]
-  }
 }
 
 Table author {
@@ -315,16 +248,6 @@ Enum UserRole {
 Ref: refresh_token.userId > user.id [delete: Cascade]
 
 Ref: notification_settings.userId - user.id [delete: Cascade]
-
-Ref: achieve.id - user.id [delete: Cascade]
-
-Ref: user_asset.userId > user.id [delete: Cascade]
-
-Ref: user_asset.assetId > asset.id [delete: Cascade]
-
-Ref: event_asset.eventId > event.id [delete: Cascade]
-
-Ref: event_asset.assetId > asset.id [delete: Cascade]
 
 Ref: book.authorId > author.id
 

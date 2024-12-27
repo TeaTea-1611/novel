@@ -1,6 +1,6 @@
 import type { MiddlewareFn } from "type-graphql";
-import { UserRole } from "../../prisma/generated/type-graphql";
-import type { Context } from "../context";
+import { UserRole } from "../../../prisma/generated/type-graphql";
+import type { Context } from "../../context";
 import { forbiddenError } from "../utils/errors";
 
 export const IsAdminOrSelf: MiddlewareFn<Context> = async (

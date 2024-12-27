@@ -44,14 +44,8 @@ function applyTypeClassEnhanceConfig<
 
 const modelsInfo = {
   User: ["id", "nickname", "email", "phone", "avatar", "avatarCover", "role", "gender", "introduce", "dob", "urls", "keyNum", "ticketNum", "candyNum", "createdAt", "emailVerified", "isTwoFactorEnable"],
-  RefreshToken: ["token", "userId", "tokenFamily", "active", "expiresAt", "createdAt"],
-  TwoFactorToken: ["id", "email", "token", "expires"],
+  RefreshToken: ["token", "userId", "expiresAt", "createdAt"],
   NotificationSettings: ["userId", "newChapter", "newInteraction"],
-  Achieve: ["id", "followCnt", "readChapterCnt", "readBookCnt"],
-  Asset: ["id", "type", "name", "description", "startDate", "endDate", "title", "url", "color", "isFree"],
-  UserAsset: ["id", "userId", "assetId", "receivedAt"],
-  Event: ["id", "name", "description", "webPath", "appPath", "startDate", "endDate"],
-  EventAsset: ["eventId", "assetId"],
   Author: ["id", "name", "originalName"],
   Book: ["id", "name", "originalName", "authorId", "originalLink", "synopsis", "kind", "gender", "status", "poster", "genreId", "wordCnt", "flowerCnt", "readCnt", "reviewCnt", "chapterCnt", "commentCnt", "points", "createdAt", "newChapterAt", "createdById"],
   Genre: ["id", "name"],

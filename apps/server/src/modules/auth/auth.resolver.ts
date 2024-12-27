@@ -10,13 +10,15 @@ import {
   Resolver,
 } from "type-graphql";
 import { Inject, Service } from "typedi";
+import { User } from "../../../prisma/generated/type-graphql";
 import type { Context } from "../../context";
-import { MutationResponse } from "../../types";
+import { env } from "../../env";
 import {
-  accessTokenManager,
   passwordResetTokenManager,
   verificationTokenManager,
-} from "../../utils/jwt";
+} from "../../shared/utils/jwt";
+import { MutationResponse } from "../../types";
+import { handleValidationError } from "../../validation/handle-error";
 import {
   LoginArgs,
   NewPasswordArgs,
@@ -25,14 +27,11 @@ import {
 } from "./auth.arg";
 import { AuthService } from "./auth.service";
 import { LoginResponse } from "./auth.type";
-import { handleValidationError } from "../../validation/handle-error";
 import {
   loginSchema,
   newPasswordSchema,
   registerSchema,
 } from "./auth.validation";
-import { env } from "../../env";
-import { User } from "../../../prisma/generated/type-graphql";
 
 const oAuth2Client = new OAuth2Client(
   env.GOOGLE_CLIENT_ID,
@@ -239,7 +238,6 @@ export class AuthResolver {
         const { accessToken, refreshToken } =
           await this.authService.createTokens(prisma, {
             userId: refreshTokenDb.userId,
-            tokenFamily: refreshTokenDb.tokenFamily,
           });
         this.authService.setRefreshTokenCookie(res, refreshToken);
         return accessToken;

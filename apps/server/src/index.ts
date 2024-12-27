@@ -2,7 +2,7 @@ import "reflect-metadata";
 import express from "express";
 import http from "http";
 import { buildSchema, GraphQLTimestamp } from "type-graphql";
-import { ErrorLoggerMiddleware } from "./middlewares/error-logger.middleware";
+import { ErrorLoggerMiddleware } from "./shared/middlewares/error-logger.middleware";
 import Container from "typedi";
 import { ApolloServer } from "@apollo/server";
 import { createContext, type Context } from "./context";
@@ -79,7 +79,7 @@ import { resolvers } from "./resolvers";
     const protocol = env.NODE_ENV === "production" ? "https" : "http";
     const host = env.HOST;
     console.log(
-      `🚀 Apollo Server ready at ${protocol}://${host}:${port}${env.GRAPHQL_PATH}`,
+      `🚀 Server ready at ${protocol}://${host}:${port}${env.GRAPHQL_PATH}`,
     );
   });
 })()

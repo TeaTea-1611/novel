@@ -1,5 +1,5 @@
 import { Link, Section, Text } from "@react-email/components";
-import Wrapper from "./wrapper";
+import Wrapper from "../components/wrapper";
 import { COMPANY_INFO } from "../../constants";
 
 interface Props {

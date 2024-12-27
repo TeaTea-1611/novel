@@ -2,7 +2,7 @@ import { type AuthChecker } from "type-graphql";
 import { type Context } from "./context";
 import { env } from "./env";
 import { GraphQLError } from "graphql";
-import { forbiddenError, tokenError } from "./utils/errors";
+import { forbiddenError, tokenError } from "./shared/utils/errors";
 
 export const authChecker: AuthChecker<Context> = async (
   { context: { req, user, prisma } },

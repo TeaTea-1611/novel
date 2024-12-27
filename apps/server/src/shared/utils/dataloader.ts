@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import DataLoader from "dataloader";
-import type { Tag } from "../../prisma/generated/type-graphql";
+import type { Tag } from "../../../prisma/generated/type-graphql";
 
 const createUserLoader = (prisma: PrismaClient) => {
   return new DataLoader(async (userIds: readonly number[]) => {
