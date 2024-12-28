@@ -1,5 +1,5 @@
 import { siteConfig } from "@/config/site";
-import { Icons } from "./icons";
+import { Icons } from "@workspace/ui/components/icons";
 
 export default function MainFooter() {
   return (

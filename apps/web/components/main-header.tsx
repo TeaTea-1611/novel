@@ -1,6 +1,6 @@
 "use client";
 
-import { Icons } from "@/components/icons";
+import { Icons } from "@workspace/ui/components/icons";
 // import { CommandMenu } from "@/components/menu-search";
 import { ModeToggle } from "@/components/mode-toggle";
 // import { UserButton } from "@/components/user-button";

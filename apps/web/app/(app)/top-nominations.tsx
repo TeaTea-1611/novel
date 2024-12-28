@@ -4,12 +4,11 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@workspace/ui/components/avatar";
-import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import NumberTicker from "@workspace/ui/components/number-ticker";
-import { Separator } from "@workspace/ui/components/separator";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { ImageIcon, TicketIcon, UserIcon } from "lucide-react";
+import { TextShimmer } from "@workspace/ui/components/text-shimmer";
+import { ImageIcon, LayersIcon, TicketIcon, UserIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -20,15 +19,16 @@ interface Props {
 
 export const TopNominations = ({ data, loading }: Props) => {
   return (
-    <div className="flex flex-col p-2 space-y-4 border shadow rounded-xl bg-card md:p-4">
+    <div className="flex flex-col">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold tracking-tight">Đề cử</h2>
+        <TextShimmer className="text-xl font-semibold tracking-tight" as={"h2"}>
+          Đề cử
+        </TextShimmer>
         <Button variant="linkHover2" asChild>
           <Link href={"/books/rank?type=nominate"}>Xem thêm</Link>
         </Button>
       </div>
-      <Separator />
-      <div className="">
+      <article className="flex flex-col gap-2 p-2 transition-colors border shadow cursor-pointer rounded-xl bg-card">
         {loading ? (
           <>
             <div className="flex justify-start space-x-2 h-[144.8px]">
@@ -77,7 +77,9 @@ export const TopNominations = ({ data, loading }: Props) => {
                       className="mr-2"
                     />
                   ) : (
-                    <span>{i + 1}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {i + 1}
+                    </span>
                   )}
                 </div>
                 <div className="flex flex-col justify-between flex-1">
@@ -88,8 +90,8 @@ export const TopNominations = ({ data, loading }: Props) => {
                     >
                       {name}
                     </Link>
-                    {isFirst && nominateMonthly && (
-                      <div className="flex items-center">
+                    {isFirst && !!nominateMonthly && (
+                      <div className="flex items-center text-sm text-muted-foreground">
                         <TicketIcon className="mr-2 size-4" />
                         <NumberTicker value={nominateMonthly} stiffness={500} />
                       </div>
@@ -97,15 +99,17 @@ export const TopNominations = ({ data, loading }: Props) => {
                   </div>
                   {isFirst && (
                     <div className="space-y-1">
-                      <div className="flex items-center">
+                      <div className="flex items-center text-sm text-muted-foreground">
                         <UserIcon className="mr-2 size-4" />
                         {author?.name ?? createdBy.nickname}
                       </div>
-                      <Badge variant={"outline"}>{genre.name}</Badge>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <LayersIcon className="mr-2 size-4" />
+                        {genre.name}
+                      </div>
                     </div>
                   )}
                 </div>
-
                 <div className="pl-2">
                   {isFirst ? (
                     <Link href={`/books/${id}`}>
@@ -117,8 +121,12 @@ export const TopNominations = ({ data, loading }: Props) => {
                       </Avatar>
                     </Link>
                   ) : (
-                    nominateMonthly && (
-                      <NumberTicker value={nominateMonthly} stiffness={500} />
+                    !!nominateMonthly && (
+                      <NumberTicker
+                        value={nominateMonthly}
+                        stiffness={500}
+                        className="text-sm text-muted-foreground"
+                      />
                     )
                   )}
                 </div>
@@ -126,7 +134,7 @@ export const TopNominations = ({ data, loading }: Props) => {
             );
           })
         )}
-      </div>
+      </article>
     </div>
   );
 };

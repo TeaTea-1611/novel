@@ -18,7 +18,7 @@ export function UserAvatar({ avatar, className }: Props) {
   return (
     <Avatar className={cn("rounded-lg size-8", className)}>
       <AvatarImage src={avatar} alt="avatar" className="rounded-lg size-full" />
-      <AvatarFallback className="rounded-lg">
+      <AvatarFallback className="rounded-lg bg-transparent">
         <Image
           src={userPng}
           alt="avatar"

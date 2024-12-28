@@ -1,7 +1,7 @@
 "use client";
 
 import { useHomePageDataQuery } from "@/apollo-client/__generated";
-import EditorPicks from "./editor-picks";
+import { EditorPicks } from "./editor-picks";
 import { MostReadBooks } from "./most-read-books";
 import { TopNominations } from "./top-nominations";
 import RecentUpdates from "./recent-updates";

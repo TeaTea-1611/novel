@@ -1,6 +1,6 @@
 "use client";
 
-import { Icons } from "@/components/icons";
+import { Icons } from "@workspace/ui/components/icons";
 import { mainNav } from "@/config/nav";
 import { siteConfig } from "@/config/site";
 import { Button, buttonVariants } from "@workspace/ui/components/button";
@@ -27,7 +27,7 @@ export const MainNav = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="size-8 px-0">
+        <Button variant="ghost" className="px-0 size-8">
           <PanelLeft className="size-4" />
           <span className="sr-only">Toggle navigation</span>
         </Button>
@@ -49,7 +49,7 @@ export const MainNav = () => {
             href={"/"}
             className={`flex items-center text-lg text-primary leading-tight`}
           >
-            <Icons.logo className="size-6 text-primary mr-2" />
+            <Icons.logo className="mr-2 size-6 text-primary" />
             {siteConfig.name}
           </Link>
           <VisuallyHidden>
@@ -58,10 +58,10 @@ export const MainNav = () => {
           </VisuallyHidden>
         </SheetHeader>
         <nav className="p-4">
-          <ul className="list-none text-sm">
+          <ul className="text-sm list-none">
             {mainNav.map((item) => (
               <Collapsible key={item.href} asChild defaultOpen={true}>
-                <li className="group/menu-item relative">
+                <li className="relative group/menu-item">
                   <Link
                     href={item.href}
                     className={

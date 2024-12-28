@@ -1,6 +1,6 @@
 "use client";
 
-import { Icons } from "@/components/icons";
+import { Icons } from "@workspace/ui/components/icons";
 import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,

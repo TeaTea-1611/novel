@@ -1,6 +1,6 @@
 "use client";
 
-import { Icons } from "@/components/icons";
+import { Icons } from "@workspace/ui/components/icons";
 import { ModeToggle } from "@/components/mode-toggle";
 import { siteConfig } from "@/config/site";
 import { ginto } from "@/styles/fonts";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Icons } from "@/components/icons";
+import { Icons } from "@workspace/ui/components/icons";
 import { ResponseMessage } from "@/components/response-message";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
