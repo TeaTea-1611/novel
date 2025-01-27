@@ -1,5 +1,6 @@
 import { BookFragment } from "@/apollo-client/__generated";
 import { DataTableColumnHeader } from "@/components/data-table-column-header";
+import LongText from "@/components/long-text";
 import { genders } from "@/data/genders";
 import { status as statuses } from "@/data/status";
 import { ColumnDef, Row } from "@tanstack/react-table";
@@ -16,8 +17,6 @@ import { format } from "date-fns";
 import { EllipsisIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { useBooks } from "../context/books-context";
-import LongText from "@/components/long-text";
-import { cn } from "@workspace/ui/lib/utils";
 
 export const columns: ColumnDef<BookFragment>[] = [
   {
