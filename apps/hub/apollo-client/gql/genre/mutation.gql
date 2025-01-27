@@ -1,0 +1,13 @@
+mutation MutationGenre($genreId: Int, $name: String!) {
+  mutationGenre(genreId: $genreId, name: $name) {
+    id
+    name
+  }
+}
+
+mutation DeleteGenres($genreIds: [Int!]!) {
+  deleteGenres(genreIds: $genreIds) {
+    success
+    message
+  }
+}

@@ -1,0 +1,19 @@
+mutation MutationTag($groupId: Int!, $name: String!, $tagId: Int) {
+  mutationTag(groupId: $groupId, name: $name, tagId: $tagId) {
+    id
+    groupId
+    name
+    group {
+      id
+      name
+      color
+    }
+  }
+}
+
+mutation DeleteTags($tagIds: [Int!]!) {
+  deleteTags(tagIds: $tagIds) {
+    success
+    message
+  }
+}

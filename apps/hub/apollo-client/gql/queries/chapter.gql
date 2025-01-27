@@ -1,0 +1,15 @@
+query ChapterByBookAndOrder($order: Int!, $bookId: Int!) {
+  chapterByBookAndOrder(order: $order, bookId: $bookId) {
+    ...chapter
+    content
+    book {
+      name
+    }
+  }
+}
+
+query Chapters($bookId: Int!) {
+  chapters(bookId: $bookId) {
+    ...chapter
+  }
+}

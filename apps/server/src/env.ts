@@ -16,7 +16,7 @@ export const env = createEnv({
     GOOGLE_TTS_KEY: z.string(),
 
     // Mail
-    SEND_MAIL_USER: z.string().email(),
+    SEND_MAIL_USER: z.string(),
     SEND_MAIL_PASS: z.string(),
 
     WEB_URL: z.string().url(),

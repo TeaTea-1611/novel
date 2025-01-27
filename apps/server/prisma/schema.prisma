@@ -3,15 +3,15 @@ generator client {
   previewFeatures = ["omitApi"]
 }
 
-generator dbml {
-  provider = "prisma-dbml-generator"
-}
+// generator dbml {
+//   provider = "prisma-dbml-generator"
+// }
 
-generator typegraphql {
-  provider = "typegraphql-prisma"
-  output   = "../prisma/generated/type-graphql"
-  emitOnly = ["models", "enums"]
-}
+// generator typegraphql {
+//   provider = "typegraphql-prisma"
+//   output   = "../prisma/generated/type-graphql"
+//   emitOnly = ["models", "enums"]
+// }
 
 datasource db {
   provider = "postgresql"

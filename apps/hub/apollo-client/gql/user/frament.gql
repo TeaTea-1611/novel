@@ -1,0 +1,19 @@
+fragment user on User {
+  id
+  email
+  nickname
+  avatar
+  avatarCover
+  role
+  emailVerified
+  isTwoFactorEnable
+  gender
+  introduce
+  phone
+  dob
+  urls
+  keyNum
+  ticketNum
+  candyNum
+  createdAt
+}

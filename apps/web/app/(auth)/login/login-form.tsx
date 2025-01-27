@@ -30,12 +30,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { loginSchema } from "@/schemas";
 import { Input } from "@workspace/ui/components/input";
 import { PasswordInput } from "@workspace/ui/components/password-input";
 import { accessTokenVar } from "@/apollo-client/vars/access-token-var";
 import { z } from "zod";
 import * as React from "react";
+import { loginSchema } from "@workspace/schemas/user";
 
 export const LoginForm = () => {
   const [countdown, setCountdown] = useState(0);

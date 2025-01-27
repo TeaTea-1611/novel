@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useChangeAvatarCoverMutation,
   useChangeAvatarMutation,
   useFullQuery,
 } from "@/apollo-client/__generated";
@@ -10,7 +11,7 @@ import { toast } from "sonner";
 import { Wrapper } from "../wrapper";
 import { EditAvatar } from "./edit-avatar";
 import { ProfileForm } from "./profile-form";
-import { EditCoverAvatar } from "./edit-cover-avatar";
+import { EditAvatarCover } from "./edit-avatar-cover";
 
 export default function Page() {
   const { data, loading } = useFullQuery();
@@ -20,6 +21,16 @@ export default function Page() {
     },
     onCompleted: ({ changeAvatar }) => {
       if (changeAvatar) {
+        toast.success("Đã cập nhật ảnh đại diện.");
+      }
+    },
+  });
+  const [changeAvatarCover] = useChangeAvatarCoverMutation({
+    onError: (error) => {
+      toast.error(error.message);
+    },
+    onCompleted: ({ changeAvatarCover }) => {
+      if (changeAvatarCover) {
         toast.success("Đã cập nhật ảnh đại diện.");
       }
     },
@@ -67,11 +78,11 @@ export default function Page() {
           ra nhận xét và đóng góp của bạn!
         </p>
         <div className="relative mb-8 max-w-96">
-          <EditCoverAvatar
-            coverAvatar={data.me.avatarCover}
+          <EditAvatarCover
+            avatarCover={data.me.avatarCover}
             onSave={(file) => {
-              changeAvatar({
-                variables: { avatar: file },
+              changeAvatarCover({
+                variables: { avatarCover: file },
               });
             }}
           />

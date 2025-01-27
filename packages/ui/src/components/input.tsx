@@ -25,8 +25,8 @@ const Input = React.forwardRef<
           Icon ? "pr-12" : "pr-2",
           className,
         )}
-        placeholder=" "
         {...props}
+        placeholder=" "
       />
       <label
         className={

@@ -10,14 +10,12 @@ import {
   Root,
 } from "type-graphql";
 import { Service } from "typedi";
-import {
-  Tag,
-  TagGroup,
-  UserRole,
-} from "../../../prisma/generated/type-graphql";
 import type { Context } from "../../context";
 import { MutationResponse } from "../../types";
 import { GraphQLError } from "graphql";
+import { Tag } from "./tag.model";
+import { TagGroup } from "./tag-group.model";
+import { UserRole } from "../../enums/user-role";
 
 @Service()
 @Resolver(() => Tag)
@@ -37,29 +35,44 @@ export class TagResolver {
 
   @Authorized(UserRole.ADMIN)
   @Mutation(() => Tag)
-  async createTag(
+  async mutationTag(
+    @Arg("tagId", () => Int, { nullable: true }) tagId: number | null,
     @Arg("name", () => String) name: string,
     @Arg("groupId", () => Int) groupId: number,
     @Ctx() { prisma }: Context,
   ): Promise<Tag> {
-    if (await prisma.tag.findUnique({ where: { name } })) {
-      throw new GraphQLError("Thẻ đã tồn tại");
-    }
-    return await prisma.tag.create({
-      data: { name, groupId },
+    const existing = await prisma.tag.findUnique({
+      where: { name },
     });
-  }
 
-  @Authorized(UserRole.ADMIN)
-  @Mutation(() => Tag)
-  async updateTag(
-    @Arg("tagId", () => Int) tagId: number,
-    @Arg("name", () => String) name: string,
-    @Arg("groupId", () => Int) groupId: number,
-    @Ctx() { prisma }: Context,
-  ): Promise<Tag> {
-    return await prisma.tag.update({
-      where: { id: tagId },
+    if (tagId) {
+      const current = await prisma.tag.findUnique({
+        where: { id: tagId },
+      });
+
+      if (!current) {
+        throw new GraphQLError("Thẻ không tồn tại.");
+      }
+
+      if (current.name === name) {
+        return current;
+      }
+
+      if (existing) {
+        throw new GraphQLError("Thẻ đã tồn tại.");
+      }
+
+      return prisma.tag.update({
+        where: { id: tagId },
+        data: { name, groupId },
+      });
+    }
+
+    if (existing) {
+      throw new GraphQLError("Thẻ đã tồn tại.");
+    }
+
+    return prisma.tag.create({
       data: { name, groupId },
     });
   }
@@ -70,6 +83,15 @@ export class TagResolver {
     @Arg("tagIds", () => [Int]) tagIds: number[],
     @Ctx() { prisma }: Context,
   ): Promise<MutationResponse> {
+    if (
+      await prisma.tagOnBook.findFirst({
+        where: { tagId: { in: tagIds } },
+        select: { tagId: true },
+      })
+    ) {
+      throw new GraphQLError("Không thể xóa do có truyện có thẻ này.");
+    }
+
     await prisma.tag.deleteMany({
       where: { id: { in: tagIds } },
     });
@@ -87,29 +109,44 @@ export class TagResolver {
 
   @Authorized(UserRole.ADMIN)
   @Mutation(() => TagGroup)
-  async createTagGroup(
+  async mutationTagGroup(
+    @Arg("tagGroupId", () => Int, { nullable: true }) tagGroupId: number | null,
     @Arg("name", () => String) name: string,
     @Arg("color", () => String) color: string,
     @Ctx() { prisma }: Context,
   ): Promise<TagGroup> {
-    if (await prisma.tagGroup.findUnique({ where: { name } })) {
-      throw new GraphQLError("Nhóm thẻ đã tồn tại");
-    }
-    return await prisma.tagGroup.create({
-      data: { name, color },
+    const existing = await prisma.tagGroup.findUnique({
+      where: { name },
     });
-  }
 
-  @Authorized(UserRole.ADMIN)
-  @Mutation(() => TagGroup)
-  async updateTagGroup(
-    @Arg("tagGroupId", () => Int) tagGroupId: number,
-    @Arg("name", () => String) name: string,
-    @Arg("color", () => String) color: string,
-    @Ctx() { prisma }: Context,
-  ): Promise<TagGroup> {
-    return await prisma.tagGroup.update({
-      where: { id: tagGroupId },
+    if (tagGroupId) {
+      const current = await prisma.tagGroup.findUnique({
+        where: { id: tagGroupId },
+      });
+
+      if (!current) {
+        throw new GraphQLError("Nhóm thẻ không tồn tại.");
+      }
+
+      if (current.name === name) {
+        return current;
+      }
+
+      if (existing) {
+        throw new GraphQLError("Nhóm thẻ đã tồn tại.");
+      }
+
+      return prisma.tagGroup.update({
+        where: { id: tagGroupId },
+        data: { name, color },
+      });
+    }
+
+    if (existing) {
+      throw new GraphQLError("Nhóm thẻ đã tồn tại.");
+    }
+
+    return prisma.tagGroup.create({
       data: { name, color },
     });
   }
@@ -120,6 +157,15 @@ export class TagResolver {
     @Arg("tagGroupIds", () => [Int]) tagGroupIds: number[],
     @Ctx() { prisma }: Context,
   ): Promise<MutationResponse> {
+    if (
+      await prisma.tag.findFirst({
+        where: { groupId: { in: tagGroupIds } },
+        select: { id: true },
+      })
+    ) {
+      throw new GraphQLError("Không thể xóa do có thẻ thuộc nhóm này.");
+    }
+
     await prisma.tagGroup.deleteMany({
       where: { id: { in: tagGroupIds } },
     });

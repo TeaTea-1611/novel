@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient, User } from "@prisma/client";
 import crypto from "crypto";
 import type { Request, Response } from "express";
 import { Redis } from "ioredis";
@@ -8,7 +8,6 @@ import { sendEmail } from "../../emails/send";
 import VerificationEmail from "../../emails/templates/verification-email";
 import PasswordResetEmail from "../../emails/templates/password-reset-email";
 import TwoFactorEmail from "../../emails/templates/two-factor-code-email";
-import type { User } from "../../../prisma/generated/type-graphql";
 import { accessTokenManager } from "../../shared/utils/jwt";
 
 @Service()

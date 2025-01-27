@@ -6,6 +6,7 @@ import { TagResolver } from "./modules/tag/tag.resolver";
 import { GenreResolver } from "./modules/genre/genre.resolver";
 import { BookResolver } from "./modules/book/book.resolver";
 import { ChapterResolver } from "./modules/chapter/chapter.resolver";
+import { ReadingResolver } from "./modules/reading/reading.resolver";
 
 export const resolvers: NonEmptyArray<Function> = [
   AppResolver,
@@ -15,4 +16,5 @@ export const resolvers: NonEmptyArray<Function> = [
   GenreResolver,
   BookResolver,
   ChapterResolver,
+  ReadingResolver,
 ];

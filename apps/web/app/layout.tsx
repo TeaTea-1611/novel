@@ -27,8 +27,12 @@ export default function RootLayout({
             <Providers>
               <TooltipProvider>
                 {children}
+                <div className="fixed inset-0 pointer-events-none -z-50">
+                  <div className="absolute size-full bg-gradient-to-b from-gradient-from to-gradient-to"></div>
+                  <div className="absolute w-full h-full bg-[url('/mask-image.svg')] bg-repeat"></div>
+                </div>
                 <ScrollToTopButton />
-                <Toaster position="top-center"></Toaster>
+                <Toaster position="top-center" />
               </TooltipProvider>
             </Providers>
           </GoogleOAuthProvider>

@@ -11,9 +11,10 @@ const tagIdsSchema = z
   .min(1, { message: "Tối thiểu 1 nhãn." })
   .max(5, { message: "Tối đa 5 nhãn." });
 
-const bookGenderSchema = z.coerce
-  .number({ invalid_type_error: "Bắt buộc.", required_error: "Bắt buộc." })
-  .refine((val) => val === 1 || val === 2, { message: "Không hợp lệ." });
+const bookGenderSchema = z.coerce.number({
+  invalid_type_error: "Bắt buộc.",
+  required_error: "Bắt buộc.",
+});
 
 const genreIdSchema = z.coerce.number({
   invalid_type_error: "Bắt buộc.",

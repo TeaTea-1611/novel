@@ -1,13 +1,13 @@
 import { Field, ObjectType } from "type-graphql";
-import { User } from "../../../prisma/generated/type-graphql";
 import { IMutationResponse } from "../../types";
+import { User } from "../user/user.model";
 
 @ObjectType({ implements: IMutationResponse })
 export class LoginResponse implements IMutationResponse {
   success!: boolean;
   message!: string;
 
-  @Field({ nullable: true })
+  @Field(() => User, { nullable: true })
   user?: User | null;
 
   @Field({ nullable: true })

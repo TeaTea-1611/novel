@@ -12,10 +12,6 @@ import {
 } from "type-graphql";
 import { Inject, Service } from "typedi";
 import { type Context } from "../../context";
-import {
-  NotificationSettings,
-  User,
-} from "../../../prisma/generated/type-graphql";
 import { AuthService } from "../auth/auth.service";
 import {
   ChangeProfileArgs,
@@ -30,6 +26,8 @@ import { finished } from "stream/promises";
 import type { Upload } from "../../types";
 import { env } from "../../env";
 import { TwoFactorResponse } from "./user.type";
+import { User } from "./user.model";
+import { NotificationSettings } from "./notification-settings.model";
 
 @Service()
 @Resolver(() => User)
@@ -76,14 +74,14 @@ export class UserResolver {
       "../../../public/upload/avatar",
     );
     await fsPromises.mkdir(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, `${user!.id}.jpg`);
+    const filePath = path.join(uploadDir, `avatar_${user!.id}.jpg`);
 
     const stream = createReadStream();
     const out = createWriteStream(filePath);
 
     try {
       const transform = sharp()
-        .resize(208, 208)
+        .resize(112, 112)
         .toFormat("jpg", { quality: 100 });
 
       stream.pipe(transform).pipe(out);
@@ -95,13 +93,53 @@ export class UserResolver {
 
     const protocol = env.NODE_ENV === "production" ? "https" : "http";
 
-    const avatar = `${protocol}://${env.HOST}:${env.PORT}/upload/avatar/${
+    const avatar = `${protocol}://${env.HOST}:${env.PORT}/upload/avatar/avatar_${
       user!.id
     }.jpg?${Date.now()}`;
 
     return await prisma.user.update({
       where: { id: user!.id },
       data: { avatar },
+    });
+  }
+
+  @Authorized()
+  @Mutation(() => User)
+  async changeAvatarCover(
+    @Arg("avatarCover", () => GraphQLUpload) { createReadStream }: Upload,
+    @Ctx() { user, prisma }: Context,
+  ): Promise<User> {
+    const uploadDir = path.join(
+      import.meta.dir,
+      "../../../public/upload/avatar",
+    );
+    await fsPromises.mkdir(uploadDir, { recursive: true });
+    const filePath = path.join(uploadDir, `avatar_cover_${user!.id}.jpg`);
+
+    const stream = createReadStream();
+    const out = createWriteStream(filePath);
+
+    try {
+      const transform = sharp()
+        .resize(396, 112)
+        .toFormat("jpg", { quality: 100 });
+
+      stream.pipe(transform).pipe(out);
+
+      await finished(out);
+    } catch (error) {
+      throw new Error("Có lỗi xảy ra khi xử lý ảnh");
+    }
+
+    const protocol = env.NODE_ENV === "production" ? "https" : "http";
+
+    const avatarCover = `${protocol}://${env.HOST}:${env.PORT}/upload/avatar/avatar_cover_${
+      user!.id
+    }.jpg?${Date.now()}`;
+
+    return await prisma.user.update({
+      where: { id: user!.id },
+      data: { avatarCover },
     });
   }
 

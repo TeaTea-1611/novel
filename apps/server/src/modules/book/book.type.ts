@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from "type-graphql";
 import { IMutationResponse } from "../../types";
-import { Book } from "../../../prisma/generated/type-graphql";
+import { Book } from "./book.model";
 
 @ObjectType({ implements: IMutationResponse })
 export class BookResponse implements IMutationResponse {

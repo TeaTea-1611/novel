@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "type-graphql";
 import { IMutationResponse } from "../../types";
-import { Chapter } from "../../../prisma/generated/type-graphql";
+import { Chapter } from "./chapter.model";
 
 @ObjectType({ implements: IMutationResponse })
 export class ChapterMutationResponse implements IMutationResponse {

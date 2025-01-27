@@ -8,10 +8,11 @@ import {
   Resolver,
 } from "type-graphql";
 import { Service } from "typedi";
-import { Genre, UserRole } from "../../../prisma/generated/type-graphql";
 import type { Context } from "../../context";
 import { MutationResponse } from "../../types";
 import { GraphQLError } from "graphql";
+import { Genre } from "./genre.model";
+import { UserRole } from "../../enums/user-role";
 
 @Service()
 @Resolver(() => Genre)
@@ -23,28 +24,43 @@ export class GenreResolver {
 
   @Authorized(UserRole.ADMIN)
   @Mutation(() => Genre)
-  async createGenre(
+  async mutationGenre(
+    @Arg("genreId", () => Int, { nullable: true }) genreId: number | null,
     @Arg("name", () => String) name: string,
     @Ctx() { prisma }: Context,
   ): Promise<Genre> {
-    if (await prisma.genre.findUnique({ where: { name } })) {
-      throw new GraphQLError("Thể loại đã tồn tại");
+    const existing = await prisma.genre.findUnique({
+      where: { name },
+    });
+
+    if (genreId) {
+      const currentGenre = await prisma.genre.findUnique({
+        where: { id: genreId },
+      });
+
+      if (!currentGenre) {
+        throw new GraphQLError("Thể loại không tồn tại");
+      }
+
+      if (currentGenre.name === name) {
+        return currentGenre;
+      }
+
+      if (existing) {
+        throw new GraphQLError("Thể loại đã tồn tại.");
+      }
+
+      return prisma.genre.update({
+        where: { id: genreId },
+        data: { name },
+      });
     }
 
-    return await prisma.genre.create({
-      data: { name },
-    });
-  }
+    if (existing) {
+      throw new GraphQLError("Thể loại đã tồn tại.");
+    }
 
-  @Authorized(UserRole.ADMIN)
-  @Mutation(() => Genre)
-  async updateGenre(
-    @Arg("genreId", () => Int) genreId: number,
-    @Arg("name", () => String) name: string,
-    @Ctx() { prisma }: Context,
-  ): Promise<Genre> {
-    return await prisma.genre.update({
-      where: { id: genreId },
+    return prisma.genre.create({
       data: { name },
     });
   }

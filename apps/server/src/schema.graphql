@@ -109,20 +109,12 @@ type Book {
   author: Author
   readMonthly: Int
   nominateMonthly: Int
-  reading: Reading
 }
 
 type Author {
   id: Int!
   name: String!
   originalName: String!
-}
-
-type Reading {
-  userId: Int!
-  bookId: Int!
-  currentChapter: Int!
-  readingAt: Timestamp!
 }
 
 type PaginatedBooksResponse {
@@ -175,16 +167,14 @@ type Mutation {
   resendTwoFactorCode(email: String!): MutationResponse!
   changeProfile(nickname: String!, introduce: String!, urls: [String!]!, gender: Int!, dob: Timestamp!): User!
   changeAvatar(avatar: Upload!): User!
+  changeAvatarCover(avatarCover: Upload!): User!
   updateTwoFactor(isTwoFactorEnable: Boolean!, code: String): TwoFactorResponse!
   updateNotificationSettings(newChapter: Boolean!, newInteraction: Boolean!): NotificationSettings!
-  createTag(groupId: Int!, name: String!): Tag!
-  updateTag(groupId: Int!, name: String!, tagId: Int!): Tag!
+  mutationTag(groupId: Int!, name: String!, tagId: Int): Tag!
   deleteTags(tagIds: [Int!]!): MutationResponse!
-  createTagGroup(color: String!, name: String!): TagGroup!
-  updateTagGroup(color: String!, name: String!, tagGroupId: Int!): TagGroup!
+  mutationTagGroup(color: String!, name: String!, tagGroupId: Int): TagGroup!
   deleteTagGroups(tagGroupIds: [Int!]!): MutationResponse!
-  createGenre(name: String!): Genre!
-  updateGenre(name: String!, genreId: Int!): Genre!
+  mutationGenre(name: String!, genreId: Int): Genre!
   deleteGenres(genreIds: [Int!]!): MutationResponse!
   createBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!): BookResponse!
   updateBook(bookId: Int!, status: Int, name: String, synopsis: String, gender: Int, genreId: Int, tagIds: [Int!]): BookResponse!

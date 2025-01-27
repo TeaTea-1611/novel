@@ -1,0 +1,9 @@
+fragment tag on Tag {
+  id
+  name
+  group {
+    id
+    name
+    color
+  }
+}

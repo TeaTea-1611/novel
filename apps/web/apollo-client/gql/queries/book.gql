@@ -7,22 +7,13 @@ query BookOptions {
     name
   }
   tags {
-    id
-    name
-    group {
-      name
-      color
-    }
+    ...tag
   }
 }
 
 query Book($bookId: Int!) {
   book(bookId: $bookId) {
     ...book
-    reading {
-      currentChapter
-      readingAt
-    }
   }
 }
 
@@ -65,5 +56,35 @@ query HomePageData($month: Int!, $year: Int!) {
       ...book
       nominateMonthly
     }
+  }
+}
+
+query CreatedBooks(
+  $page: Int!
+  $take: Int!
+  $keyword: String!
+  $gender: Int
+  $genreId: Int
+  $tagIds: [Int!]
+  $sortBy: String
+  $sortOrder: SortOrder
+) {
+  createdBooks(
+    page: $page
+    take: $take
+    keyword: $keyword
+    gender: $gender
+    genreId: $genreId
+    tagIds: $tagIds
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+  ) {
+    total
+    books {
+      ...book
+    }
+    prev
+    next
+    totalPages
   }
 }

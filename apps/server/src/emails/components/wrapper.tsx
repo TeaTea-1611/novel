@@ -17,7 +17,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default function Wrapper({ preview, children }: Props) {
+export function Wrapper({ preview, children }: Props) {
   return (
     <Html>
       <Head />
@@ -63,3 +63,5 @@ export default function Wrapper({ preview, children }: Props) {
     </Html>
   );
 }
+
+export default Wrapper;

@@ -8,11 +8,11 @@ interface Props {
   validMinutes: number;
 }
 
-export default function PasswordResetEmail({
+export const PasswordResetEmail = ({
   userName,
   passwordResetUrl,
   validMinutes = 5,
-}: Props) {
+}: Props) => {
   return (
     <Wrapper
       preview={`Đặt lại mật khẩu tài khoản ${COMPANY_INFO.name} của bạn`}
@@ -83,4 +83,6 @@ export default function PasswordResetEmail({
       </Text>
     </Wrapper>
   );
-}
+};
+
+export default PasswordResetEmail;

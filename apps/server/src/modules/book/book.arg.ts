@@ -1,11 +1,5 @@
-import {
-  ArgsType,
-  Field,
-  InputType,
-  Int,
-  registerEnumType,
-} from "type-graphql";
-import { SortOrder } from "../../../prisma/generated/type-graphql";
+import { ArgsType, Field, Int, registerEnumType } from "type-graphql";
+import { SortOrder } from "../../enums/sort-order";
 
 @ArgsType()
 export class CreateBookArgs {
@@ -88,7 +82,7 @@ export class PaginatedBooksArgs {
   tagIds?: number[];
 
   @Field(() => String, { nullable: true })
-  sortBy?: "name" | "createdAt" | "updatedAt";
+  sortBy?: "name" | "createdAt" | "updatedAt" | "status";
 
   @Field(() => SortOrder, { nullable: true, defaultValue: SortOrder.asc })
   sortOrder?: SortOrder;

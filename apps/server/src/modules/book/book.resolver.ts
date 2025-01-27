@@ -18,14 +18,6 @@ import {
   UseMiddleware,
 } from "type-graphql";
 import { Service } from "typedi";
-import {
-  Author,
-  Book,
-  Genre,
-  Reading,
-  Tag,
-  User,
-} from "../../../prisma/generated/type-graphql";
 import type { Context } from "../../context";
 import { env } from "../../env";
 import { createBookSchema, updateBookSchema } from "./book.validation";
@@ -41,6 +33,11 @@ import {
 } from "./book.arg";
 import { BookResponse, PaginatedBooksResponse } from "./book.type";
 import { handleValidationError } from "../../validation/handle-error";
+import { Book } from "./book.model";
+import { User } from "../user/user.model";
+import { Genre } from "../genre/genre.model";
+import { Tag } from "../tag/tag.model";
+import { Author } from "../author/author.model";
 
 @Service()
 @Resolver(() => Book)
@@ -86,7 +83,7 @@ export class BookResolver {
 
   @FieldResolver(() => Author, { nullable: true })
   async author(@Root() book: Book, @Ctx() { prisma }: Context) {
-    return book.kind === 1
+    return book.kind === 2
       ? prisma.book.findUnique({ where: { id: book.id } }).author()
       : null;
   }
@@ -101,23 +98,23 @@ export class BookResolver {
     return book?.nominateMonthly ?? null;
   }
 
-  // @UseMiddleware(UserMiddleware)
-  @FieldResolver(() => Reading, { nullable: true })
-  async reading(
-    @Root() book: Book,
-    @Ctx() { user, prisma }: Context,
-  ): Promise<Reading | null> {
-    if (!user) return null;
+  // // @UseMiddleware(UserMiddleware)
+  // @FieldResolver(() => Reading, { nullable: true })
+  // async reading(
+  //   @Root() book: Book,
+  //   @Ctx() { user, prisma }: Context
+  // ): Promise<Reading | null> {
+  //   if (!user) return null;
 
-    return await prisma.reading.findUnique({
-      where: {
-        userId_bookId: {
-          userId: user.id,
-          bookId: book.id,
-        },
-      },
-    });
-  }
+  //   return await prisma.reading.findUnique({
+  //     where: {
+  //       userId_bookId: {
+  //         userId: user.id,
+  //         bookId: book.id,
+  //       },
+  //     },
+  //   });
+  // }
 
   @Authorized()
   @Mutation(() => BookResponse)

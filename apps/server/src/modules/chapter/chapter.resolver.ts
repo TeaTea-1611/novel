@@ -14,7 +14,6 @@ import { Service } from "typedi";
 import type { Context } from "../../context";
 import { ChapterMutationResponse } from "./chapter.type";
 import { MutationResponse } from "../../types";
-import { Book, Chapter } from "../../../prisma/generated/type-graphql";
 import {
   CreateChapterArgs,
   SwapChaptersArgs,
@@ -23,6 +22,8 @@ import {
 import { handleValidationError } from "../../validation/handle-error";
 import { createChapterSchema } from "./chapter.validation";
 import { forbiddenError } from "../../shared/utils/errors";
+import { Chapter } from "./chapter.model";
+import { Book } from "../book/book.model";
 
 const MAX_DELETE_LIMIT = 20;
 

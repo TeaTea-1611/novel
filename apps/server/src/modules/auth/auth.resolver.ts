@@ -10,7 +10,6 @@ import {
   Resolver,
 } from "type-graphql";
 import { Inject, Service } from "typedi";
-import { User } from "../../../prisma/generated/type-graphql";
 import type { Context } from "../../context";
 import { env } from "../../env";
 import {
@@ -31,7 +30,8 @@ import {
   loginSchema,
   newPasswordSchema,
   registerSchema,
-} from "./auth.validation";
+} from "@workspace/schemas/user";
+import { User } from "../user/user.model";
 
 const oAuth2Client = new OAuth2Client(
   env.GOOGLE_CLIENT_ID,
@@ -105,7 +105,13 @@ export class AuthResolver {
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user?.password || !(await argon2.verify(user.password, password))) {
+    console.log(user);
+
+    if (
+      !user ||
+      !user.password ||
+      !(await argon2.verify(user.password, password))
+    ) {
       return { success: false, message: "Thông tin đăng nhập không hợp lệ." };
     }
 

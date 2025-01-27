@@ -28,11 +28,13 @@ export type EmailHtml = {
 };
 
 export const sendEmail = async ({ from, to, subject, react }: Emails) => {
+  const html = await render(react);
+
   await transporter.sendMail({
     from,
     to,
     subject,
-    html: await render(react),
+    html,
   });
 };
 
