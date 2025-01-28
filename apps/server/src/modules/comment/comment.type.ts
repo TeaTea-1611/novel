@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from "type-graphql";
 import { IMutationResponse } from "../../types";
-import { Book, Comment } from "../../../prisma/generated/type-graphql";
+import { Novel, Comment } from "../../../prisma/generated/type-graphql";
 
 @ObjectType()
 export class PaginatedCommentsResponse {

@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import {
   Arg,
   Authorized,
@@ -9,10 +10,9 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 import type { Context } from "../../context";
-import { MutationResponse } from "../../types";
-import { GraphQLError } from "graphql";
-import { Genre } from "./genre.model";
 import { UserRole } from "../../enums/user-role";
+import { MutationResponse } from "../../types";
+import { Genre } from "./genre.model";
 
 @Service()
 @Resolver(() => Genre)
@@ -34,16 +34,16 @@ export class GenreResolver {
     });
 
     if (genreId) {
-      const currentGenre = await prisma.genre.findUnique({
+      const current = await prisma.genre.findUnique({
         where: { id: genreId },
       });
 
-      if (!currentGenre) {
-        throw new GraphQLError("Thể loại không tồn tại");
+      if (!current) {
+        throw new GraphQLError("Thể loại không tồn tại.");
       }
 
-      if (currentGenre.name === name) {
-        return currentGenre;
+      if (current.name === name) {
+        return current;
       }
 
       if (existing) {
@@ -72,7 +72,7 @@ export class GenreResolver {
     @Ctx() { prisma }: Context,
   ): Promise<MutationResponse> {
     if (
-      await prisma.book.findFirst({
+      await prisma.novel.findFirst({
         where: { genreId: { in: genreIds } },
         select: { id: true },
       })

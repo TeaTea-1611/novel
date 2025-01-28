@@ -6,11 +6,11 @@ export class Reading {
   userId!: number;
 
   @Field((_type) => Int)
-  bookId!: number;
+  novelId!: number;
 
   @Field((_type) => Int)
-  currentChapter!: number;
+  chapterId!: number;
 
   @Field((_type) => Date)
-  readingAt!: Date;
+  lastRead!: Date;
 }

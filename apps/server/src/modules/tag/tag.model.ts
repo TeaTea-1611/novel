@@ -6,7 +6,7 @@ export class Tag {
   id!: number;
 
   @Field((_type) => Int)
-  groupId!: number;
+  tagGroupId!: number;
 
   @Field((_type) => String)
   name!: string;

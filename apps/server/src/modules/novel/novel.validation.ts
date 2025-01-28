@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { stringSchema } from "../../validation/common";
 
-const nameSchema = stringSchema(3, 255, "Tên");
+const titleSchema = stringSchema(3, 255, "Tên");
 const authorNameSchema = stringSchema(3, 255, "Tên tác giả");
 const authorOriginNameSchema = stringSchema(3, 255, "Tên gốc của tác giả");
 const synopsisSchema = stringSchema(0, 4000, "Tóm tắt");
@@ -11,7 +11,7 @@ const tagIdsSchema = z
   .min(1, { message: "Tối thiểu 1 nhãn." })
   .max(5, { message: "Tối đa 5 nhãn." });
 
-const bookGenderSchema = z.coerce
+const novelGenderSchema = z.coerce
   .number({ invalid_type_error: "Bắt buộc.", required_error: "Bắt buộc." })
   .refine((val) => val === 1 || val === 2, { message: "Không hợp lệ." });
 
@@ -25,35 +25,35 @@ const statusSchema = z.coerce.number({
   required_error: "Bắt buộc.",
 });
 
-const baseBookSchema = {
-  name: nameSchema,
+const baseNovelSchema = {
+  title: titleSchema,
   synopsis: synopsisSchema,
-  gender: bookGenderSchema,
+  gender: novelGenderSchema,
   genreId: genreIdSchema,
   tagIds: tagIdsSchema,
 };
 
-const extendedBookSchema = {
-  ...baseBookSchema,
+const extendedNovelSchema = {
+  ...baseNovelSchema,
   originalName: stringSchema(3, 255, "Tên gốc truyện"),
   authorName: authorNameSchema,
   originalAuthorName: authorOriginNameSchema,
 };
 
-export const createBookSchema = z.object(baseBookSchema);
+export const createNovelSchema = z.object(baseNovelSchema);
 
-export const updateBookSchema = z.object({
-  name: z.optional(nameSchema),
+export const updateNovelSchema = z.object({
+  title: z.optional(titleSchema),
   synopsis: z.optional(synopsisSchema),
-  gender: z.optional(bookGenderSchema),
+  gender: z.optional(novelGenderSchema),
   genreId: z.optional(genreIdSchema),
   tagIds: z.optional(tagIdsSchema),
   status: z.optional(statusSchema),
 });
 
-export const convertBookSchema = z.object(extendedBookSchema);
+export const convertNovelSchema = z.object(extendedNovelSchema);
 
-export const updateConvertBookSchema = z.object({
-  ...extendedBookSchema,
+export const updateConvertNovelSchema = z.object({
+  ...extendedNovelSchema,
   status: statusSchema,
 });

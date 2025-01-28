@@ -1,4 +1,3 @@
-import argon2 from "argon2";
 import { OAuth2Client } from "google-auth-library";
 import {
   Arg,
@@ -46,40 +45,48 @@ export class AuthResolver {
     @Inject(() => AuthService) private readonly authService: AuthService,
   ) {}
 
+  private async handleUserRegistration(
+    email: string,
+    nickname: string,
+    password: string,
+    prisma: Context["prisma"],
+  ) {
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      throw new Error("Email đã được sử dụng.");
+    }
+
+    const hashPassword = await Bun.password.hash(password);
+    return prisma.user.create({
+      data: {
+        email,
+        nickname,
+        password: hashPassword,
+        notifications: {
+          create: {
+            enableInteractions: true,
+            enableNewChapter: true,
+          },
+        },
+      },
+    });
+  }
+
   @Mutation(() => MutationResponse)
   async register(
     @Args() { email, nickname, password }: RegisterArgs,
     @Ctx() { prisma }: Context,
   ): Promise<MutationResponse> {
     handleValidationError(
-      registerSchema.safeParse({
-        email,
-        nickname,
-        password,
-      }),
+      registerSchema.safeParse({ email, nickname, password }),
     );
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return {
-        success: false,
-        message: "Email đã được sử dụng.",
-      };
-    }
-
-    const user = await prisma.user.create({
-      data: {
-        email,
-        nickname,
-        password: await argon2.hash(password),
-        notificationSettings: {
-          create: {
-            newChapter: true,
-            newInteraction: true,
-          },
-        },
-      },
-    });
+    const user = await this.handleUserRegistration(
+      email,
+      nickname,
+      password,
+      prisma,
+    );
 
     const token = verificationTokenManager.sign({ email });
     await this.authService.sendVerificationEmail(user, token);
@@ -95,27 +102,18 @@ export class AuthResolver {
     @Args() { email, password, code }: LoginArgs,
     @Ctx() { res, prisma, redis }: Context,
   ): Promise<LoginResponse> {
-    handleValidationError(
-      loginSchema.safeParse({
-        email,
-        password,
-        code,
-      }),
-    );
+    handleValidationError(loginSchema.safeParse({ email, password, code }));
 
     const user = await prisma.user.findUnique({ where: { email } });
-
-    console.log(user);
-
     if (
       !user ||
       !user.password ||
-      !(await argon2.verify(user.password, password))
+      !(await Bun.password.verify(password, user.password))
     ) {
       return { success: false, message: "Thông tin đăng nhập không hợp lệ." };
     }
 
-    if (!user.emailVerified) {
+    if (!user.emailVerifiedAt) {
       const token = verificationTokenManager.sign({ email });
       await this.authService.sendVerificationEmail(user, token);
       return {
@@ -125,7 +123,7 @@ export class AuthResolver {
       };
     }
 
-    if (user.isTwoFactorEnable) {
+    if (user.isTwoFactorAuth) {
       if (code) {
         const isValid = await this.authService.verifyTwoFactorCode(
           user.id,
@@ -176,22 +174,16 @@ export class AuthResolver {
     }
 
     const { email, name } = payload;
-
     const user = await prisma.user.upsert({
       where: { email },
       update: {},
-      create: {
-        email,
-        nickname: name,
-        emailVerified: new Date(),
-      },
+      create: { email, nickname: name, emailVerifiedAt: new Date() },
     });
 
     const { accessToken, refreshToken } = await this.authService.createTokens(
       prisma,
       { userId: user.id },
     );
-
     this.authService.setRefreshTokenCookie(res, refreshToken);
 
     return {
@@ -213,9 +205,7 @@ export class AuthResolver {
   async logout(@Ctx() { req, res, user, prisma }: Context): Promise<boolean> {
     const token = this.authService.getRefreshTokenCookie(req);
     if (token) {
-      await prisma.refreshToken.delete({
-        where: { userId: user?.id, token },
-      });
+      await prisma.refreshToken.delete({ where: { userId: user?.id, token } });
       this.authService.clearRefreshTokenCookie(res);
       return true;
     }
@@ -227,17 +217,13 @@ export class AuthResolver {
     @Ctx() { req, res, prisma }: Context,
   ): Promise<string | null> {
     const token = this.authService.getRefreshTokenCookie(req);
-
     if (!token) return null;
 
     const refreshTokenDb = await prisma.refreshToken.findUnique({
       where: { token },
     });
-
     if (refreshTokenDb) {
-      await prisma.refreshToken.delete({
-        where: { token },
-      });
+      await prisma.refreshToken.delete({ where: { token } });
       const hasExpired = new Date(refreshTokenDb.expiresAt) < new Date();
 
       if (!hasExpired) {
@@ -258,17 +244,13 @@ export class AuthResolver {
     @Ctx() { prisma }: Context,
   ): Promise<MutationResponse> {
     const decoded = verificationTokenManager.verify(token);
-
     if (decoded?.email) {
       await prisma.user.update({
         where: { email: decoded.email },
-        data: {
-          emailVerified: new Date(),
-        },
+        data: { emailVerifiedAt: new Date() },
       });
       return { success: true, message: "Email đã được xác minh." };
     }
-
     return { success: false, message: "Token không hợp lệ." };
   }
 
@@ -278,12 +260,10 @@ export class AuthResolver {
     @Ctx() { prisma }: Context,
   ): Promise<MutationResponse> {
     const user = await prisma.user.findUnique({ where: { email } });
-
     if (user) {
       const token = passwordResetTokenManager.sign({ email });
       await this.authService.sendPasswordResetEmail(user, token);
     }
-
     return { success: true, message: "Email xác minh đã được gửi." };
   }
 
@@ -292,24 +272,15 @@ export class AuthResolver {
     @Args() { token, newPassword }: NewPasswordArgs,
     @Ctx() { prisma }: Context,
   ): Promise<MutationResponse> {
-    handleValidationError(
-      newPasswordSchema.safeParse({
-        newPassword,
-      }),
-    );
+    handleValidationError(newPasswordSchema.safeParse({ newPassword }));
     const decoded = passwordResetTokenManager.verify(token);
-
     if (decoded?.email) {
       await prisma.user.update({
         where: { email: decoded.email },
-        data: {
-          password: await argon2.hash(newPassword),
-        },
+        data: { password: await Bun.password.hash(newPassword) },
       });
-
       return { success: true, message: "Mật khẩu đã được cập nhật." };
     }
-
     return { success: false, message: "Token không hợp lệ." };
   }
 
@@ -320,11 +291,9 @@ export class AuthResolver {
   ): Promise<MutationResponse> {
     const targetUser =
       user || (await prisma.user.findUnique({ where: { email } }));
-
     if (targetUser) {
       await this.authService.createAndSendNewTwoFactorCode(targetUser, redis);
     }
-
     return { success: true, message: "Đã gửi mã xác thực." };
   }
 }

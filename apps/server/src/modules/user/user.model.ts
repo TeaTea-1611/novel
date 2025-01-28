@@ -1,3 +1,4 @@
+import { Gender } from "../../enums/gender";
 import { UserRole } from "../../enums/user-role";
 import { Field, Int, ObjectType } from "type-graphql";
 
@@ -21,31 +22,31 @@ export class User {
   avatar!: string;
 
   @Field((_type) => String)
-  avatarCover!: string;
+  coverImage!: string;
 
   @Field((_type) => UserRole)
-  role!: "ADMIN" | "EDITOR" | "CONVERTER" | "USER";
+  role!: "ADMIN" | "USER";
 
-  @Field((_type) => Int)
-  gender!: number;
+  @Field((_type) => Gender)
+  gender!: "MALE" | "FEMALE" | "OTHER";
 
   @Field((_type) => String)
-  introduce!: string;
+  bio!: string;
 
   @Field((_type) => Date)
-  dob!: Date;
+  birthDate!: Date;
 
   @Field((_type) => [String])
-  urls!: string[];
+  socialLinks!: string[];
 
   @Field((_type) => Int)
-  keyNum!: number;
+  keys!: number;
 
   @Field((_type) => Int)
-  ticketNum!: number;
+  tickets!: number;
 
   @Field((_type) => Int)
-  candyNum!: number;
+  candies!: number;
 
   @Field((_type) => Date)
   createdAt!: Date;
@@ -53,8 +54,8 @@ export class User {
   @Field((_type) => Date, {
     nullable: true,
   })
-  emailVerified?: Date | null;
+  emailVerifiedAt?: Date | null;
 
   @Field((_type) => Boolean)
-  isTwoFactorEnable!: boolean;
+  isTwoFactorAuth!: boolean;
 }

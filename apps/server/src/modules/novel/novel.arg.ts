@@ -1,16 +1,22 @@
 import { ArgsType, Field, Int, registerEnumType } from "type-graphql";
 import { SortOrder } from "../../enums/sort-order";
+import { Gender } from "../../enums/gender";
+import { NovelStatus } from "./novel.enum";
+import type {
+  NovelStatus as PrismaNovelStatus,
+  Gender as PrismaGender,
+} from "@prisma/client";
 
 @ArgsType()
-export class CreateBookArgs {
+export class CreateNovelArgs {
   @Field()
-  name!: string;
+  title!: string;
 
   @Field()
   synopsis!: string;
 
-  @Field(() => Int)
-  gender!: number;
+  @Field(() => Gender)
+  gender!: PrismaGender;
 
   @Field(() => Int)
   genreId!: number;
@@ -20,7 +26,7 @@ export class CreateBookArgs {
 }
 
 @ArgsType()
-export class ConvertBookArgs extends CreateBookArgs {
+export class ConvertNovelArgs extends CreateNovelArgs {
   @Field()
   originalName!: string;
 
@@ -32,21 +38,21 @@ export class ConvertBookArgs extends CreateBookArgs {
 }
 
 @ArgsType()
-export class UpdateBookArgs {
+export class UpdateNovelArgs {
   @Field(() => Int)
-  bookId!: number;
+  novelId!: number;
 
-  @Field(() => Int, { nullable: true })
-  status?: number;
+  @Field(() => NovelStatus, { nullable: true })
+  status?: PrismaNovelStatus;
 
   @Field({ nullable: true })
-  name?: string;
+  title?: string;
 
   @Field({ nullable: true })
   synopsis?: string;
 
-  @Field(() => Int, { nullable: true })
-  gender?: number;
+  @Field(() => Gender, { nullable: true })
+  gender?: Gender;
 
   @Field(() => Int, { nullable: true })
   genreId?: number;
@@ -56,13 +62,13 @@ export class UpdateBookArgs {
 }
 
 @ArgsType()
-export class UpdateConvertBookArgs extends ConvertBookArgs {
+export class UpdateConvertNovelArgs extends ConvertNovelArgs {
   @Field(() => Int)
   id!: number;
 }
 
 @ArgsType()
-export class PaginatedBooksArgs {
+export class PaginatedNovelsArgs {
   @Field(() => Int, { defaultValue: 1 })
   page!: number;
 
@@ -72,8 +78,8 @@ export class PaginatedBooksArgs {
   @Field(() => String, { defaultValue: "" })
   keyword!: string;
 
-  @Field(() => Int, { nullable: true })
-  gender?: number;
+  @Field(() => Gender, { nullable: true })
+  gender?: Gender;
 
   @Field(() => Int, { nullable: true })
   genreId?: number;
@@ -82,7 +88,7 @@ export class PaginatedBooksArgs {
   tagIds?: number[];
 
   @Field(() => String, { nullable: true })
-  sortBy?: "name" | "createdAt" | "updatedAt" | "status";
+  sortBy?: string;
 
   @Field(() => SortOrder, { nullable: true, defaultValue: SortOrder.asc })
   sortOrder?: SortOrder;
@@ -102,7 +108,7 @@ registerEnumType(PaginatedRankingTypeEnum, {
 });
 
 @ArgsType()
-export class PaginatedRankingBooksArgs {
+export class PaginatedRankingNovelsArgs {
   @Field(() => Int)
   page!: number;
 

@@ -3,7 +3,7 @@ import { ArgsType, Field, InputType, Int } from "type-graphql";
 @ArgsType()
 export class CreateChapterArgs {
   @Field(() => Int)
-  bookId!: number;
+  NovelId!: number;
 
   @Field(() => Int)
   order!: number;
@@ -24,7 +24,7 @@ export class CreateChapterArgs {
 @ArgsType()
 export class UpdateChapterArgs {
   @Field(() => Int)
-  bookId!: number;
+  NovelId!: number;
 
   @Field(() => Int)
   chapterId!: number;
@@ -54,7 +54,7 @@ class SwapChapterInput {
 @ArgsType()
 export class SwapChaptersArgs {
   @Field(() => Int)
-  bookId!: number;
+  NovelId!: number;
 
   @Field(() => [SwapChapterInput])
   data!: SwapChapterInput[];

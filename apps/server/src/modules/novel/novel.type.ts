@@ -1,23 +1,23 @@
 import { Field, Int, ObjectType } from "type-graphql";
 import { IMutationResponse } from "../../types";
-import { Book } from "./book.model";
+import { Novel } from "./novel.model";
 
 @ObjectType({ implements: IMutationResponse })
-export class BookResponse implements IMutationResponse {
+export class NovelResponse implements IMutationResponse {
   success!: boolean;
   message!: string;
 
-  @Field(() => Book, { nullable: true })
-  book?: Book | null;
+  @Field(() => Novel, { nullable: true })
+  novel?: Novel | null;
 }
 
 @ObjectType()
-export class PaginatedBooksResponse {
+export class PaginatedNovelsResponse {
   @Field(() => Int)
   total!: number;
 
-  @Field(() => [Book])
-  books!: Book[];
+  @Field(() => [Novel])
+  novels!: Novel[];
 
   @Field(() => Int, { nullable: true })
   prev?: number | null;

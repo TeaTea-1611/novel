@@ -10,4 +10,7 @@ export class Author {
 
   @Field((_type) => String)
   originalName!: string;
+
+  @Field((_type) => String)
+  country!: string;
 }

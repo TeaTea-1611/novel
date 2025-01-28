@@ -28,4 +28,4 @@ export const twoFactorCodeSchema = z
   .length(6, { message: "Mã xác thực phải gồm 6 chữ số." })
   .regex(/^\d{6}$/, { message: "Mã xác thực phải là 6 chữ số." });
 
-// Book
+// Novel

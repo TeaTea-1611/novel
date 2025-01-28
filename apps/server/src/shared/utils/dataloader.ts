@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Tag } from "@prisma/client";
 import DataLoader from "dataloader";
-import type { Tag } from "../../../prisma/generated/type-graphql";
 
 const createUserLoader = (prisma: PrismaClient) => {
   return new DataLoader(async (userIds: readonly number[]) => {
@@ -11,12 +10,14 @@ const createUserLoader = (prisma: PrismaClient) => {
   });
 };
 
-const createBookLoader = (prisma: PrismaClient) => {
-  return new DataLoader(async (bookIds: readonly number[]) => {
-    const books = await prisma.book.findMany({
-      where: { id: { in: [...bookIds] } },
+const createNovelLoader = (prisma: PrismaClient) => {
+  return new DataLoader(async (novelIds: readonly number[]) => {
+    const novels = await prisma.novel.findMany({
+      where: { id: { in: [...novelIds] } },
     });
-    return bookIds.map((bookId) => books.find((book) => book.id === bookId));
+    return novelIds.map((NovelId) =>
+      novels.find((Novel) => Novel.id === NovelId),
+    );
   });
 };
 
@@ -31,25 +32,25 @@ const createGenreLoader = (prisma: PrismaClient) => {
   });
 };
 
-const createTagOnBookLoader = (prisma: PrismaClient) => {
-  return new DataLoader(async (bookIds: readonly number[]) => {
-    const tagOnBooks = await prisma.tagOnBook.findMany({
-      where: { bookId: { in: bookIds as number[] } },
+const createTagOnNovelLoader = (prisma: PrismaClient) => {
+  return new DataLoader(async (novelIds: readonly number[]) => {
+    const tagOnNovels = await prisma.novelTag.findMany({
+      where: { novelId: { in: novelIds as number[] } },
       include: { tag: true },
     });
 
-    const tagsMap = tagOnBooks.reduce<Record<number, Tag[]>>(
-      (acc, tagOnBook) => {
-        if (!acc[tagOnBook.bookId]) {
-          acc[tagOnBook.bookId] = [];
+    const tagsMap = tagOnNovels.reduce<Record<number, Tag[]>>(
+      (acc, tagOnNovel) => {
+        if (!acc[tagOnNovel.novelId]) {
+          acc[tagOnNovel.novelId] = [];
         }
-        acc[tagOnBook.bookId].push(tagOnBook.tag);
+        acc[tagOnNovel.novelId].push(tagOnNovel.tag);
         return acc;
       },
       {},
     );
 
-    return bookIds.map((bookId) => tagsMap[bookId] || []);
+    return novelIds.map((novelId) => tagsMap[novelId] || []);
   });
 };
 
@@ -75,9 +76,9 @@ const createAuthorLoader = (prisma: PrismaClient) => {
 
 export const buildDataLoaders = (prisma: PrismaClient) => ({
   userLoader: createUserLoader(prisma),
-  bookLoader: createBookLoader(prisma),
+  NovelLoader: createNovelLoader(prisma),
   authorLoader: createAuthorLoader(prisma),
   genreLoader: createGenreLoader(prisma),
-  tagOnBookLoader: createTagOnBookLoader(prisma),
+  tagOnNovelLoader: createTagOnNovelLoader(prisma),
   tagGroupLoader: createTagGroupLoader(prisma),
 });

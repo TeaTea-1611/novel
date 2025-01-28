@@ -20,7 +20,7 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.3",
-    "prisma": "^6.2.1",
+    "prisma": "^6.3.0",
     "prisma-dbml-generator": "^0.12.0",
     "react-email": "3.0.6",
     "typegraphql-prisma": "0.18.0"
@@ -31,13 +31,12 @@
   "dependencies": {
     "@apollo/server": "^4.11.3",
     "@faker-js/faker": "^9.3.0",
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "^6.3.0",
     "@react-email/components": "0.0.32",
     "@react-email/render": "1.0.4",
     "@t3-oss/env-core": "^0.11.1",
     "@types/graphql-fields": "^1.3.9",
     "@workspace/schemas": "workspace:*",
-    "argon2": "^0.41.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dataloader": "^2.2.3",

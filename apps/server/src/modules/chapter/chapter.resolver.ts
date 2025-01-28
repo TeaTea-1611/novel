@@ -23,7 +23,7 @@ import { handleValidationError } from "../../validation/handle-error";
 import { createChapterSchema } from "./chapter.validation";
 import { forbiddenError } from "../../shared/utils/errors";
 import { Chapter } from "./chapter.model";
-import { Book } from "../book/book.model";
+import { Novel } from "../novel/Novel.model";
 
 const MAX_DELETE_LIMIT = 20;
 
@@ -36,12 +36,12 @@ export class ChapterResolver {
     return chapter.content;
   }
 
-  @FieldResolver(() => Book, { nullable: true })
-  async book(
+  @FieldResolver(() => Novel, { nullable: true })
+  async Novel(
     @Root() chapter: Chapter,
     @Ctx() { prisma }: Context,
-  ): Promise<Book | null> {
-    return await prisma.book.findUnique({ where: { id: chapter.bookId } });
+  ): Promise<Novel | null> {
+    return await prisma.Novel.findUnique({ where: { id: chapter.NovelId } });
   }
 
   @Query(() => Chapter, { nullable: true })
@@ -55,23 +55,23 @@ export class ChapterResolver {
   }
 
   @Query(() => Chapter, { nullable: true })
-  async chapterByBookAndOrder(
-    @Arg("bookId", () => Int) bookId: number,
+  async chapterByNovelAndOrder(
+    @Arg("NovelId", () => Int) NovelId: number,
     @Arg("order", () => Int) order: number,
     @Ctx() { prisma }: Context,
   ): Promise<Chapter | null> {
     return await prisma.chapter.findFirst({
-      where: { bookId, order },
+      where: { NovelId, order },
     });
   }
 
   @Query(() => [Chapter])
   async chapters(
-    @Arg("bookId", () => Int) bookId: number,
+    @Arg("NovelId", () => Int) NovelId: number,
     @Ctx() { prisma }: Context,
   ): Promise<Chapter[]> {
     return await prisma.chapter.findMany({
-      where: { bookId },
+      where: { NovelId },
       omit: { content: true },
     });
   }
@@ -80,7 +80,7 @@ export class ChapterResolver {
   @Mutation(() => ChapterMutationResponse)
   async createChapter(
     @Args()
-    { bookId, order, ...args }: CreateChapterArgs,
+    { NovelId, order, ...args }: CreateChapterArgs,
     @Ctx() { prisma, user }: Context,
   ): Promise<ChapterMutationResponse> {
     handleValidationError(
@@ -89,24 +89,24 @@ export class ChapterResolver {
       }),
     );
 
-    const book = await prisma.book.findUnique({
-      where: { id: bookId },
+    const Novel = await prisma.Novel.findUnique({
+      where: { id: NovelId },
     });
 
-    if (!book) {
+    if (!Novel) {
       return {
         success: false,
         message: "Không tìm thấy truyện.",
       };
     }
 
-    if (book.createdById !== user!.id) {
+    if (Novel.createdById !== user!.id) {
       throw forbiddenError();
     }
 
     const existingChapter = await prisma.chapter.findFirst({
       where: {
-        bookId: bookId,
+        NovelId: NovelId,
         order: order,
       },
       select: { id: true },
@@ -115,7 +115,7 @@ export class ChapterResolver {
     if (existingChapter) {
       await prisma.chapter.updateMany({
         where: {
-          bookId: bookId,
+          NovelId: NovelId,
           order: { gte: order },
         },
         data: {
@@ -126,7 +126,7 @@ export class ChapterResolver {
 
     const chapter = await prisma.chapter.create({
       data: {
-        bookId,
+        NovelId,
         order,
         ...args,
       },
@@ -142,7 +142,7 @@ export class ChapterResolver {
   @Authorized()
   @Mutation(() => ChapterMutationResponse)
   async updateChapter(
-    @Args() { chapterId, bookId, ...args }: UpdateChapterArgs,
+    @Args() { chapterId, NovelId, ...args }: UpdateChapterArgs,
     @Ctx() { prisma, user }: Context,
   ): Promise<ChapterMutationResponse> {
     handleValidationError(
@@ -151,12 +151,12 @@ export class ChapterResolver {
       }),
     );
 
-    const book = await prisma.book.findUnique({
-      where: { id: bookId },
+    const Novel = await prisma.Novel.findUnique({
+      where: { id: NovelId },
       select: { createdById: true },
     });
 
-    if (!book || book.createdById !== user!.id) {
+    if (!Novel || Novel.createdById !== user!.id) {
       throw forbiddenError();
     }
 
@@ -175,7 +175,7 @@ export class ChapterResolver {
   @Authorized()
   @Mutation(() => MutationResponse)
   async deleteChapters(
-    @Arg("bookId", () => Int) bookId: number,
+    @Arg("NovelId", () => Int) NovelId: number,
     @Arg("chapterIds", () => [Int]) chapterIds: number[],
     @Ctx() { prisma, user }: Context,
   ): Promise<MutationResponse> {
@@ -193,21 +193,21 @@ export class ChapterResolver {
       };
     }
 
-    const book = await prisma.book.findUnique({
-      where: { id: bookId },
+    const Novel = await prisma.Novel.findUnique({
+      where: { id: NovelId },
       select: {
         id: true,
         createdById: true,
       },
     });
 
-    if (!book || book.createdById !== user!.id) {
+    if (!Novel || Novel.createdById !== user!.id) {
       throw forbiddenError();
     }
 
     // Lấy danh sách thứ tự của các chương sẽ bị xóa
     const deletedChapters = await prisma.chapter.findMany({
-      where: { id: { in: chapterIds }, bookId: book.id },
+      where: { id: { in: chapterIds }, NovelId: Novel.id },
       select: { order: true },
     });
 
@@ -226,7 +226,7 @@ export class ChapterResolver {
 
     await prisma.$transaction(async (tx) => {
       await tx.chapter.deleteMany({
-        where: { id: { in: chapterIds }, bookId: book.id },
+        where: { id: { in: chapterIds }, NovelId: Novel.id },
       });
 
       for (let i = 0; i < deletedOrders.length; i++) {
@@ -243,7 +243,7 @@ export class ChapterResolver {
 
         await tx.chapter.updateMany({
           where: {
-            bookId: book.id,
+            NovelId: Novel.id,
             order: { gt: currentOrder - i }, // Giảm `order` theo số lượng chương đã xóa trước đó
           },
           data: {
@@ -264,7 +264,7 @@ export class ChapterResolver {
   @Authorized()
   @Mutation(() => MutationResponse)
   async updateChapters(
-    @Arg("bookId", () => Int) bookId: number,
+    @Arg("NovelId", () => Int) NovelId: number,
     @Arg("chapterIds", () => [Int]) chapterIds: number[],
     @Arg("unlockPrice", () => Int) unlockPrice: number,
     @Arg("publishAt", () => Date) publishAt: Date,
@@ -277,20 +277,20 @@ export class ChapterResolver {
       };
     }
 
-    const book = await prisma.book.findUnique({
-      where: { id: bookId },
+    const Novel = await prisma.Novel.findUnique({
+      where: { id: NovelId },
       select: {
         id: true,
         createdById: true,
       },
     });
 
-    if (!book || book.createdById !== user!.id) {
+    if (!Novel || Novel.createdById !== user!.id) {
       throw forbiddenError();
     }
 
     await prisma.chapter.updateMany({
-      where: { bookId: book.id, id: { in: chapterIds } },
+      where: { NovelId: Novel.id, id: { in: chapterIds } },
       data: {
         unlockPrice,
         publishAt,
@@ -307,14 +307,14 @@ export class ChapterResolver {
   @Mutation(() => [Chapter])
   async swapChapters(
     @Args()
-    { bookId, data }: SwapChaptersArgs,
+    { NovelId, data }: SwapChaptersArgs,
     @Ctx() { prisma, user }: Context,
   ): Promise<Chapter[]> {
-    const book = await prisma.book.findUnique({
-      where: { id: bookId },
+    const Novel = await prisma.Novel.findUnique({
+      where: { id: NovelId },
     });
 
-    if (!book || book.createdById !== user!.id) {
+    if (!Novel || Novel.createdById !== user!.id) {
       throw forbiddenError();
     }
 
@@ -322,7 +322,7 @@ export class ChapterResolver {
       await prisma.$transaction(
         data.map((chapter) =>
           prisma.chapter.update({
-            where: { bookId, id: chapter.id },
+            where: { NovelId, id: chapter.id },
             data: { order: chapter.newOrder },
           }),
         ),

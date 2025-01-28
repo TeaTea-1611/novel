@@ -12,16 +12,13 @@ type Query {
   tags: [Tag!]!
   tagGroups: [TagGroup!]!
   genres: [Genre!]!
-  kinds: [Int!]!
-  genders: [Int!]!
-  status: [Int!]!
-  book(bookId: Int!): Book
-  paginatedBooks(page: Int! = 1, take: Int! = 10, keyword: String! = "", gender: Int, genreId: Int, tagIds: [Int!], sortBy: String, sortOrder: SortOrder = asc): PaginatedBooksResponse!
-  paginatedRankingBooks(page: Int!, take: Int!, type: PaginatedRankingType!, month: Int!, year: Int!): PaginatedBooksResponse!
-  createdBooks(page: Int! = 1, take: Int! = 10, keyword: String! = "", gender: Int, genreId: Int, tagIds: [Int!], sortBy: String, sortOrder: SortOrder = asc): PaginatedBooksResponse!
   chapterById(chapterId: Int!): Chapter
-  chapterByBookAndOrder(order: Int!, bookId: Int!): Chapter
-  chapters(bookId: Int!): [Chapter!]!
+  chapterByNovelAndOrder(order: Int!, NovelId: Int!): Chapter
+  chapters(NovelId: Int!): [Chapter!]!
+  novel(novelId: Int!): Novel
+  paginatedNovels(page: Int! = 1, take: Int! = 10, keyword: String! = "", gender: Gender, genreId: Int, tagIds: [Int!], sortBy: String, sortOrder: SortOrder = asc): PaginatedNovelsResponse!
+  paginatedRankingNovels(page: Int!, take: Int!, type: PaginatedRankingType!, month: Int!, year: Int!): PaginatedNovelsResponse!
+  myNovels(page: Int! = 1, take: Int! = 10, keyword: String! = "", gender: Gender, genreId: Int, tagIds: [Int!], sortBy: String, sortOrder: SortOrder = asc): PaginatedNovelsResponse!
 }
 
 type User {
@@ -30,26 +27,30 @@ type User {
   email: String!
   phone: String!
   avatar: String!
-  avatarCover: String!
+  coverImage: String!
   role: UserRole!
-  gender: Int!
-  introduce: String!
-  dob: Timestamp!
-  urls: [String!]!
-  keyNum: Int!
-  ticketNum: Int!
-  candyNum: Int!
+  gender: Gender!
+  bio: String!
+  birthDate: Timestamp!
+  socialLinks: [String!]!
+  keys: Int!
+  tickets: Int!
+  candies: Int!
   createdAt: Timestamp!
-  emailVerified: Timestamp
-  isTwoFactorEnable: Boolean!
+  emailVerifiedAt: Timestamp
+  isTwoFactorAuth: Boolean!
   notificationSettings: NotificationSettings!
 }
 
 enum UserRole {
   ADMIN
-  EDITOR
-  CONVERTER
   USER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 }
 
 """
@@ -65,7 +66,7 @@ type NotificationSettings {
 
 type Tag {
   id: Int!
-  groupId: Int!
+  tagGroupId: Int!
   name: String!
   group: TagGroup!
 }
@@ -81,25 +82,34 @@ type Genre {
   name: String!
 }
 
-type Book {
+type Chapter {
   id: Int!
-  name: String!
-  originalName: String!
-  authorId: Int
-  originalLink: String!
-  synopsis: String!
-  kind: Int!
-  gender: Int!
-  status: Int!
-  poster: String!
-  genreId: Int!
-  wordCnt: Int!
-  flowerCnt: Int!
+  NovelId: Int!
+  order: Int!
+  title: String!
+  unlockPrice: Int!
   readCnt: Int!
-  reviewCnt: Int!
-  chapterCnt: Int!
-  commentCnt: Int!
-  points: Float!
+  publishAt: Timestamp!
+  createdAt: Timestamp!
+  updatedAt: Timestamp!
+  content: String!
+  Novel: Novel
+}
+
+type Novel {
+  id: Int!
+  title: String!
+  originalTitle: String
+  authorId: Int
+  synopsis: String!
+  type: NovelType!
+  gender: Gender!
+  status: NovelStatus!
+  coverImage: String!
+  genreId: Int!
+  wordCount: Int!
+  totalChapters: Int!
+  publishedAt: Timestamp
   createdAt: Timestamp!
   newChapterAt: Timestamp!
   createdById: Int!
@@ -111,15 +121,28 @@ type Book {
   nominateMonthly: Int
 }
 
+enum NovelType {
+  TRANSLATION
+  ORIGINAL
+}
+
+enum NovelStatus {
+  WAITING
+  ONGOING
+  COMPLETED
+  PAUSED
+}
+
 type Author {
   id: Int!
   name: String!
   originalName: String!
+  country: String!
 }
 
-type PaginatedBooksResponse {
+type PaginatedNovelsResponse {
   total: Int!
-  books: [Book!]!
+  novels: [Novel!]!
   prev: Int
   next: Int
   totalPages: Int!
@@ -136,20 +159,6 @@ enum PaginatedRankingType {
   comment
   review
   nominate
-}
-
-type Chapter {
-  id: Int!
-  bookId: Int!
-  order: Int!
-  title: String!
-  unlockPrice: Int!
-  readCnt: Int!
-  publishAt: Timestamp!
-  createdAt: Timestamp!
-  updatedAt: Timestamp!
-  content: String!
-  book: Book
 }
 
 type Mutation {
@@ -170,23 +179,21 @@ type Mutation {
   changeAvatarCover(avatarCover: Upload!): User!
   updateTwoFactor(isTwoFactorEnable: Boolean!, code: String): TwoFactorResponse!
   updateNotificationSettings(newChapter: Boolean!, newInteraction: Boolean!): NotificationSettings!
-  mutationTag(groupId: Int!, name: String!, tagId: Int): Tag!
+  mutationTag(tagGroupId: Int!, name: String!, tagId: Int): Tag!
   deleteTags(tagIds: [Int!]!): MutationResponse!
   mutationTagGroup(color: String!, name: String!, tagGroupId: Int): TagGroup!
   deleteTagGroups(tagGroupIds: [Int!]!): MutationResponse!
   mutationGenre(name: String!, genreId: Int): Genre!
   deleteGenres(genreIds: [Int!]!): MutationResponse!
-  createBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!): BookResponse!
-  updateBook(bookId: Int!, status: Int, name: String, synopsis: String, gender: Int, genreId: Int, tagIds: [Int!]): BookResponse!
-  convertBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!, originalName: String!, authorName: String!, originalAuthorName: String!): BookResponse!
-  updateConvertBook(name: String!, synopsis: String!, gender: Int!, genreId: Int!, tagIds: [Int!]!, originalName: String!, authorName: String!, originalAuthorName: String!, id: Int!): BookResponse!
-  changePoster(poster: Upload!, bookId: Int!): Book!
-  deleteBook(bookId: Int!): MutationResponse!
-  createChapter(bookId: Int!, order: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
-  updateChapter(bookId: Int!, chapterId: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
-  deleteChapters(chapterIds: [Int!]!, bookId: Int!): MutationResponse!
-  updateChapters(publishAt: Timestamp!, unlockPrice: Int!, chapterIds: [Int!]!, bookId: Int!): MutationResponse!
-  swapChapters(bookId: Int!, data: [SwapChapterInput!]!): [Chapter!]!
+  createChapter(NovelId: Int!, order: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
+  updateChapter(NovelId: Int!, chapterId: Int!, title: String!, content: String!, publishAt: Timestamp!, unlockPrice: Int!): ChapterMutationResponse!
+  deleteChapters(chapterIds: [Int!]!, NovelId: Int!): MutationResponse!
+  updateChapters(publishAt: Timestamp!, unlockPrice: Int!, chapterIds: [Int!]!, NovelId: Int!): MutationResponse!
+  swapChapters(NovelId: Int!, data: [SwapChapterInput!]!): [Chapter!]!
+  createNovel(title: String!, synopsis: String!, gender: Gender!, genreId: Int!, tagIds: [Int!]!): NovelResponse!
+  updateNovel(novelId: Int!, status: NovelStatus, title: String, synopsis: String, gender: Gender, genreId: Int, tagIds: [Int!]): NovelResponse!
+  changeCoverImage(coverImage: Upload!, novelId: Int!): Novel!
+  deleteNovel(novelId: Int!): MutationResponse!
 }
 
 type MutationResponse implements IMutationResponse {
@@ -216,12 +223,6 @@ type TwoFactorResponse implements IMutationResponse {
   twoFactor: Boolean
 }
 
-type BookResponse implements IMutationResponse {
-  success: Boolean!
-  message: String!
-  book: Book
-}
-
 type ChapterMutationResponse implements IMutationResponse {
   success: Boolean!
   message: String!
@@ -231,4 +232,10 @@ type ChapterMutationResponse implements IMutationResponse {
 input SwapChapterInput {
   id: Int!
   newOrder: Int!
+}
+
+type NovelResponse implements IMutationResponse {
+  success: Boolean!
+  message: String!
+  novel: Novel
 }

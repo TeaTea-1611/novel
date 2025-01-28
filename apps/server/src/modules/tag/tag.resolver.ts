@@ -25,7 +25,7 @@ export class TagResolver {
     @Root() tag: Tag,
     @Ctx() { dataLoaders: { tagGroupLoader } }: Context,
   ) {
-    return tagGroupLoader.load(tag.groupId);
+    return tagGroupLoader.load(tag.tagGroupId);
   }
 
   @Query(() => [Tag])
@@ -38,7 +38,7 @@ export class TagResolver {
   async mutationTag(
     @Arg("tagId", () => Int, { nullable: true }) tagId: number | null,
     @Arg("name", () => String) name: string,
-    @Arg("groupId", () => Int) groupId: number,
+    @Arg("tagGroupId", () => Int) tagGroupId: number,
     @Ctx() { prisma }: Context,
   ): Promise<Tag> {
     const existing = await prisma.tag.findUnique({
@@ -64,7 +64,7 @@ export class TagResolver {
 
       return prisma.tag.update({
         where: { id: tagId },
-        data: { name, groupId },
+        data: { name, tagGroupId },
       });
     }
 
@@ -73,7 +73,7 @@ export class TagResolver {
     }
 
     return prisma.tag.create({
-      data: { name, groupId },
+      data: { name, tagGroupId },
     });
   }
 
@@ -84,7 +84,7 @@ export class TagResolver {
     @Ctx() { prisma }: Context,
   ): Promise<MutationResponse> {
     if (
-      await prisma.tagOnBook.findFirst({
+      await prisma.novelTag.findFirst({
         where: { tagId: { in: tagIds } },
         select: { tagId: true },
       })
@@ -159,7 +159,7 @@ export class TagResolver {
   ): Promise<MutationResponse> {
     if (
       await prisma.tag.findFirst({
-        where: { groupId: { in: tagGroupIds } },
+        where: { tagGroupId: { in: tagGroupIds } },
         select: { id: true },
       })
     ) {

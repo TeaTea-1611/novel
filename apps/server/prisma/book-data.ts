@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 const password = "Tl161102@";
 
-async function generateBookStatistics() {
+async function generateNovelStatistics() {
   const hashPassword = await argon2.hash(password);
 
   await prisma.user.upsert({
@@ -50,21 +50,21 @@ async function generateBookStatistics() {
       .join("\n\n");
 
     // Tạo sách vào ngày base
-    const bookCreatedDate = new Date(baseDate);
-    bookCreatedDate.setDate(
+    const NovelCreatedDate = new Date(baseDate);
+    NovelCreatedDate.setDate(
       baseDate.getDate() + Math.floor(Math.random() * 30),
     );
 
-    const book = await prisma.book.create({
+    const Novel = await prisma.Novel.create({
       data: {
-        createdAt: bookCreatedDate,
+        createdAt: NovelCreatedDate,
         createdById: user!.id,
         genreId: randomGenreId,
         gender: 1,
         kind: 2,
         name,
         synopsis,
-        tagOnBooks: {
+        tagOnNovels: {
           create: randomTagIds.map((id) => ({ tag: { connect: { id } } })),
         },
       },
@@ -73,11 +73,11 @@ async function generateBookStatistics() {
     let totalRead = 0;
 
     const chapterPromises = [...Array(10)].map(async (_, j) => {
-      const chapterCreatedDate = new Date(bookCreatedDate);
+      const chapterCreatedDate = new Date(NovelCreatedDate);
 
       return prisma.chapter.create({
         data: {
-          bookId: book.id,
+          NovelId: Novel.id,
           createdAt: chapterCreatedDate,
           title: fakerVI.word.words(8),
           content: [...Array(10)]
@@ -91,13 +91,13 @@ async function generateBookStatistics() {
 
     await Promise.all(chapterPromises);
 
-    // Tạo bookStatistic từ ngày tạo sách đến hiện tại
+    // Tạo NovelStatistic từ ngày tạo sách đến hiện tại
     const currentDate = new Date();
-    let statisticDate = new Date(bookCreatedDate);
+    let statisticDate = new Date(NovelCreatedDate);
 
     while (statisticDate <= currentDate) {
       const chapters = await prisma.chapter.findMany({
-        where: { bookId: book.id },
+        where: { NovelId: Novel.id },
         select: { id: true },
       });
 
@@ -116,10 +116,10 @@ async function generateBookStatistics() {
         });
       }
 
-      await prisma.bookStatistic.create({
+      await prisma.NovelStatistic.create({
         data: {
           date: statisticDate,
-          bookId: book.id,
+          NovelId: Novel.id,
           read: totalDailyRead,
         },
       });
@@ -127,8 +127,8 @@ async function generateBookStatistics() {
       statisticDate.setDate(statisticDate.getDate() + 1);
     }
 
-    await prisma.book.update({
-      where: { id: book.id },
+    await prisma.Novel.update({
+      where: { id: Novel.id },
       data: {
         readCnt: totalRead,
       },
@@ -136,7 +136,7 @@ async function generateBookStatistics() {
   }
 }
 
-generateBookStatistics()
+generateNovelStatistics()
   .catch((e) => {
     console.error(e);
     process.exit(1);

@@ -18,7 +18,7 @@ import { GraphQLError } from "graphql";
 export class CommentResolver {
   @Query(() => PaginatedCommentsResponse)
   async comments(
-    @Arg("bookId", () => Int) bookId: number,
+    @Arg("NovelId", () => Int) NovelId: number,
     @Arg("page", () => Int) page: number,
     @Arg("take", () => Int) take: number,
     @Ctx() { prisma }: Context,
@@ -28,10 +28,10 @@ export class CommentResolver {
 
     const [total, comments] = await Promise.all([
       await prisma.comment.count({
-        where: { bookId },
+        where: { NovelId },
       }),
       await prisma.comment.findMany({
-        where: { bookId },
+        where: { NovelId },
         take: realTake,
         skip: (currentPage - 1) * realTake,
         orderBy: { createdAt: "desc" },
@@ -54,7 +54,7 @@ export class CommentResolver {
   @Authorized()
   @Mutation(() => Comment)
   async comment(
-    @Arg("bookId", () => Int) bookId: number,
+    @Arg("NovelId", () => Int) NovelId: number,
     @Arg("chapterId", () => Int) chapterId: number,
     @Arg("content", () => String) content: string,
     @Ctx() { prisma, user }: Context,
@@ -63,8 +63,8 @@ export class CommentResolver {
 
     const comment = await prisma.comment.create({
       data: {
-        book: { connect: { id: bookId } },
-        chapter: { connect: { id: chapterId, bookId: bookId } },
+        Novel: { connect: { id: NovelId } },
+        chapter: { connect: { id: chapterId, NovelId: NovelId } },
         user: { connect: { id: user!.id } },
         content,
       },
@@ -72,20 +72,20 @@ export class CommentResolver {
 
     if (comment) {
       await Promise.all([
-        prisma.book.update({
-          where: { id: comment.bookId },
+        prisma.Novel.update({
+          where: { id: comment.NovelId },
           data: { commentCnt: { increment: 1 } },
           select: { id: true },
         }),
-        prisma.bookStatistic.upsert({
+        prisma.NovelStatistic.upsert({
           where: {
-            bookId_date: {
-              bookId: comment.bookId,
+            NovelId_date: {
+              NovelId: comment.NovelId,
               date,
             },
           },
           create: {
-            bookId: comment.bookId,
+            NovelId: comment.NovelId,
             date,
             comment: 1,
           },
@@ -129,15 +129,15 @@ export class CommentResolver {
           data: { replyCnt: { increment: 1 } },
           select: { id: true },
         }),
-        prisma.bookStatistic.upsert({
+        prisma.NovelStatistic.upsert({
           where: {
-            bookId_date: {
-              bookId: comment.bookId,
+            NovelId_date: {
+              NovelId: comment.NovelId,
               date,
             },
           },
           create: {
-            bookId: comment.bookId,
+            NovelId: comment.NovelId,
             date,
             comment: 1,
           },
