@@ -1,11 +1,11 @@
 import { Field, Int, ObjectType } from "type-graphql";
-import { Gender } from "../../enums/gender";
-import { NovelStatus, NovelType } from "./novel.enum";
-import type {
-  NovelStatus as PrismaNovelStatus,
-  Gender as PrismaGender,
-  NovelType as PrismaNovelType,
-} from "@prisma/client";
+import { Gender, type GenderType } from "../../enums/gender";
+import {
+  NovelStatus,
+  NovelType,
+  type NovelStatusType,
+  type NovelTypeType,
+} from "./novel.enum";
 
 @ObjectType()
 export class Novel {
@@ -25,13 +25,13 @@ export class Novel {
   synopsis!: string;
 
   @Field((_type) => NovelType)
-  type!: PrismaNovelType;
+  type!: NovelTypeType;
 
   @Field((_type) => Gender)
-  gender!: PrismaGender;
+  gender!: GenderType;
 
   @Field((_type) => NovelStatus)
-  status!: PrismaNovelStatus;
+  status!: NovelStatusType;
 
   @Field((_type) => String)
   coverImage!: string;

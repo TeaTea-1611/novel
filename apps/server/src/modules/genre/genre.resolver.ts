@@ -10,7 +10,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 import type { Context } from "../../context";
-import { UserRole } from "../../enums/user-role";
+import { UserRole } from "../user/user.enum";
 import { MutationResponse } from "../../types";
 import { Genre } from "./genre.model";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  BookOptionsDocument,
+  NovelOptionsDocument,
   Genre,
   useDeleteGenresMutation,
 } from "@/apollo-client/__generated";
@@ -49,7 +49,7 @@ export function GenresDeleteDialog(props: DeleteProps) {
       );
       if (data.deleteGenres.success) {
         client.refetchQueries({
-          include: [BookOptionsDocument],
+          include: [NovelOptionsDocument],
         });
         onOpenChange(false);
         setValue("");

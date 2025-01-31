@@ -1,7 +1,7 @@
-// import { Gender } from "@prisma/client";
 import { registerEnumType } from "type-graphql";
+import { type Gender as GenderType } from "@prisma/client";
 
-export enum Gender {
+enum Gender {
   MALE = "MALE",
   FEMALE = "FEMALE",
   OTHER = "OTHER",
@@ -11,3 +11,5 @@ registerEnumType(Gender, {
   name: "Gender",
   description: undefined,
 });
+
+export { Gender, type GenderType };

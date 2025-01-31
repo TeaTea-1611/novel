@@ -1,13 +1,13 @@
 import { Field, Int, ObjectType } from "type-graphql";
 
 @ObjectType()
-export class NotificationSettings {
+export class Notifications {
   @Field((_type) => Int)
   userId!: number;
 
   @Field((_type) => Boolean)
-  newChapter!: boolean;
+  enableNewChapter!: boolean;
 
   @Field((_type) => Boolean)
-  newInteraction!: boolean;
+  enableInteractions!: boolean;
 }

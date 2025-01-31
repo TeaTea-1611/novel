@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  BookOptionsDocument,
+  NovelOptionsDocument,
   Genre,
   useMutationGenreMutation,
 } from "@/apollo-client/__generated";
@@ -53,7 +53,7 @@ export function GenresActionDialog({ currentRow, open, onOpenChange }: Props) {
     onCompleted() {
       if (!currentRow) {
         client.refetchQueries({
-          include: [BookOptionsDocument],
+          include: [NovelOptionsDocument],
         });
       }
       form.reset();

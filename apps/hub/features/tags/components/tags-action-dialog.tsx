@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  BookOptionsDocument,
+  NovelOptionsDocument,
   TagFragment,
   useBookOptionsSuspenseQuery,
   useMutationTagMutation,
@@ -72,7 +72,7 @@ export function TagsActionDialog({ currentRow, open, onOpenChange }: Props) {
     onCompleted() {
       if (!currentRow) {
         client.refetchQueries({
-          include: [BookOptionsDocument],
+          include: [NovelOptionsDocument],
         });
       }
       form.reset();

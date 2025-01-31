@@ -1,7 +1,7 @@
-mutation MutationTag($groupId: Int!, $name: String!, $tagId: Int) {
-  mutationTag(groupId: $groupId, name: $name, tagId: $tagId) {
+mutation MutationTag($tagGroupId: Int!, $name: String!, $tagId: Int) {
+  mutationTag(tagGroupId: $tagGroupId, name: $name, tagId: $tagId) {
     id
-    groupId
+    tagGroupId
     name
     group {
       id

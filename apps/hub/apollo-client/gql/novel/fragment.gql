@@ -1,0 +1,34 @@
+fragment novel on Novel {
+  id
+  title
+  originalTitle
+  authorId
+  synopsis
+  type
+  gender
+  status
+  coverImage
+  genreId
+  wordCount
+  totalChapters
+  publishedAt
+  createdAt
+  newChapterAt
+  createdById
+  createdBy {
+    id
+    nickname
+    avatar
+  }
+  genre {
+    id
+    name
+  }
+  tags {
+    ...tag
+  }
+  author {
+    id
+    name
+  }
+}

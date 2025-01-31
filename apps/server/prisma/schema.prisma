@@ -188,7 +188,7 @@ model Chapter {
   novel      Novel              @relation(fields: [novelId], references: [id])
   comments   Comment[]
   statistics ChapterStatistic[]
-  Reading    Reading[]
+  reading    Reading[]
 
   @@unique([novelId, chapterNumber])
   @@index([novelId])

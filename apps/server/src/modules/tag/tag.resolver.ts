@@ -15,7 +15,7 @@ import { MutationResponse } from "../../types";
 import { GraphQLError } from "graphql";
 import { Tag } from "./tag.model";
 import { TagGroup } from "./tag-group.model";
-import { UserRole } from "../../enums/user-role";
+import { UserRole } from "../user/user.enum";
 
 @Service()
 @Resolver(() => Tag)

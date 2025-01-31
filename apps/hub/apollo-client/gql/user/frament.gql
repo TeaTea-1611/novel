@@ -1,19 +1,19 @@
 fragment user on User {
   id
-  email
   nickname
-  avatar
-  avatarCover
-  role
-  emailVerified
-  isTwoFactorEnable
-  gender
-  introduce
+  email
   phone
-  dob
-  urls
-  keyNum
-  ticketNum
-  candyNum
+  avatar
+  coverImage
+  role
+  gender
+  bio
+  birthDate
+  socialLinks
+  keys
+  tickets
+  candies
   createdAt
+  emailVerifiedAt
+  isTwoFactorAuth
 }

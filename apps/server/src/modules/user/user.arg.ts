@@ -1,4 +1,5 @@
 import { ArgsType, Field, Int } from "type-graphql";
+import { Gender } from "../../enums/gender";
 
 @ArgsType()
 export class ChangeProfileArgs {
@@ -6,16 +7,16 @@ export class ChangeProfileArgs {
   nickname!: string;
 
   @Field()
-  introduce!: string;
+  bio!: string;
 
   @Field(() => [String])
-  urls!: string[];
+  socialLinks!: string[];
 
-  @Field(() => Int)
-  gender!: number;
+  @Field(() => Gender)
+  gender!: Gender.MALE | Gender.FEMALE | Gender.OTHER;
 
   @Field()
-  dob!: Date;
+  birthDate!: Date;
 }
 
 @ArgsType()
@@ -30,8 +31,8 @@ export class TwoFactorArgs {
 @ArgsType()
 export class NotificationSettingsArgs {
   @Field()
-  newChapter!: boolean;
+  enableNewChapter!: boolean;
 
   @Field()
-  newInteraction!: boolean;
+  enableInteractions!: boolean;
 }

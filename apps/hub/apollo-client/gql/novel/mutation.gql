@@ -1,0 +1,54 @@
+mutation CreateNovel(
+  $title: String!
+  $synopsis: String!
+  $gender: Gender!
+  $genreId: Int!
+  $tagIds: [Int!]!
+) {
+  createNovel(
+    title: $title
+    synopsis: $synopsis
+    gender: $gender
+    genreId: $genreId
+    tagIds: $tagIds
+  ) {
+    success
+    message
+    novel {
+      id
+      title
+      originalTitle
+      authorId
+      synopsis
+      type
+      gender
+      status
+      coverImage
+      genreId
+      wordCount
+      totalChapters
+      publishedAt
+      createdAt
+      newChapterAt
+      createdById
+      createdBy {
+        id
+        nickname
+        avatar
+      }
+      genre {
+        id
+        name
+      }
+      tags {
+        ...tag
+      }
+      author {
+        id
+        name
+        originalName
+        country
+      }
+    }
+  }
+}

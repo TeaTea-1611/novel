@@ -1,6 +1,6 @@
 "use client";
 
-import { useBookOptionsQuery } from "@/apollo-client/__generated";
+import { useGenresQuery } from "@/apollo-client/__generated";
 import { Main } from "@/components/layout/main";
 import { columns } from "@/features/genres/components/genres-columns";
 import { GenresDialogs } from "@/features/genres/components/genres-dialogs";
@@ -16,7 +16,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import { AlertCircle } from "lucide-react";
 
 export default function GenresPage() {
-  const { data, loading, error } = useBookOptionsQuery();
+  const { data, loading, error } = useGenresQuery();
 
   if (loading) {
     return (

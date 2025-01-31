@@ -1,5 +1,5 @@
-import { Gender } from "../../enums/gender";
-import { UserRole } from "../../enums/user-role";
+import { Gender, type GenderType } from "../../enums/gender";
+import { UserRole, type UserRoleType } from "./user.enum";
 import { Field, Int, ObjectType } from "type-graphql";
 
 @ObjectType()
@@ -25,10 +25,10 @@ export class User {
   coverImage!: string;
 
   @Field((_type) => UserRole)
-  role!: "ADMIN" | "USER";
+  role!: UserRoleType;
 
   @Field((_type) => Gender)
-  gender!: "MALE" | "FEMALE" | "OTHER";
+  gender!: GenderType;
 
   @Field((_type) => String)
   bio!: string;

@@ -1,3 +1,8 @@
+import { createWriteStream, promises as fsPromises } from "fs";
+import { GraphQLUpload, type FileUpload } from "graphql-upload-ts";
+import * as path from "path";
+import sharp from "sharp";
+import { finished } from "stream/promises";
 import {
   Arg,
   Args,
@@ -12,22 +17,16 @@ import {
 } from "type-graphql";
 import { Inject, Service } from "typedi";
 import { type Context } from "../../context";
+import { env } from "../../env";
 import { AuthService } from "../auth/auth.service";
+import { Notifications } from "./notifications.model";
 import {
   ChangeProfileArgs,
   NotificationSettingsArgs,
   TwoFactorArgs,
 } from "./user.arg";
-import GraphQLUpload from "graphql-upload/GraphQLUpload.mjs";
-import * as path from "path";
-import { createWriteStream, promises as fsPromises } from "fs";
-import sharp from "sharp";
-import { finished } from "stream/promises";
-import type { Upload } from "../../types";
-import { env } from "../../env";
-import { TwoFactorResponse } from "./user.type";
 import { User } from "./user.model";
-import { NotificationSettings } from "./notification-settings.model";
+import { TwoFactorResponse } from "./user.type";
 
 @Service()
 @Resolver(() => User)
@@ -36,11 +35,9 @@ export class UserResolver {
     @Inject(() => AuthService) private readonly authService: AuthService,
   ) {}
 
-  @FieldResolver(() => NotificationSettings)
-  async notificationSettings(@Root() user: User, @Ctx() { prisma }: Context) {
-    return prisma.user
-      .findUnique({ where: { id: user.id } })
-      .notificationSettings();
+  @FieldResolver(() => Notifications)
+  async notifications(@Root() user: User, @Ctx() { prisma }: Context) {
+    return prisma.user.findUnique({ where: { id: user.id } }).notifications();
   }
 
   @Query(() => User, { nullable: true })
@@ -66,7 +63,7 @@ export class UserResolver {
   @Authorized()
   @Mutation(() => User)
   async changeAvatar(
-    @Arg("avatar", () => GraphQLUpload) { createReadStream }: Upload,
+    @Arg("avatar", () => GraphQLUpload) { createReadStream }: FileUpload,
     @Ctx() { user, prisma }: Context,
   ): Promise<User> {
     const uploadDir = path.join(
@@ -106,7 +103,7 @@ export class UserResolver {
   @Authorized()
   @Mutation(() => User)
   async changeAvatarCover(
-    @Arg("avatarCover", () => GraphQLUpload) { createReadStream }: Upload,
+    @Arg("file", () => GraphQLUpload) { createReadStream }: FileUpload,
     @Ctx() { user, prisma }: Context,
   ): Promise<User> {
     const uploadDir = path.join(
@@ -114,7 +111,7 @@ export class UserResolver {
       "../../../public/upload/avatar",
     );
     await fsPromises.mkdir(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, `avatar_cover_${user!.id}.jpg`);
+    const filePath = path.join(uploadDir, `image_cover_${user!.id}.jpg`);
 
     const stream = createReadStream();
     const out = createWriteStream(filePath);
@@ -133,13 +130,13 @@ export class UserResolver {
 
     const protocol = env.NODE_ENV === "production" ? "https" : "http";
 
-    const avatarCover = `${protocol}://${env.HOST}:${env.PORT}/upload/avatar/avatar_cover_${
+    const coverImage = `${protocol}://${env.HOST}:${env.PORT}/upload/avatar/image_cover_${
       user!.id
     }.jpg?${Date.now()}`;
 
     return await prisma.user.update({
       where: { id: user!.id },
-      data: { avatarCover },
+      data: { coverImage },
     });
   }
 
@@ -171,22 +168,22 @@ export class UserResolver {
 
     await prisma.user.update({
       where: { id: user?.id },
-      data: { isTwoFactorEnable },
+      data: { isTwoFactorAuth: isTwoFactorEnable },
     });
     return { success: true, message: "Cập nhật thành công." };
   }
 
   @Authorized()
-  @Mutation(() => NotificationSettings)
-  async updateNotificationSettings(
-    @Args() { newChapter, newInteraction }: NotificationSettingsArgs,
+  @Mutation(() => Notifications)
+  async updateNotifications(
+    @Args() { enableNewChapter, enableInteractions }: NotificationSettingsArgs,
     @Ctx() { user, prisma }: Context,
-  ): Promise<NotificationSettings> {
+  ): Promise<Notifications> {
     return await prisma.notificationSettings.update({
       where: { userId: user!.id },
       data: {
-        newChapter,
-        newInteraction,
+        enableNewChapter,
+        enableInteractions,
       },
     });
   }

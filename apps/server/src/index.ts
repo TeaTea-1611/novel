@@ -15,9 +15,9 @@ import cors from "cors";
 import { expressMiddleware } from "@apollo/server/express4";
 import * as path from "path";
 import cookieParser from "cookie-parser";
-import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.mjs";
 import { env } from "./env";
 import { resolvers } from "./resolvers";
+import { graphqlUploadExpress } from "graphql-upload-ts";
 
 (async () => {
   const app = express();
@@ -59,6 +59,7 @@ import { resolvers } from "./resolvers";
 
   app.use(
     env.GRAPHQL_PATH,
+
     cors<cors.CorsRequest>({
       origin: [env.WEB_URL!, "http://localhost:3001"],
       credentials: true,
@@ -67,6 +68,7 @@ import { resolvers } from "./resolvers";
     graphqlUploadExpress({
       maxFileSize: env.GRAPHQL_UPLOAD_MAX_FILE_SIZE,
       maxFiles: env.GRAPHQL_UPLOAD_MAX_FILES,
+      overrideSendResponse: false,
     }),
     expressMiddleware(server, {
       context: async ({ req, res }) => {

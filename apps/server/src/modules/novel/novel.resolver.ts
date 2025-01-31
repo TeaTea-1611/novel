@@ -1,6 +1,6 @@
-import { NovelType, type Prisma } from "@prisma/client";
+import { type Prisma } from "@prisma/client";
 import { createWriteStream, promises as fsPromises } from "fs";
-import GraphQLUpload from "graphql-upload/GraphQLUpload.mjs";
+import { GraphQLUpload } from "graphql-upload-ts";
 import * as path from "path";
 import sharp from "sharp";
 import { finished } from "stream/promises";
@@ -35,6 +35,7 @@ import {
 import { Novel } from "./novel.model";
 import { NovelResponse, PaginatedNovelsResponse } from "./novel.type";
 import { createNovelSchema, updateNovelSchema } from "./novel.validation";
+import { NovelType } from "./novel.enum";
 
 @Service()
 @Resolver(() => Novel)

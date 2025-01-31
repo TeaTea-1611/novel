@@ -1,6 +1,0 @@
-# query NotificationSettings {
-#   notificationSettings {
-#     newChapter
-#     newInteraction
-#   }
-# }

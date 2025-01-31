@@ -39,9 +39,10 @@ type User {
   createdAt: Timestamp!
   emailVerifiedAt: Timestamp
   isTwoFactorAuth: Boolean!
-  notificationSettings: NotificationSettings!
+  notifications: Notifications!
 }
 
+"""The role of the user in the system"""
 enum UserRole {
   ADMIN
   USER
@@ -58,10 +59,10 @@ The javascript `Date` as integer. Type represents date and time as number of mil
 """
 scalar Timestamp
 
-type NotificationSettings {
+type Notifications {
   userId: Int!
-  newChapter: Boolean!
-  newInteraction: Boolean!
+  enableNewChapter: Boolean!
+  enableInteractions: Boolean!
 }
 
 type Tag {
@@ -174,11 +175,11 @@ type Mutation {
   passwordReset(email: String!): MutationResponse!
   newPassword(token: String!, newPassword: String!): MutationResponse!
   resendTwoFactorCode(email: String!): MutationResponse!
-  changeProfile(nickname: String!, introduce: String!, urls: [String!]!, gender: Int!, dob: Timestamp!): User!
+  changeProfile(nickname: String!, bio: String!, socialLinks: [String!]!, gender: Gender!, birthDate: Timestamp!): User!
   changeAvatar(avatar: Upload!): User!
-  changeAvatarCover(avatarCover: Upload!): User!
+  changeAvatarCover(coverImage: Upload!): User!
   updateTwoFactor(isTwoFactorEnable: Boolean!, code: String): TwoFactorResponse!
-  updateNotificationSettings(newChapter: Boolean!, newInteraction: Boolean!): NotificationSettings!
+  updateNotifications(enableNewChapter: Boolean!, enableInteractions: Boolean!): Notifications!
   mutationTag(tagGroupId: Int!, name: String!, tagId: Int): Tag!
   deleteTags(tagIds: [Int!]!): MutationResponse!
   mutationTagGroup(color: String!, name: String!, tagGroupId: Int): TagGroup!

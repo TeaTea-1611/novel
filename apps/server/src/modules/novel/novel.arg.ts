@@ -1,11 +1,7 @@
 import { ArgsType, Field, Int, registerEnumType } from "type-graphql";
 import { SortOrder } from "../../enums/sort-order";
-import { Gender } from "../../enums/gender";
-import { NovelStatus } from "./novel.enum";
-import type {
-  NovelStatus as PrismaNovelStatus,
-  Gender as PrismaGender,
-} from "@prisma/client";
+import { Gender, type GenderType } from "../../enums/gender";
+import { NovelStatus, type NovelStatusType } from "./novel.enum";
 
 @ArgsType()
 export class CreateNovelArgs {
@@ -16,7 +12,7 @@ export class CreateNovelArgs {
   synopsis!: string;
 
   @Field(() => Gender)
-  gender!: PrismaGender;
+  gender!: GenderType;
 
   @Field(() => Int)
   genreId!: number;
@@ -43,7 +39,7 @@ export class UpdateNovelArgs {
   novelId!: number;
 
   @Field(() => NovelStatus, { nullable: true })
-  status?: PrismaNovelStatus;
+  status?: NovelStatusType;
 
   @Field({ nullable: true })
   title?: string;
@@ -52,7 +48,7 @@ export class UpdateNovelArgs {
   synopsis?: string;
 
   @Field(() => Gender, { nullable: true })
-  gender?: Gender;
+  gender?: GenderType;
 
   @Field(() => Int, { nullable: true })
   genreId?: number;

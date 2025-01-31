@@ -1,0 +1,9 @@
+query NovelOptions {
+  genres {
+    id
+    name
+  }
+  tags {
+    ...tag
+  }
+}

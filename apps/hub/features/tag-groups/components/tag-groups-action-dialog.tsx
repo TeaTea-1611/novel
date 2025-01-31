@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  BookOptionsDocument,
+  NovelOptionsDocument,
   TagGroup,
   useMutationTagGroupMutation,
 } from "@/apollo-client/__generated";
@@ -63,7 +63,7 @@ export function TagGroupsActionDialog({
     onCompleted() {
       if (!currentRow) {
         client.refetchQueries({
-          include: [BookOptionsDocument],
+          include: [NovelOptionsDocument],
         });
       }
       form.reset();

@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  BookOptionsDocument,
+  NovelOptionsDocument,
   TagFragment,
   useDeleteTagsMutation,
 } from "@/apollo-client/__generated";
@@ -49,7 +49,7 @@ export function TagsDeleteDialog(props: DeleteProps) {
       );
       if (data.deleteTags.success) {
         client.refetchQueries({
-          include: [BookOptionsDocument],
+          include: [NovelOptionsDocument],
         });
         onOpenChange(false);
         setValue("");
