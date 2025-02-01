@@ -1,14 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, prisma, type User } from "@workspace/db";
 import { type Request, type Response } from "express";
 import { type Redis } from "ioredis";
 import { accessTokenManager } from "./shared/utils/jwt";
 import { redis } from "./redis";
 import { buildDataLoaders } from "./shared/utils/dataloader";
-import type { User } from "../prisma/generated/type-graphql";
-
-const prisma = new PrismaClient({
-  // log: ["query"],
-});
 
 export interface Context {
   req: Request;

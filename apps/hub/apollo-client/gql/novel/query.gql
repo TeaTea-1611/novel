@@ -4,6 +4,18 @@ query NovelOptions {
     name
   }
   tags {
-    ...tag
+    id
+    name
+    tagGroupId
+    group {
+      id
+      name
+      color
+    }
+  }
+  tagGroups {
+    id
+    name
+    color
   }
 }

@@ -6,10 +6,10 @@ export class Chapter {
   id!: number;
 
   @Field((_type) => Int)
-  NovelId!: number;
+  novelId!: number;
 
   @Field((_type) => Int)
-  order!: number;
+  chapterNumber!: number;
 
   @Field((_type) => String)
   title!: string;

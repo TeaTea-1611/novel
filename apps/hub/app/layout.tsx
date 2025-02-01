@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`min-h-svh w-full antialiased`}>
+      <body className={`${inter.className} min-h-svh w-full antialiased`}>
         <ApolloWrapper>
           <Providers>
             <TooltipProvider>

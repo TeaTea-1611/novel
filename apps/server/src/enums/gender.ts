@@ -1,10 +1,10 @@
 import { registerEnumType } from "type-graphql";
-import { type Gender as GenderType } from "@prisma/client";
+import { type Gender as GenderType } from "@workspace/db";
 
 enum Gender {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-  OTHER = "OTHER",
+  Male = "Male",
+  Female = "Female",
+  Other = "Other",
 }
 
 registerEnumType(Gender, {

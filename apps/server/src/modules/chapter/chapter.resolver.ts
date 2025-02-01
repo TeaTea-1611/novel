@@ -20,10 +20,9 @@ import {
   UpdateChapterArgs,
 } from "./chapter.arg";
 import { handleValidationError } from "../../validation/handle-error";
-import { createChapterSchema } from "./chapter.validation";
 import { forbiddenError } from "../../shared/utils/errors";
 import { Chapter } from "./chapter.model";
-import { Novel } from "../novel/Novel.model";
+import { Novel } from "../novel/novel.model";
 
 const MAX_DELETE_LIMIT = 20;
 
@@ -37,11 +36,11 @@ export class ChapterResolver {
   }
 
   @FieldResolver(() => Novel, { nullable: true })
-  async Novel(
+  async novel(
     @Root() chapter: Chapter,
     @Ctx() { prisma }: Context,
   ): Promise<Novel | null> {
-    return await prisma.Novel.findUnique({ where: { id: chapter.NovelId } });
+    return await prisma.novel.findUnique({ where: { id: chapter.NovelId } });
   }
 
   @Query(() => Chapter, { nullable: true })
@@ -56,22 +55,22 @@ export class ChapterResolver {
 
   @Query(() => Chapter, { nullable: true })
   async chapterByNovelAndOrder(
-    @Arg("NovelId", () => Int) NovelId: number,
-    @Arg("order", () => Int) order: number,
+    @Arg("novelId", () => Int) novelId: number,
+    @Arg("chapterNumber", () => Int) chapterNumber: number,
     @Ctx() { prisma }: Context,
   ): Promise<Chapter | null> {
     return await prisma.chapter.findFirst({
-      where: { NovelId, order },
+      where: { novelId, chapterNumber },
     });
   }
 
   @Query(() => [Chapter])
   async chapters(
-    @Arg("NovelId", () => Int) NovelId: number,
+    @Arg("novelId", () => Int) novelId: number,
     @Ctx() { prisma }: Context,
   ): Promise<Chapter[]> {
     return await prisma.chapter.findMany({
-      where: { NovelId },
+      where: { novelId },
       omit: { content: true },
     });
   }

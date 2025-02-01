@@ -18,13 +18,12 @@ enum Gender {
   OTHER
 }
 
-enum NovelType {
+enum NovelKind {
   TRANSLATION
   ORIGINAL
 }
 
 enum NovelStatus {
-  WAITING
   ONGOING
   COMPLETED
   PAUSED
@@ -104,9 +103,9 @@ model Novel {
   authorId      Int?
   createdById   Int         @unique
   genreId       Int
-  type          NovelType
+  kind          NovelKind
   gender        Gender
-  status        NovelStatus @default(WAITING)
+  status        NovelStatus @default(ONGOING)
   synopsis      String
   coverImage    String
   wordCount     Int         @default(0)

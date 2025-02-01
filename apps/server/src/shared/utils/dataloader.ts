@@ -1,4 +1,4 @@
-import { PrismaClient, type Tag } from "@prisma/client";
+import { PrismaClient, type Tag } from "@workspace/db";
 import DataLoader from "dataloader";
 
 const createUserLoader = (prisma: PrismaClient) => {

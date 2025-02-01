@@ -59,7 +59,6 @@ import { graphqlUploadExpress } from "graphql-upload-ts";
 
   app.use(
     env.GRAPHQL_PATH,
-
     cors<cors.CorsRequest>({
       origin: [env.WEB_URL!, "http://localhost:3001"],
       credentials: true,

@@ -23,7 +23,7 @@
     "@radix-ui/react-tooltip": "^1.1.6",
     "@react-oauth/google": "^0.12.1",
     "@tanstack/react-table": "^8.20.6",
-    "@workspace/schemas": "workspace:*",
+    "@workspace/db": "workspace:*",
     "@workspace/ui": "workspace:*",
     "apollo-upload-client": "17.0.0",
     "class-variance-authority": "^0.7.0",

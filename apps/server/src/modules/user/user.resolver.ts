@@ -102,7 +102,7 @@ export class UserResolver {
 
   @Authorized()
   @Mutation(() => User)
-  async changeAvatarCover(
+  async changeCoverImage(
     @Arg("file", () => GraphQLUpload) { createReadStream }: FileUpload,
     @Ctx() { user, prisma }: Context,
   ): Promise<User> {
@@ -111,7 +111,7 @@ export class UserResolver {
       "../../../public/upload/avatar",
     );
     await fsPromises.mkdir(uploadDir, { recursive: true });
-    const filePath = path.join(uploadDir, `image_cover_${user!.id}.jpg`);
+    const filePath = path.join(uploadDir, `cover_image_${user!.id}.jpg`);
 
     const stream = createReadStream();
     const out = createWriteStream(filePath);
@@ -130,7 +130,7 @@ export class UserResolver {
 
     const protocol = env.NODE_ENV === "production" ? "https" : "http";
 
-    const coverImage = `${protocol}://${env.HOST}:${env.PORT}/upload/avatar/image_cover_${
+    const coverImage = `${protocol}://${env.HOST}:${env.PORT}/upload/avatar/cover_image_${
       user!.id
     }.jpg?${Date.now()}`;
 

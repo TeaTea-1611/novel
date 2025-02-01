@@ -1,27 +1,26 @@
 import { registerEnumType } from "type-graphql";
 import {
-  type NovelType as NovelTypeType,
+  type NovelKind as NovelKindType,
   type NovelStatus as NovelStatusType,
-} from "@prisma/client";
+} from "@workspace/db";
 
-enum NovelType {
-  TRANSLATION = "TRANSLATION",
-  ORIGINAL = "ORIGINAL",
+enum NovelKind {
+  Translation = "Translation",
+  Original = "Original",
 }
-registerEnumType(NovelType, {
-  name: "NovelType",
+registerEnumType(NovelKind, {
+  name: "NovelKind",
   description: undefined,
 });
 
 enum NovelStatus {
-  WAITING = "WAITING",
-  ONGOING = "ONGOING",
-  COMPLETED = "COMPLETED",
-  PAUSED = "PAUSED",
+  Ongoing = "Ongoing",
+  Completed = "Completed",
+  Paused = "Paused",
 }
 registerEnumType(NovelStatus, {
   name: "NovelStatus",
   description: undefined,
 });
 
-export { NovelType, NovelStatus, type NovelStatusType, type NovelTypeType };
+export { NovelKind, NovelStatus, type NovelStatusType, type NovelKindType };

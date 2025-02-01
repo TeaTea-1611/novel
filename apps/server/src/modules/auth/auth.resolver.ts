@@ -25,11 +25,7 @@ import {
 } from "./auth.arg";
 import { AuthService } from "./auth.service";
 import { LoginResponse } from "./auth.type";
-import {
-  loginSchema,
-  newPasswordSchema,
-  registerSchema,
-} from "@workspace/schemas/user";
+import { loginSchema, newPasswordSchema, registerSchema } from "@workspace/db";
 import { User } from "../user/user.model";
 
 const oAuth2Client = new OAuth2Client(

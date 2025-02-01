@@ -1,9 +1,9 @@
 import { registerEnumType } from "type-graphql";
-import { type UserRole as UserRoleType } from "@prisma/client";
+import { type UserRole as UserRoleType } from "@workspace/db";
 
 enum UserRole {
-  ADMIN = "ADMIN",
-  USER = "USER",
+  Admin = "Admin",
+  User = "User",
 }
 
 registerEnumType(UserRole, {

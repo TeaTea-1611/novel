@@ -1,0 +1,302 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+generator typegraphql {
+  provider = "typegraphql-prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  Admin
+  User
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
+
+enum NovelKind {
+  Translation
+  Original
+}
+
+enum NovelStatus {
+  Ongoing
+  Completed
+  Paused
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  nickname        String
+  email           String    @unique
+  password        String?
+  phone           String    @default("")
+  avatar          String    @default("")
+  coverImage      String    @default("")
+  role            UserRole  @default(User)
+  gender          Gender    @default(Other)
+  bio             String    @default("")
+  birthDate       DateTime  @default(now())
+  socialLinks     String[]
+  keys            Int       @default(0)
+  tickets         Int       @default(0)
+  candies         Int       @default(0)
+  createdAt       DateTime  @default(now())
+  emailVerifiedAt DateTime?
+  isTwoFactorAuth Boolean   @default(false)
+
+  notifications  NotificationSettings?
+  reviews        Review[]
+  comments       Comment[]
+  authoredNovels Novel[]
+  sessions       RefreshToken[]
+  readings       Reading[]
+  favorites      Favorite[]
+  replies        ReplyComment[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model RefreshToken {
+  token     String   @id @default(uuid()) @db.Uuid
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model NotificationSettings {
+  userId             Int     @id @unique
+  enableNewChapter   Boolean @default(true)
+  enableInteractions Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_notifications")
+}
+
+model Author {
+  id           Int    @id @default(autoincrement())
+  name         String
+  originalName String
+  country      String
+
+  novels Novel[]
+
+  @@unique([name, originalName])
+  @@index([name])
+  @@map("authors")
+}
+
+model Novel {
+  id            Int         @id @default(autoincrement())
+  title         String      @unique
+  originalTitle String?
+  authorId      Int?
+  createdById   Int         @unique
+  genreId       Int
+  kind          NovelKind
+  gender        Gender
+  status        NovelStatus @default(Ongoing)
+  synopsis      String
+  coverImage    String
+  wordCount     Int         @default(0)
+  totalChapters Int         @default(0)
+  publishedAt   DateTime?
+  newChapterAt  DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+
+  author     Author?          @relation(fields: [authorId], references: [id])
+  createdBy  User             @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  genre      Genre            @relation(fields: [genreId], references: [id])
+  chapters   Chapter[]
+  novelTags  NovelTag[]
+  reviews    Review[]
+  statistics NovelStatistic[]
+  readers    Reading[]
+  favorites  Favorite[]
+  comments   Comment[]
+
+  @@index([title])
+  @@index([authorId])
+  @@map("novels")
+}
+
+model Genre {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  novels Novel[]
+
+  @@map("genres")
+}
+
+model Tag {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+  tagGroupId  Int
+
+  tagGroup TagGroup   @relation(fields: [tagGroupId], references: [id])
+  novels   NovelTag[]
+
+  @@map("tags")
+}
+
+model TagGroup {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  color String
+
+  tags Tag[]
+
+  @@map("tag_groups")
+}
+
+model NovelTag {
+  novelId Int
+  tagId   Int
+
+  novel Novel @relation(fields: [novelId], references: [id], onDelete: Cascade)
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([novelId, tagId])
+  @@map("novel_tags")
+}
+
+model Chapter {
+  id            Int      @id @default(autoincrement())
+  novelId       Int
+  chapterNumber Int
+  title         String
+  content       String
+  isLocked      Boolean  @default(false)
+  unlockCost    Int      @default(0)
+  publishedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  novel      Novel              @relation(fields: [novelId], references: [id])
+  comments   Comment[]
+  statistics ChapterStatistic[]
+  reading    Reading[]
+
+  @@unique([novelId, chapterNumber])
+  @@index([novelId])
+  @@map("chapters")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Float
+  content   String
+  isSpoiler Boolean  @default(false)
+  userId    Int
+  novelId   Int
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  novel Novel @relation(fields: [novelId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, novelId])
+  @@map("reviews")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  likes     Int      @default(0)
+  userId    Int
+  chapterId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User           @relation(fields: [userId], references: [id])
+  chapter Chapter        @relation(fields: [chapterId], references: [id])
+  replies ReplyComment[]
+  Novel   Novel?         @relation(fields: [novelId], references: [id])
+  novelId Int?
+
+  @@map("comments")
+}
+
+model ReplyComment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  likes     Int      @default(0)
+  userId    Int
+  commentId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  comment Comment @relation(fields: [commentId], references: [id])
+
+  @@map("comment_replies")
+}
+
+model Reading {
+  userId    Int
+  novelId   Int
+  chapterId Int
+  lastRead  DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  novel   Novel   @relation(fields: [novelId], references: [id])
+  chapter Chapter @relation(fields: [chapterId], references: [id])
+
+  @@id([userId, novelId])
+  @@map("reading_history")
+}
+
+model Favorite {
+  userId    Int
+  novelId   Int
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  novel Novel @relation(fields: [novelId], references: [id], onDelete: Cascade)
+
+  @@id([userId, novelId])
+  @@map("favorites")
+}
+
+model NovelStatistic {
+  id         Int      @id @default(autoincrement())
+  novelId    Int
+  dailyViews Int      @default(0)
+  totalViews Int      @default(0)
+  reviews    Int      @default(0)
+  comments   Int      @default(0)
+  date       DateTime @db.Date
+
+  novel Novel @relation(fields: [novelId], references: [id])
+
+  @@unique([novelId, date])
+  @@map("novel_analytics")
+}
+
+model ChapterStatistic {
+  id        Int      @id @default(autoincrement())
+  chapterId Int
+  views     Int      @default(0)
+  date      DateTime @db.Date
+
+  chapter Chapter @relation(fields: [chapterId], references: [id])
+
+  @@unique([chapterId, date])
+  @@map("chapter_analytics")
+}

@@ -1,15 +1,32 @@
 import { ArgsType, Field, Int, registerEnumType } from "type-graphql";
 import { SortOrder } from "../../enums/sort-order";
 import { Gender, type GenderType } from "../../enums/gender";
-import { NovelStatus, type NovelStatusType } from "./novel.enum";
+import {
+  NovelKind,
+  NovelStatus,
+  type NovelKindType,
+  type NovelStatusType,
+} from "./novel.enum";
 
 @ArgsType()
 export class CreateNovelArgs {
   @Field()
   title!: string;
 
+  @Field(() => NovelKind)
+  kind!: NovelKindType;
+
+  @Field({ nullable: true })
+  originalTitle?: string | null;
+
+  @Field(() => Int, { nullable: true })
+  authorId?: number | null;
+
   @Field()
   synopsis!: string;
+
+  @Field(() => NovelStatus)
+  status!: NovelStatusType;
 
   @Field(() => Gender)
   gender!: GenderType;
@@ -22,45 +39,36 @@ export class CreateNovelArgs {
 }
 
 @ArgsType()
-export class ConvertNovelArgs extends CreateNovelArgs {
-  @Field()
-  originalName!: string;
-
-  @Field()
-  authorName!: string;
-
-  @Field()
-  originalAuthorName!: string;
-}
-
-@ArgsType()
 export class UpdateNovelArgs {
   @Field(() => Int)
-  novelId!: number;
+  id!: number;
 
-  @Field(() => NovelStatus, { nullable: true })
-  status?: NovelStatusType;
+  @Field()
+  title!: string;
+
+  @Field(() => NovelKind)
+  kind!: NovelKindType;
 
   @Field({ nullable: true })
-  title?: string;
-
-  @Field({ nullable: true })
-  synopsis?: string;
-
-  @Field(() => Gender, { nullable: true })
-  gender?: GenderType;
+  originalTitle?: string | null;
 
   @Field(() => Int, { nullable: true })
-  genreId?: number;
+  authorId?: number | null;
 
-  @Field(() => [Int], { nullable: true })
-  tagIds?: number[];
-}
+  @Field()
+  synopsis!: string;
 
-@ArgsType()
-export class UpdateConvertNovelArgs extends ConvertNovelArgs {
+  @Field(() => NovelStatus)
+  status!: NovelStatusType;
+
+  @Field(() => Gender)
+  gender!: GenderType;
+
   @Field(() => Int)
-  id!: number;
+  genreId!: number;
+
+  @Field(() => [Int])
+  tagIds!: number[];
 }
 
 @ArgsType()
@@ -75,7 +83,7 @@ export class PaginatedNovelsArgs {
   keyword!: string;
 
   @Field(() => Gender, { nullable: true })
-  gender?: Gender;
+  gender?: GenderType;
 
   @Field(() => Int, { nullable: true })
   genreId?: number;

@@ -1,5 +1,6 @@
-import { type Prisma } from "@prisma/client";
+import { createNovelSchema, type Prisma } from "@workspace/db";
 import { createWriteStream, promises as fsPromises } from "fs";
+import { GraphQLError } from "graphql";
 import { GraphQLUpload } from "graphql-upload-ts";
 import * as path from "path";
 import sharp from "sharp";
@@ -32,108 +33,102 @@ import {
   PaginatedRankingNovelsArgs,
   UpdateNovelArgs,
 } from "./novel.arg";
+import { NovelKind } from "./novel.enum";
 import { Novel } from "./novel.model";
-import { NovelResponse, PaginatedNovelsResponse } from "./novel.type";
-import { createNovelSchema, updateNovelSchema } from "./novel.validation";
-import { NovelType } from "./novel.enum";
+import { PaginatedNovelsResponse } from "./novel.type";
 
 @Service()
 @Resolver(() => Novel)
 export class NovelResolver {
+  private async ensureUniqueTitleForUpdate(
+    prisma: Context["prisma"],
+    title: string,
+  ) {
+    const existing = await prisma.novel.findUnique({
+      where: { title },
+      select: { id: true },
+    });
+
+    if (existing) {
+      throw new GraphQLError("Truyện đã tồn tại.");
+    }
+  }
+
   @FieldResolver(() => User)
   async createdBy(
-    @Root() Novel: Novel,
+    @Root() novel: Novel,
     @Ctx() { dataLoaders: { userLoader } }: Context,
   ) {
-    return userLoader.load(Novel.createdById);
+    return userLoader.load(novel.createdById);
   }
 
   @FieldResolver(() => Genre)
   async genre(
-    @Root() Novel: Novel,
+    @Root() novel: Novel,
     @Ctx() { dataLoaders: { genreLoader } }: Context,
   ) {
-    return genreLoader.load(Novel.genreId);
+    return genreLoader.load(novel.genreId);
   }
 
   @FieldResolver(() => [Tag])
   async tags(
-    @Root() Novel: Novel,
+    @Root() novel: Novel,
     @Ctx() { dataLoaders: { tagOnNovelLoader } }: Context,
   ) {
-    return tagOnNovelLoader.load(Novel.id);
+    return tagOnNovelLoader.load(novel.id);
   }
 
   @FieldResolver(() => Author, { nullable: true })
   async author(@Root() novel: Novel, @Ctx() { prisma }: Context) {
-    return novel.type === NovelType.TRANSLATION
+    return novel.kind === NovelKind.Translation
       ? prisma.novel.findUnique({ where: { id: novel.id } }).author()
       : null;
   }
 
   @FieldResolver(() => Int, { nullable: true })
-  readMonthly(@Root() Novel: Novel & { readMonthly?: number }) {
-    return Novel?.readMonthly ?? null;
+  readMonthly(@Root() novel: Novel & { readMonthly?: number }) {
+    return novel?.readMonthly ?? null;
   }
 
   @FieldResolver(() => Int, { nullable: true })
-  nominateMonthly(@Root() Novel: Novel & { nominateMonthly?: number }) {
-    return Novel?.nominateMonthly ?? null;
+  nominateMonthly(@Root() novel: Novel & { nominateMonthly?: number }) {
+    return novel?.nominateMonthly ?? null;
   }
 
-  // // @UseMiddleware(UserMiddleware)
-  // @FieldResolver(() => Reading, { nullable: true })
-  // async reading(
-  //   @Root() Novel: Novel,
-  //   @Ctx() { user, prisma }: Context
-  // ): Promise<Reading | null> {
-  //   if (!user) return null;
-
-  //   return await prisma.reading.findUnique({
-  //     where: {
-  //       userId_NovelId: {
-  //         userId: user.id,
-  //         NovelId: Novel.id,
-  //       },
-  //     },
-  //   });
-  // }
-
   @Authorized()
-  @Mutation(() => NovelResponse)
+  @Mutation(() => Novel)
   async createNovel(
     @Args()
-    { title, synopsis, gender, genreId, tagIds }: CreateNovelArgs,
+    args: CreateNovelArgs,
     @Ctx() { user, prisma }: Context,
-  ): Promise<NovelResponse> {
-    handleValidationError(
-      createNovelSchema.safeParse({
-        title,
-        synopsis,
-        gender,
-        genreId,
-        tagIds,
-      }),
-    );
+  ): Promise<Novel> {
+    handleValidationError(createNovelSchema.safeParse(args));
 
-    const existing = await prisma.novel.findUnique({
-      where: { title },
-    });
+    const {
+      title,
+      kind,
+      originalTitle,
+      authorId,
+      synopsis,
+      gender,
+      genreId,
+      status,
+      tagIds,
+    } = args;
 
-    if (existing) {
-      return {
-        success: false,
-        message: "Tên truyện đã tồn tại.",
-      };
-    }
+    await this.ensureUniqueTitleForUpdate(prisma, title);
 
-    const novel = await prisma.novel.create({
+    return await prisma.novel.create({
       data: {
         title,
+        kind,
+        ...(kind === NovelKind.Translation
+          ? { originalTitle, author: { connect: { id: authorId! } } }
+          : {}),
         gender,
         synopsis,
+        status,
         coverImage: "",
-        type: NovelType.ORIGINAL,
         createdBy: { connect: { id: user!.id } },
         genre: { connect: { id: genreId } },
         novelTags: {
@@ -141,193 +136,64 @@ export class NovelResolver {
         },
       },
     });
-
-    return {
-      success: true,
-      message: "Thêm mới thành công.",
-      novel,
-    };
   }
 
   @Authorized()
-  @Mutation(() => NovelResponse)
+  @Mutation(() => Novel)
   async updateNovel(
     @Args()
-    { novelId, genreId, tagIds, ...args }: UpdateNovelArgs,
+    args: UpdateNovelArgs,
     @Ctx() { user, prisma }: Context,
-  ): Promise<NovelResponse> {
-    handleValidationError(
-      updateNovelSchema.safeParse({
-        ...args,
-        genreId,
-        tagIds,
-      }),
-    );
+  ): Promise<Novel> {
+    handleValidationError(createNovelSchema.safeParse(args));
 
-    const existing = await prisma.novel.findFirst({
-      where: {
-        id: novelId,
-        createdById: user!.id,
-      },
-      select: { id: true },
+    const {
+      id,
+      title,
+      kind,
+      originalTitle,
+      authorId,
+      synopsis,
+      gender,
+      genreId,
+      status,
+      tagIds,
+    } = args;
+
+    const novel = await prisma.novel.findUnique({
+      where: { id },
     });
 
-    if (!existing) {
-      return {
-        success: false,
-        message: "Truyện không tồn tại hoặc bạn không có quyền chỉnh sửa.",
-      };
+    if (!novel || novel.createdById !== user!.id) {
+      throw forbiddenError();
     }
 
-    const updated = await prisma.novel.update({
-      where: { id: novelId },
+    if (novel.title !== title) {
+      await this.ensureUniqueTitleForUpdate(prisma, title);
+    }
+
+    return await prisma.novel.update({
+      where: {
+        id: id,
+      },
       data: {
-        ...args,
-        ...(genreId ? { genre: { connect: { id: genreId } } } : {}),
-        ...(tagIds?.length
-          ? {
-              tagOnNovels: {
-                deleteMany: {},
-                create: tagIds.map((id) => ({ tag: { connect: { id } } })),
-              },
-            }
+        title,
+        kind,
+        ...(kind === NovelKind.Translation
+          ? { originalTitle, author: { connect: { id: authorId! } } }
           : {}),
+        gender,
+        synopsis,
+        status,
+        coverImage: "",
+        genre: { connect: { id: genreId } },
+        novelTags: {
+          deleteMany: {},
+          create: tagIds.map((id) => ({ tag: { connect: { id } } })),
+        },
       },
     });
-
-    return {
-      success: true,
-      message: "Cập nhật thành công.",
-      novel: updated,
-    };
   }
-
-  // @Authorized()
-  // @Mutation(() => NovelResponse)
-  // async convertNovel(
-  //   @Args()
-  //   {
-  //     name,
-  //     originalName,
-  //     authorName,
-  //     originalAuthorName,
-  //     synopsis,
-  //     gender,
-  //     genreId,
-  //     tagIds,
-  //   }: ConvertNovelArgs,
-  //   @Ctx() { user, prisma }: Context,
-  // ): Promise<NovelResponse> {
-  //   const existingNovel = await prisma.Novel.findUnique({
-  //     where: { name },
-  //   });
-
-  //   if (existingNovel) {
-  //     return {
-  //       success: false,
-  //       message: "Tên truyện đã tồn tại.",
-  //       Novel: null,
-  //     };
-  //   }
-
-  //   const Novel = await prisma.Novel.create({
-  //     data: {
-  //       kind: 1,
-  //       name,
-  //       originalName,
-  //       author: {
-  //         connectOrCreate: {
-  //           where: {
-  //             name_originalName: {
-  //               name: authorName,
-  //               originalName: originalAuthorName,
-  //             },
-  //           },
-  //           create: { name: authorName, originalName: originalAuthorName },
-  //         },
-  //       },
-  //       gender,
-  //       synopsis,
-  //       createdBy: { connect: { id: user!.id } },
-  //       genre: { connect: { id: genreId } },
-  //       tagOnNovels: {
-  //         create: tagIds.map((id) => ({ tag: { connect: { id } } })),
-  //       },
-  //     },
-  //   });
-
-  //   return {
-  //     success: true,
-  //     message: "Thêm mới thành công.",
-  //     Novel,
-  //   };
-  // }
-
-  // @Authorized()
-  // @Mutation(() => NovelResponse)
-  // async updateConvertNovel(
-  //   @Args()
-  //   {
-  //     id,
-  //     name,
-  //     synopsis,
-  //     gender,
-  //     genreId,
-  //     tagIds,
-  //     authorName,
-  //     originalAuthorName,
-  //     originalName,
-  //   }: UpdateConvertNovelArgs,
-  //   @Ctx() { user, prisma }: Context,
-  // ): Promise<NovelResponse> {
-  //   const existingNovel = await prisma.Novel.findFirst({
-  //     where: {
-  //       id,
-  //       createdById: user!.id,
-  //     },
-  //     select: { id: true },
-  //   });
-
-  //   if (!existingNovel) {
-  //     return {
-  //       success: false,
-  //       message: "Truyện không tồn tại hoặc bạn không có quyền chỉnh sửa.",
-  //       Novel: null,
-  //     };
-  //   }
-
-  //   const updatedNovel = await prisma.Novel.update({
-  //     where: { id },
-  //     data: {
-  //       name,
-  //       originalName,
-  //       synopsis,
-  //       author: {
-  //         connectOrCreate: {
-  //           where: {
-  //             name_originalName: {
-  //               name: authorName,
-  //               originalName: originalAuthorName,
-  //             },
-  //           },
-  //           create: { name: authorName, originalName: originalAuthorName },
-  //         },
-  //       },
-  //       gender,
-  //       genre: { connect: { id: genreId } },
-  //       tagOnNovels: {
-  //         deleteMany: {},
-  //         create: tagIds.map((id) => ({ tag: { connect: { id } } })),
-  //       },
-  //     },
-  //   });
-
-  //   return {
-  //     success: true,
-  //     message: "Cập nhật thành công.",
-  //     Novel: updatedNovel,
-  //   };
-  // }
 
   @Query(() => Novel, { nullable: true })
   async novel(

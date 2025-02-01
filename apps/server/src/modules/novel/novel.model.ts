@@ -1,10 +1,10 @@
 import { Field, Int, ObjectType } from "type-graphql";
 import { Gender, type GenderType } from "../../enums/gender";
 import {
+  NovelKind,
   NovelStatus,
-  NovelType,
+  type NovelKindType,
   type NovelStatusType,
-  type NovelTypeType,
 } from "./novel.enum";
 
 @ObjectType()
@@ -24,8 +24,8 @@ export class Novel {
   @Field((_type) => String)
   synopsis!: string;
 
-  @Field((_type) => NovelType)
-  type!: NovelTypeType;
+  @Field((_type) => NovelKind)
+  kind!: NovelKindType;
 
   @Field((_type) => Gender)
   gender!: GenderType;

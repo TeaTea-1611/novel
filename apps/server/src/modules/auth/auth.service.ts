@@ -1,4 +1,4 @@
-import type { PrismaClient, User } from "@prisma/client";
+import type { PrismaClient, User } from "@workspace/db";
 import crypto from "crypto";
 import type { Request, Response } from "express";
 import { Redis } from "ioredis";

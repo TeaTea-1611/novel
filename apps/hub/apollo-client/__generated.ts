@@ -29,12 +29,12 @@ export type Author = {
 
 export type Chapter = {
   __typename?: 'Chapter';
-  Novel?: Maybe<Novel>;
-  NovelId: Scalars['Int']['output'];
+  chapterNumber: Scalars['Int']['output'];
   content: Scalars['String']['output'];
   createdAt: Scalars['Timestamp']['output'];
   id: Scalars['Int']['output'];
-  order: Scalars['Int']['output'];
+  novel?: Maybe<Novel>;
+  novelId: Scalars['Int']['output'];
   publishAt: Scalars['Timestamp']['output'];
   readCnt: Scalars['Int']['output'];
   title: Scalars['String']['output'];
@@ -50,9 +50,9 @@ export type ChapterMutationResponse = IMutationResponse & {
 };
 
 export enum Gender {
-  Female = 'FEMALE',
-  Male = 'MALE',
-  Other = 'OTHER'
+  Female = 'Female',
+  Male = 'Male',
+  Other = 'Other'
 }
 
 export type Genre = {
@@ -78,11 +78,9 @@ export type LoginResponse = IMutationResponse & {
 export type Mutation = {
   __typename?: 'Mutation';
   changeAvatar: User;
-  changeAvatarCover: User;
   changeCoverImage: Novel;
   changeProfile: User;
   createChapter: ChapterMutationResponse;
-  createNovel: NovelResponse;
   deleteChapters: MutationResponse;
   deleteGenres: MutationResponse;
   deleteNovel: MutationResponse;
@@ -92,6 +90,7 @@ export type Mutation = {
   login: LoginResponse;
   logout: Scalars['Boolean']['output'];
   mutationGenre: Genre;
+  mutationNovel: Novel;
   mutationTag: Tag;
   mutationTagGroup: TagGroup;
   newPassword: MutationResponse;
@@ -103,8 +102,7 @@ export type Mutation = {
   updateChapter: ChapterMutationResponse;
   updateChapters: MutationResponse;
   updateCopyright?: Maybe<Scalars['Boolean']['output']>;
-  updateNotificationSettings: NotificationSettings;
-  updateNovel: NovelResponse;
+  updateNotifications: Notifications;
   updatePrivacyPolicy?: Maybe<Scalars['Boolean']['output']>;
   updateTermsOfService?: Maybe<Scalars['Boolean']['output']>;
   updateTwoFactor: TwoFactorResponse;
@@ -114,11 +112,6 @@ export type Mutation = {
 
 export type MutationChangeAvatarArgs = {
   avatar: Scalars['Upload']['input'];
-};
-
-
-export type MutationChangeAvatarCoverArgs = {
-  avatarCover: Scalars['Upload']['input'];
 };
 
 
@@ -144,15 +137,6 @@ export type MutationCreateChapterArgs = {
   publishAt: Scalars['Timestamp']['input'];
   title: Scalars['String']['input'];
   unlockPrice: Scalars['Int']['input'];
-};
-
-
-export type MutationCreateNovelArgs = {
-  gender: Gender;
-  genreId: Scalars['Int']['input'];
-  synopsis: Scalars['String']['input'];
-  tagIds: Array<Scalars['Int']['input']>;
-  title: Scalars['String']['input'];
 };
 
 
@@ -197,6 +181,17 @@ export type MutationLoginArgs = {
 export type MutationMutationGenreArgs = {
   genreId?: InputMaybe<Scalars['Int']['input']>;
   name: Scalars['String']['input'];
+};
+
+
+export type MutationMutationNovelArgs = {
+  gender: Gender;
+  genreId: Scalars['Int']['input'];
+  novelId?: InputMaybe<Scalars['Int']['input']>;
+  status: NovelStatus;
+  synopsis: Scalars['String']['input'];
+  tagIds: Array<Scalars['Int']['input']>;
+  title: Scalars['String']['input'];
 };
 
 
@@ -266,20 +261,9 @@ export type MutationUpdateCopyrightArgs = {
 };
 
 
-export type MutationUpdateNotificationSettingsArgs = {
-  newChapter: Scalars['Boolean']['input'];
-  newInteraction: Scalars['Boolean']['input'];
-};
-
-
-export type MutationUpdateNovelArgs = {
-  gender?: InputMaybe<Gender>;
-  genreId?: InputMaybe<Scalars['Int']['input']>;
-  novelId: Scalars['Int']['input'];
-  status?: InputMaybe<NovelStatus>;
-  synopsis?: InputMaybe<Scalars['String']['input']>;
-  tagIds?: InputMaybe<Array<Scalars['Int']['input']>>;
-  title?: InputMaybe<Scalars['String']['input']>;
+export type MutationUpdateNotificationsArgs = {
+  enableInteractions: Scalars['Boolean']['input'];
+  enableNewChapter: Scalars['Boolean']['input'];
 };
 
 
@@ -309,10 +293,10 @@ export type MutationResponse = IMutationResponse & {
   success: Scalars['Boolean']['output'];
 };
 
-export type NotificationSettings = {
-  __typename?: 'NotificationSettings';
-  newChapter: Scalars['Boolean']['output'];
-  newInteraction: Scalars['Boolean']['output'];
+export type Notifications = {
+  __typename?: 'Notifications';
+  enableInteractions: Scalars['Boolean']['output'];
+  enableNewChapter: Scalars['Boolean']['output'];
   userId: Scalars['Int']['output'];
 };
 
@@ -328,6 +312,7 @@ export type Novel = {
   genre: Genre;
   genreId: Scalars['Int']['output'];
   id: Scalars['Int']['output'];
+  kind: NovelKind;
   newChapterAt: Scalars['Timestamp']['output'];
   nominateMonthly?: Maybe<Scalars['Int']['output']>;
   originalTitle?: Maybe<Scalars['String']['output']>;
@@ -338,27 +323,18 @@ export type Novel = {
   tags: Array<Tag>;
   title: Scalars['String']['output'];
   totalChapters: Scalars['Int']['output'];
-  type: NovelType;
   wordCount: Scalars['Int']['output'];
 };
 
-export type NovelResponse = IMutationResponse & {
-  __typename?: 'NovelResponse';
-  message: Scalars['String']['output'];
-  novel?: Maybe<Novel>;
-  success: Scalars['Boolean']['output'];
-};
-
-export enum NovelStatus {
-  Completed = 'COMPLETED',
-  Ongoing = 'ONGOING',
-  Paused = 'PAUSED',
-  Waiting = 'WAITING'
+export enum NovelKind {
+  Original = 'Original',
+  Translation = 'Translation'
 }
 
-export enum NovelType {
-  Original = 'ORIGINAL',
-  Translation = 'TRANSLATION'
+export enum NovelStatus {
+  Completed = 'Completed',
+  Ongoing = 'Ongoing',
+  Paused = 'Paused'
 }
 
 export type PaginatedNovelsResponse = {
@@ -404,13 +380,13 @@ export type QueryChapterByIdArgs = {
 
 
 export type QueryChapterByNovelAndOrderArgs = {
-  NovelId: Scalars['Int']['input'];
-  order: Scalars['Int']['input'];
+  chapterNumber: Scalars['Int']['input'];
+  novelId: Scalars['Int']['input'];
 };
 
 
 export type QueryChaptersArgs = {
-  NovelId: Scalars['Int']['input'];
+  novelId: Scalars['Int']['input'];
 };
 
 
@@ -503,16 +479,17 @@ export type User = {
   isTwoFactorAuth: Scalars['Boolean']['output'];
   keys: Scalars['Int']['output'];
   nickname: Scalars['String']['output'];
-  notifications: NotificationSettings;
+  notifications: Notifications;
   phone: Scalars['String']['output'];
   role: UserRole;
   socialLinks: Array<Scalars['String']['output']>;
   tickets: Scalars['Int']['output'];
 };
 
+/** The role of the user in the system */
 export enum UserRole {
-  Admin = 'ADMIN',
-  User = 'USER'
+  Admin = 'Admin',
+  User = 'User'
 }
 
 export type MutationGenreMutationVariables = Exact<{
@@ -535,23 +512,46 @@ export type GenresQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GenresQuery = { __typename?: 'Query', genres: Array<{ __typename?: 'Genre', id: number, name: string }> };
 
-export type NovelFragment = { __typename?: 'Novel', id: number, title: string, originalTitle?: string | null, authorId?: number | null, synopsis: string, type: NovelType, gender: Gender, status: NovelStatus, coverImage: string, genreId: number, wordCount: number, totalChapters: number, publishedAt?: any | null, createdAt: any, newChapterAt: any, createdById: number, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string }, genre: { __typename?: 'Genre', id: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', id: number, name: string, color: string } }>, author?: { __typename?: 'Author', id: number, name: string } | null };
+export type NovelFragment = { __typename?: 'Novel', id: number, title: string, originalTitle?: string | null, authorId?: number | null, synopsis: string, kind: NovelKind, gender: Gender, status: NovelStatus, coverImage: string, genreId: number, wordCount: number, totalChapters: number, publishedAt?: any | null, createdAt: any, newChapterAt: any, createdById: number, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, coverImage: string }, genre: { __typename?: 'Genre', id: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', id: number, name: string, color: string } }>, author?: { __typename?: 'Author', id: number, name: string, originalName: string, country: string } | null };
 
-export type CreateNovelMutationVariables = Exact<{
+export type MutationNovelMutationVariables = Exact<{
+  status: NovelStatus;
   title: Scalars['String']['input'];
   synopsis: Scalars['String']['input'];
   gender: Gender;
   genreId: Scalars['Int']['input'];
   tagIds: Array<Scalars['Int']['input']> | Scalars['Int']['input'];
+  novelId?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type CreateNovelMutation = { __typename?: 'Mutation', createNovel: { __typename?: 'NovelResponse', success: boolean, message: string, novel?: { __typename?: 'Novel', id: number, title: string, originalTitle?: string | null, authorId?: number | null, synopsis: string, type: NovelType, gender: Gender, status: NovelStatus, coverImage: string, genreId: number, wordCount: number, totalChapters: number, publishedAt?: any | null, createdAt: any, newChapterAt: any, createdById: number, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string }, genre: { __typename?: 'Genre', id: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', id: number, name: string, color: string } }>, author?: { __typename?: 'Author', id: number, name: string, originalName: string, country: string } | null } | null } };
+export type MutationNovelMutation = { __typename?: 'Mutation', mutationNovel: { __typename?: 'Novel', id: number, title: string, originalTitle?: string | null, authorId?: number | null, synopsis: string, kind: NovelKind, gender: Gender, status: NovelStatus, coverImage: string, genreId: number, wordCount: number, totalChapters: number, publishedAt?: any | null, createdAt: any, newChapterAt: any, createdById: number, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, coverImage: string }, genre: { __typename?: 'Genre', id: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', id: number, name: string, color: string } }>, author?: { __typename?: 'Author', id: number, name: string, originalName: string, country: string } | null } };
+
+export type MyNovelsQueryVariables = Exact<{
+  page: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
+  keyword: Scalars['String']['input'];
+  gender?: InputMaybe<Gender>;
+  genreId?: InputMaybe<Scalars['Int']['input']>;
+  tagIds?: InputMaybe<Array<Scalars['Int']['input']> | Scalars['Int']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<SortOrder>;
+}>;
+
+
+export type MyNovelsQuery = { __typename?: 'Query', myNovels: { __typename?: 'PaginatedNovelsResponse', total: number, prev?: number | null, next?: number | null, totalPages: number, novels: Array<{ __typename?: 'Novel', id: number, title: string, originalTitle?: string | null, authorId?: number | null, synopsis: string, kind: NovelKind, gender: Gender, status: NovelStatus, coverImage: string, genreId: number, wordCount: number, totalChapters: number, publishedAt?: any | null, createdAt: any, newChapterAt: any, createdById: number, createdBy: { __typename?: 'User', id: number, nickname: string, avatar: string, coverImage: string }, genre: { __typename?: 'Genre', id: number, name: string }, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', id: number, name: string, color: string } }>, author?: { __typename?: 'Author', id: number, name: string, originalName: string, country: string } | null }> } };
+
+export type DeleteNovelMutationVariables = Exact<{
+  novelId: Scalars['Int']['input'];
+}>;
+
+
+export type DeleteNovelMutation = { __typename?: 'Mutation', deleteNovel: { __typename?: 'MutationResponse', success: boolean, message: string } };
 
 export type NovelOptionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type NovelOptionsQuery = { __typename?: 'Query', genres: Array<{ __typename?: 'Genre', id: number, name: string }>, tags: Array<{ __typename?: 'Tag', id: number, name: string, group: { __typename?: 'TagGroup', id: number, name: string, color: string } }> };
+export type NovelOptionsQuery = { __typename?: 'Query', genres: Array<{ __typename?: 'Genre', id: number, name: string }>, tags: Array<{ __typename?: 'Tag', id: number, name: string, tagGroupId: number, group: { __typename?: 'TagGroup', id: number, name: string, color: string } }>, tagGroups: Array<{ __typename?: 'TagGroup', id: number, name: string, color: string }> };
 
 export type DeleteTagGroupsMutationVariables = Exact<{
   tagGroupIds: Array<Scalars['Int']['input']> | Scalars['Int']['input'];
@@ -684,7 +684,7 @@ export const NovelFragmentDoc = gql`
   originalTitle
   authorId
   synopsis
-  type
+  kind
   gender
   status
   coverImage
@@ -699,6 +699,7 @@ export const NovelFragmentDoc = gql`
     id
     nickname
     avatar
+    coverImage
   }
   genre {
     id
@@ -710,6 +711,8 @@ export const NovelFragmentDoc = gql`
   author {
     id
     name
+    originalName
+    country
   }
 }
     ${TagFragmentDoc}`;
@@ -843,86 +846,149 @@ export type GenresQueryHookResult = ReturnType<typeof useGenresQuery>;
 export type GenresLazyQueryHookResult = ReturnType<typeof useGenresLazyQuery>;
 export type GenresSuspenseQueryHookResult = ReturnType<typeof useGenresSuspenseQuery>;
 export type GenresQueryResult = Apollo.QueryResult<GenresQuery, GenresQueryVariables>;
-export const CreateNovelDocument = gql`
-    mutation CreateNovel($title: String!, $synopsis: String!, $gender: Gender!, $genreId: Int!, $tagIds: [Int!]!) {
-  createNovel(
+export const MutationNovelDocument = gql`
+    mutation MutationNovel($status: NovelStatus!, $title: String!, $synopsis: String!, $gender: Gender!, $genreId: Int!, $tagIds: [Int!]!, $novelId: Int) {
+  mutationNovel(
+    status: $status
     title: $title
     synopsis: $synopsis
     gender: $gender
     genreId: $genreId
     tagIds: $tagIds
+    novelId: $novelId
   ) {
-    success
-    message
-    novel {
-      id
-      title
-      originalTitle
-      authorId
-      synopsis
-      type
-      gender
-      status
-      coverImage
-      genreId
-      wordCount
-      totalChapters
-      publishedAt
-      createdAt
-      newChapterAt
-      createdById
-      createdBy {
-        id
-        nickname
-        avatar
-      }
-      genre {
-        id
-        name
-      }
-      tags {
-        ...tag
-      }
-      author {
-        id
-        name
-        originalName
-        country
-      }
-    }
+    ...novel
   }
 }
-    ${TagFragmentDoc}`;
-export type CreateNovelMutationFn = Apollo.MutationFunction<CreateNovelMutation, CreateNovelMutationVariables>;
+    ${NovelFragmentDoc}`;
+export type MutationNovelMutationFn = Apollo.MutationFunction<MutationNovelMutation, MutationNovelMutationVariables>;
 
 /**
- * __useCreateNovelMutation__
+ * __useMutationNovelMutation__
  *
- * To run a mutation, you first call `useCreateNovelMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateNovelMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useMutationNovelMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMutationNovelMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [createNovelMutation, { data, loading, error }] = useCreateNovelMutation({
+ * const [mutationNovelMutation, { data, loading, error }] = useMutationNovelMutation({
  *   variables: {
+ *      status: // value for 'status'
  *      title: // value for 'title'
  *      synopsis: // value for 'synopsis'
  *      gender: // value for 'gender'
  *      genreId: // value for 'genreId'
  *      tagIds: // value for 'tagIds'
+ *      novelId: // value for 'novelId'
  *   },
  * });
  */
-export function useCreateNovelMutation(baseOptions?: Apollo.MutationHookOptions<CreateNovelMutation, CreateNovelMutationVariables>) {
+export function useMutationNovelMutation(baseOptions?: Apollo.MutationHookOptions<MutationNovelMutation, MutationNovelMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateNovelMutation, CreateNovelMutationVariables>(CreateNovelDocument, options);
+        return Apollo.useMutation<MutationNovelMutation, MutationNovelMutationVariables>(MutationNovelDocument, options);
       }
-export type CreateNovelMutationHookResult = ReturnType<typeof useCreateNovelMutation>;
-export type CreateNovelMutationResult = Apollo.MutationResult<CreateNovelMutation>;
-export type CreateNovelMutationOptions = Apollo.BaseMutationOptions<CreateNovelMutation, CreateNovelMutationVariables>;
+export type MutationNovelMutationHookResult = ReturnType<typeof useMutationNovelMutation>;
+export type MutationNovelMutationResult = Apollo.MutationResult<MutationNovelMutation>;
+export type MutationNovelMutationOptions = Apollo.BaseMutationOptions<MutationNovelMutation, MutationNovelMutationVariables>;
+export const MyNovelsDocument = gql`
+    query MyNovels($page: Int!, $take: Int!, $keyword: String!, $gender: Gender, $genreId: Int, $tagIds: [Int!], $sortBy: String, $sortOrder: SortOrder) {
+  myNovels(
+    page: $page
+    take: $take
+    keyword: $keyword
+    gender: $gender
+    genreId: $genreId
+    tagIds: $tagIds
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+  ) {
+    total
+    novels {
+      ...novel
+    }
+    prev
+    next
+    totalPages
+  }
+}
+    ${NovelFragmentDoc}`;
+
+/**
+ * __useMyNovelsQuery__
+ *
+ * To run a query within a React component, call `useMyNovelsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyNovelsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyNovelsQuery({
+ *   variables: {
+ *      page: // value for 'page'
+ *      take: // value for 'take'
+ *      keyword: // value for 'keyword'
+ *      gender: // value for 'gender'
+ *      genreId: // value for 'genreId'
+ *      tagIds: // value for 'tagIds'
+ *      sortBy: // value for 'sortBy'
+ *      sortOrder: // value for 'sortOrder'
+ *   },
+ * });
+ */
+export function useMyNovelsQuery(baseOptions: Apollo.QueryHookOptions<MyNovelsQuery, MyNovelsQueryVariables> & ({ variables: MyNovelsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MyNovelsQuery, MyNovelsQueryVariables>(MyNovelsDocument, options);
+      }
+export function useMyNovelsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyNovelsQuery, MyNovelsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MyNovelsQuery, MyNovelsQueryVariables>(MyNovelsDocument, options);
+        }
+export function useMyNovelsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MyNovelsQuery, MyNovelsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MyNovelsQuery, MyNovelsQueryVariables>(MyNovelsDocument, options);
+        }
+export type MyNovelsQueryHookResult = ReturnType<typeof useMyNovelsQuery>;
+export type MyNovelsLazyQueryHookResult = ReturnType<typeof useMyNovelsLazyQuery>;
+export type MyNovelsSuspenseQueryHookResult = ReturnType<typeof useMyNovelsSuspenseQuery>;
+export type MyNovelsQueryResult = Apollo.QueryResult<MyNovelsQuery, MyNovelsQueryVariables>;
+export const DeleteNovelDocument = gql`
+    mutation DeleteNovel($novelId: Int!) {
+  deleteNovel(novelId: $novelId) {
+    success
+    message
+  }
+}
+    `;
+export type DeleteNovelMutationFn = Apollo.MutationFunction<DeleteNovelMutation, DeleteNovelMutationVariables>;
+
+/**
+ * __useDeleteNovelMutation__
+ *
+ * To run a mutation, you first call `useDeleteNovelMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteNovelMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteNovelMutation, { data, loading, error }] = useDeleteNovelMutation({
+ *   variables: {
+ *      novelId: // value for 'novelId'
+ *   },
+ * });
+ */
+export function useDeleteNovelMutation(baseOptions?: Apollo.MutationHookOptions<DeleteNovelMutation, DeleteNovelMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteNovelMutation, DeleteNovelMutationVariables>(DeleteNovelDocument, options);
+      }
+export type DeleteNovelMutationHookResult = ReturnType<typeof useDeleteNovelMutation>;
+export type DeleteNovelMutationResult = Apollo.MutationResult<DeleteNovelMutation>;
+export type DeleteNovelMutationOptions = Apollo.BaseMutationOptions<DeleteNovelMutation, DeleteNovelMutationVariables>;
 export const NovelOptionsDocument = gql`
     query NovelOptions {
   genres {
@@ -930,10 +996,22 @@ export const NovelOptionsDocument = gql`
     name
   }
   tags {
-    ...tag
+    id
+    name
+    tagGroupId
+    group {
+      id
+      name
+      color
+    }
+  }
+  tagGroups {
+    id
+    name
+    color
   }
 }
-    ${TagFragmentDoc}`;
+    `;
 
 /**
  * __useNovelOptionsQuery__

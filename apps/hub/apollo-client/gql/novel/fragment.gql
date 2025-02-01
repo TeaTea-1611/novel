@@ -4,7 +4,7 @@ fragment novel on Novel {
   originalTitle
   authorId
   synopsis
-  type
+  kind
   gender
   status
   coverImage
@@ -19,6 +19,7 @@ fragment novel on Novel {
     id
     nickname
     avatar
+    coverImage
   }
   genre {
     id
@@ -30,5 +31,7 @@ fragment novel on Novel {
   author {
     id
     name
+    originalName
+    country
   }
 }
